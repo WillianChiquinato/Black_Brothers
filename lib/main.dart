@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
               //Para o botao e o Text para adicinar texto e TEXSTYLE para estilizaçao
               ElevatedButton(onPressed: () {
                   print('Pressionou');
-                }, child: Text('Aperta ai pf'),
+                }, child: Text('Aperta ai pf krl'),
               ),
             ],
           ),
