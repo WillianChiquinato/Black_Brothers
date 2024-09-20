@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //Home é o nosso BODY no Flutter.
-      //Stack, empilhar uma em cima da outra.
+      //Stack, empilhar uma em cima da outra.,
       //Um em cima do outro com stack, literalmente em forma de pilha
       home: Scaffold(
         appBar: AppBar(
@@ -25,19 +25,19 @@ class MyApp extends StatelessWidget {
         body: Container(
           //Filtrando a cor com o RGB, modelando com o fromARGB, mas nao da pra pegar a cor, tem que pegar externa
           color: Color.fromARGB(255, 174, 134, 57),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: ListView(
+            scrollDirection: Axis.vertical,
             children: [
               // Vai ser da imagem
               Padding(
-                padding: const EdgeInsets.all(50.0),
+                padding: const EdgeInsets.all(40.0),
                 child: Stack(
                   alignment: AlignmentDirectional.center,
                   children: [
                     Container(
                       color: Colors.orange,
-                      height: 100,
-                      width: 100,
+                      height: 170,
+                      width: 170,
                     ),
                     Container(
                       color: Colors.redAccent,
@@ -47,8 +47,8 @@ class MyApp extends StatelessWidget {
                   ],
                 ),
               ),
-              InputUsuario(Colors.black),
-              InputUsuario(Colors.orangeAccent),
+              InputUsuario('Usuario'),
+              InputUsuario('Senha'),
               Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: ElevatedButton(
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
                   onPressed: () {
                     print('Pressionou');
                   },
-                  child: Text(
+                  child: const Text(
                     'Entrar',
                     style: TextStyle(
                         color: Colors.white,
@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
                 color: Color.fromARGB(255, 174, 134, 57),
                 height: 50,
                 width: 2000,
-                child: Text(
+                child: const Text(
                   '---------------- OU ----------------',
                   style: TextStyle(
                       color: Colors.white,
@@ -81,54 +81,98 @@ class MyApp extends StatelessWidget {
                 ),
               ),
               //Para o botao e o Text para adicinar texto e TEXSTYLE para estilizaçao
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    minimumSize: Size(300, 50),
-                    backgroundColor: Colors.white54),
-                onPressed: () {
-                  print('Pressionou');
-                },
-                child: Text(
-                  'Inscrever-se',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: Size(300, 50),
+                      backgroundColor: Colors.white54),
+                  onPressed: () {
+                    print('Pressionou');
+                  },
+                  child: const Text(
+                    'Inscrever-se',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: Icon(Icons.add_card_rounded),
-        ),
+        floatingActionButton: AlertaEntrar(text: 'Ola'),
       ),
     );
   }
 }
 
 //StatelessWidget para tarefas repetitivas.
-//Voce pode fazer um layout inteiro e so chamar a funcao aonde vc quer, muito util para Containers com muitos detalhes.
-//Um widget que vc pode modelar a vontade, com o msm codigo, e depois ficar reutilizando.
-class InputUsuario extends StatelessWidget {
-  //Criando uma variavel para separar cada Container pelo o que eu quero (Especificando cada Container).
-  //Pode ser o que vc quiser, String, int qualquer variavel.
-  //Nesse caso usei Color para mudar a cor de fundo, ai so referenciar a variavel aonde quer e completar o parametro na chamada da funcao.
-  final Color nomeCaminho;
-  const InputUsuario(this.nomeCaminho, {super.key});
+//Estatico, sem mudanca de valores, sem atualizar na tela
+class InputUsuario extends StatefulWidget {
+  final String nomePlaceholder;
 
+  const InputUsuario(this.nomePlaceholder, {super.key});
+
+  @override
+  State<InputUsuario> createState() => _InputUsuarioState();
+}
+
+class _InputUsuarioState extends State<InputUsuario> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 40.0),
-      child: Stack(alignment: AlignmentDirectional.center, children: [
-        Container(
-          color: nomeCaminho,
-          height: 50,
-          width: 300,
-        ),
-      ]),
+        padding: const EdgeInsets.only(bottom: 35.0, left: 25.0, right: 25.0),
+        child: Container(
+          width: 330,
+          height: 60,
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: widget.nomePlaceholder,
+              filled: true,
+              fillColor: Colors.white54,
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+              ),
+            ),
+          ),
+        ));
+  }
+}
+
+class AlertaEntrar extends StatelessWidget {
+  final String text;
+
+  AlertaEntrar({required this.text});
+
+  void _showPopup(BuildContext context, String nomePlaceholder) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Bem-vindo!"),
+          content: Text("Aqui esta um text para dizer que o CONTEXT é o conteudo do alerta"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Fechar"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o popup
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () {
+        _showPopup(context, '$text');
+      },
+      child: Icon(Icons.add_card_rounded),
     );
   }
 }

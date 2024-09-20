@@ -90,3 +90,31 @@
 
 //Sobre text, quando o texto é muito grande e nao cabe no container, ele colocar ... no final
 //Overflow: TextOverFlow.elipsis,
+
+//Sobre StatefulWidget, serve para atualizar variaveis ou estados que podem mudar e atualizar na tela, ja que o Stateless é estático, como se fosse o Update do UNITY
+//StatefulWidget Funciona para mudar variaveis no sistema.
+// class InputUsuario extends StatefulWidget {
+//   final String nomePlaceholder;
+//
+//   const InputUsuario(this.nomePlaceholder, {super.key});
+//
+//   @override
+//   State<InputUsuario> createState() => _InputUsuarioState();
+// }
+//
+// class _InputUsuarioState extends State<InputUsuario> {
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//         padding: const EdgeInsets.only(bottom: 25.0),
+//         child: Container(
+//           width: 330,
+//           height: 80,
+//           child: TextField(
+//             decoration: InputDecoration(
+//                 border: OutlineInputBorder(), hintText: '$nomePlaceholder'),
+//           ),
+//         ));
+//   }
+// }
