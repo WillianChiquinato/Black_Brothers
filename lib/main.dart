@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -11,37 +10,28 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      //Home é o nosso BODY no Flutter.
+      //Stack, empilhar uma em cima da outra.
+      //Um em cima do outro com stack, literalmente em forma de pilha
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 174, 134, 57),
         ),
-        //Home é o nosso BODY no Flutter.
-        //Stack, empilhar uma em cima da outra.
-        //Um em cima do outro com stack, literalmente em forma de pilha
-        home: Container(
+        body: Container(
           //Filtrando a cor com o RGB, modelando com o fromARGB, mas nao da pra pegar a cor, tem que pegar externa
-          color: Color.fromARGB(255, 24, 100, 1),
+          color: Color.fromARGB(255, 174, 134, 57),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Stack(
-                alignment: AlignmentDirectional.center,
-                children: [
-                  Container(
-                    color: Colors.orange,
-                    height: 100,
-                    width: 100,
-                  ),
-                  Container(
-                    color: Colors.redAccent,
-                    height: 50,
-                    width: 50,
-                  )
-                ],
-              ),
-              Stack(
+              // Vai ser da imagem
+              Padding(
+                padding: const EdgeInsets.all(50.0),
+                child: Stack(
                   alignment: AlignmentDirectional.center,
                   children: [
                     Container(
@@ -54,86 +44,91 @@ class MyApp extends StatelessWidget {
                       height: 50,
                       width: 50,
                     )
-                  ]
+                  ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    color: Colors.greenAccent,
-                    height: 50,
-                    width: 50,
+              InputUsuario(Colors.black),
+              InputUsuario(Colors.orangeAccent),
+              Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: Size(300, 50),
+                      backgroundColor: Colors.white10),
+                  onPressed: () {
+                    print('Pressionou');
+                  },
+                  child: Text(
+                    'Entrar',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
                   ),
-                  Container(
-                    color: Colors.pink,
-                    height: 50,
-                    width: 50,
-                  ),
-                  Container(
-                    color: Colors.purple,
-                    height: 50,
-                    width: 50,
-                  )
-                ],
+                ),
               ),
               Container(
-                color: Colors.amber,
-                height: 30,
-                width: 300,
-                child: Text('Inscrever-se',
-                  style: TextStyle(color: Colors.black, fontSize: 26),
-                  textAlign: TextAlign.center,),
+                color: Color.fromARGB(255, 174, 134, 57),
+                height: 50,
+                width: 2000,
+                child: Text(
+                  '---------------- OU ----------------',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
               ),
               //Para o botao e o Text para adicinar texto e TEXSTYLE para estilizaçao
-              ElevatedButton(onPressed: () {
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    minimumSize: Size(300, 50),
+                    backgroundColor: Colors.white54),
+                onPressed: () {
                   print('Pressionou');
-                }, child: Text('Aperta ai pf krl'),
+                },
+                child: Text(
+                  'Inscrever-se',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
-        )
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: Icon(Icons.add_card_rounded),
+        ),
+      ),
+    );
+  }
+}
 
-      // Column ou Row(
-      //   //Column mainAxisAlignment = Eixo principal de alinhamento da COLUNA, Vertical
-      //   //Row mainAxisAlignment = Eixo principal de alinhamento da LINHA, horizontal
-      //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //   //Column crossAxisAlignment, manipulando o eixo contrário que corta ele, no caso o eixo X, horizontal
-      //   //Row crossAxisAlignment, manipulando o eixo contrário que corta ele, no caso o eixo Y, vertical
-      //   crossAxisAlignment: CrossAxisAlignment.end,
-      //   children: [
-      //     Container(
-      //       color: Colors.orange,
-      //       height: 100,
-      //       width: 100,
-      //     ),
-      //     Container(
-      //       color: Colors.deepOrangeAccent,
-      //       height: 100,
-      //       width: 100,          ),
-      //   ],
-      // ),
+//StatelessWidget para tarefas repetitivas.
+//Voce pode fazer um layout inteiro e so chamar a funcao aonde vc quer, muito util para Containers com muitos detalhes.
+//Um widget que vc pode modelar a vontade, com o msm codigo, e depois ficar reutilizando.
+class InputUsuario extends StatelessWidget {
+  //Criando uma variavel para separar cada Container pelo o que eu quero (Especificando cada Container).
+  //Pode ser o que vc quiser, String, int qualquer variavel.
+  //Nesse caso usei Color para mudar a cor de fundo, ai so referenciar a variavel aonde quer e completar o parametro na chamada da funcao.
+  final Color nomeCaminho;
+  const InputUsuario(this.nomeCaminho, {super.key});
 
-      // Stack(
-      //   //Alinhamento direcional, alterando esse alinhamento conforma desejado
-      //   alignment: AlignmentDirectional.center,
-      //   children: [
-      //     Container(
-      //       color: Colors.orange,
-      //     ),
-      //     Container(
-      //       color: Colors.deepOrangeAccent,
-      //       height: 500,
-      //       width: 300,          ),
-      //   ],
-      // ),
-
-      // Container(
-      //   color: Colors.orange,
-      //   //Criando um filho diretamente com esse container
-      //   //Container nao faz sobreposicao, entao nao fica um em cima do outro, ele substitui
-      //   child: Container(
-      //   color: Colors.redAccent,
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 40.0),
+      child: Stack(alignment: AlignmentDirectional.center, children: [
+        Container(
+          color: nomeCaminho,
+          height: 50,
+          width: 300,
+        ),
+      ]),
     );
   }
 }
