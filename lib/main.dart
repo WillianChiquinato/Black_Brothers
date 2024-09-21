@@ -20,31 +20,22 @@ class MyApp extends StatelessWidget {
       //Um em cima do outro com stack, literalmente em forma de pilha
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 174, 134, 57),
+          backgroundColor: Color.fromARGB(255, 174, 120, 2),
         ),
         body: Container(
           //Filtrando a cor com o RGB, modelando com o fromARGB, mas nao da pra pegar a cor, tem que pegar externa
-          color: Color.fromARGB(255, 174, 134, 57),
+          color: Color.fromARGB(255, 174, 120, 2),
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
               // Vai ser da imagem
               Padding(
                 padding: const EdgeInsets.all(40.0),
-                child: Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: [
-                    Container(
-                      color: Colors.orange,
-                      height: 170,
-                      width: 170,
-                    ),
-                    Container(
-                      color: Colors.redAccent,
-                      height: 50,
-                      width: 50,
-                    )
-                  ],
+                child: Container(
+                  color: Colors.transparent,
+                  height: 170,
+                  width: 170,
+                  child: Image.asset('Assets/Black_Brother.png', fit: BoxFit.cover),
                 ),
               ),
               InputUsuario('Usuario'),
@@ -68,7 +59,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
               Container(
-                color: Color.fromARGB(255, 174, 134, 57),
+                color: Color.fromARGB(255, 174, 120, 2),
                 height: 50,
                 width: 2000,
                 child: const Text(
@@ -152,7 +143,8 @@ class AlertaEntrar extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Bem-vindo!"),
-          content: Text("Aqui esta um text para dizer que o CONTEXT é o conteudo do alerta"),
+          content: Text(
+              "Aqui esta um text para dizer que o CONTEXT é o conteudo do alerta"),
           actions: <Widget>[
             TextButton(
               child: Text("Fechar"),
