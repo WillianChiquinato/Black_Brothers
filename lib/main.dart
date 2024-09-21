@@ -4,9 +4,14 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,11 +25,11 @@ class MyApp extends StatelessWidget {
       //Um em cima do outro com stack, literalmente em forma de pilha
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 174, 120, 2),
+          backgroundColor: Color.fromARGB(255, 168, 88, 9),
         ),
         body: Container(
           //Filtrando a cor com o RGB, modelando com o fromARGB, mas nao da pra pegar a cor, tem que pegar externa
-          color: Color.fromARGB(255, 174, 120, 2),
+          color: Color.fromARGB(255, 168, 88, 9),
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
@@ -45,7 +50,7 @@ class MyApp extends StatelessWidget {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       minimumSize: Size(300, 50),
-                      backgroundColor: Colors.white10),
+                      backgroundColor: Color.fromARGB(255, 77, 37, 0),),
                   onPressed: () {
                     print('Pressionou');
                   },
@@ -59,7 +64,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
               Container(
-                color: Color.fromARGB(255, 174, 120, 2),
+                color: Color.fromARGB(255, 168, 88, 9),
                 height: 50,
                 width: 2000,
                 child: const Text(
@@ -77,7 +82,7 @@ class MyApp extends StatelessWidget {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       minimumSize: Size(300, 50),
-                      backgroundColor: Colors.white54),
+                      backgroundColor: Color.fromARGB(255, 146, 146, 146)),
                   onPressed: () {
                     print('Pressionou');
                   },
@@ -122,7 +127,7 @@ class _InputUsuarioState extends State<InputUsuario> {
             decoration: InputDecoration(
               hintText: widget.nomePlaceholder,
               filled: true,
-              fillColor: Colors.white54,
+              fillColor: Colors.white70,
               border: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
               ),
