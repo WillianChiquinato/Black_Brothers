@@ -138,7 +138,8 @@ class _MyAppState extends State<TelaInicial> {
 
               Visibility(
                   visible: userController.isLoading.value,
-                  child: const CircularProgressIndicator()),
+                  child: const Center(
+                    child: CircularProgressIndicator())),
               Visibility(
                   visible: !userController.isLoading.value &&
                       userController.UserAddress.value != null,
@@ -148,14 +149,36 @@ class _MyAppState extends State<TelaInicial> {
               Container(
                 color: Color.fromARGB(255, 168, 88, 9),
                 height: 50,
-                width: 2000,
-                child: const Text(
-                  '---------------- OU ----------------',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    // Linha à esquerda
+                    Expanded(
+                      child: Divider(
+                        color: Colors.white,
+                        thickness: 2,
+                        indent: 30,  // Espaçamento da borda esquerda
+                        endIndent: 10, // Espaçamento antes do texto
+                      ),
+                    ),
+                    const Text(
+                      'OU',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // Linha à direita
+                    Expanded(
+                      child: Divider(
+                        color: Colors.white,
+                        thickness: 2,
+                        indent: 10,  // Espaçamento antes do texto
+                        endIndent: 30, // Espaçamento da borda direita
+                      ),
+                    ),
+                  ],
                 ),
               ),
               //Para o botao e o Text para adicinar texto e TEXSTYLE para estilizaçao
