@@ -1,17 +1,38 @@
 import 'package:flutter/material.dart';
+import 'API/CardEntrada.dart';
+import 'API/controller.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const TelaInicial());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+//StatelessWidget para tarefas repetitivas.
+//Estatico, sem mudanca de valores, sem atualizar na tela
+class TelaInicial extends StatefulWidget {
+  const TelaInicial({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<TelaInicial> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+final TextEditingController nomeUsuario = TextEditingController();
+final UserController userController = UserController();
+
+class _MyAppState extends State<TelaInicial> {
+  @override
+  void initState() {
+    userController.addListener(() {
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  final TextEditingController nomeSenha = TextEditingController();
+  bool _obscuraSenha = true;
+
+  String _usuario = "";
+  String _senha = "";
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -40,19 +61,70 @@ class _MyAppState extends State<MyApp> {
                   color: Colors.transparent,
                   height: 170,
                   width: 170,
-                  child: Image.asset('Assets/Black_Brother.png', fit: BoxFit.cover),
+                  child: Image.asset('Assets/Black_Brother.png',
+                      fit: BoxFit.cover),
                 ),
               ),
-              InputUsuario('Usuario'),
-              InputUsuario('Senha'),
+              Padding(
+                  padding: const EdgeInsets.only(
+                      bottom: 35.0, left: 25.0, right: 25.0),
+                  child: Container(
+                    width: 330,
+                    height: 60,
+                    child: TextField(
+                      controller: nomeUsuario,
+                      decoration: InputDecoration(
+                        hintText: 'Usuario',
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                      ),
+                    ),
+                  )),
+              Padding(
+                  padding: const EdgeInsets.only(
+                      bottom: 35.0, left: 25.0, right: 25.0),
+                  child: Container(
+                    width: 330,
+                    height: 60,
+                    child: TextField(
+                      controller: nomeSenha,
+                      obscureText: _obscuraSenha,
+                      decoration: InputDecoration(
+                        hintText: 'Senha',
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                      ),
+                    ),
+                  )),
               Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      minimumSize: Size(300, 50),
-                      backgroundColor: Color.fromARGB(255, 77, 37, 0),),
+                    minimumSize: Size(300, 50),
+                    backgroundColor: Color.fromARGB(255, 77, 37, 0),
+                  ),
                   onPressed: () {
-                    print('Pressionou');
+                    //Incluindo a API em uma pequena verificação do usuario;
+                    if (nomeUsuario.text.length < 50) {
+                      userController.searchApi(user: nomeUsuario.text);
+                    } else {
+                      const snackBar =
+                          SnackBar(content: Text('O nome esta muito grande'));
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                    setState(() {
+                      _usuario = nomeUsuario.text;
+                      _senha = nomeSenha.text;
+                      print('Usuario: ' + _usuario);
+                      print('Senha: ' + _senha);
+                    });
                   },
                   child: const Text(
                     'Entrar',
@@ -63,6 +135,16 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
               ),
+
+              Visibility(
+                  visible: userController.isLoading.value,
+                  child: const CircularProgressIndicator()),
+              Visibility(
+                  visible: !userController.isLoading.value &&
+                      userController.UserAddress.value != null,
+                  child: CardlocationWidget(
+                      User: userController.UserAddress.value)),
+
               Container(
                 color: Color.fromARGB(255, 168, 88, 9),
                 height: 50,
@@ -101,39 +183,6 @@ class _MyAppState extends State<MyApp> {
         floatingActionButton: AlertaEntrar(text: 'Ola'),
       ),
     );
-  }
-}
-
-//StatelessWidget para tarefas repetitivas.
-//Estatico, sem mudanca de valores, sem atualizar na tela
-class InputUsuario extends StatefulWidget {
-  final String nomePlaceholder;
-
-  const InputUsuario(this.nomePlaceholder, {super.key});
-
-  @override
-  State<InputUsuario> createState() => _InputUsuarioState();
-}
-
-class _InputUsuarioState extends State<InputUsuario> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 35.0, left: 25.0, right: 25.0),
-        child: Container(
-          width: 330,
-          height: 60,
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: widget.nomePlaceholder,
-              filled: true,
-              fillColor: Colors.white70,
-              border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-              ),
-            ),
-          ),
-        ));
   }
 }
 

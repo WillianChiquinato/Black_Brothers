@@ -3,16 +3,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:projetosflutter/API/%20Json/Api_Services.dart';
 import 'modelo_User.dart';
 
-class Controller extends ChangeNotifier {
+class UserController extends ChangeNotifier {
   ApiServices apiService = ApiServices();
 
-  ValueNotifier<ApiModel?> UserAddress = ValueNotifier(null);
+  ValueNotifier<UserClass?> UserAddress = ValueNotifier(null);
   ValueNotifier<bool> isLoading = ValueNotifier(false);
 
   Future<void> searchApi({required String user}) async {
     isLoading.value = true;
 
-    ApiModel? Apimodel = await apiService.getUser(user: user);
+    UserClass? Apimodel = await apiService.getUser(user: user);
 
     if (Apimodel != null) {
       UserAddress.value = Apimodel;

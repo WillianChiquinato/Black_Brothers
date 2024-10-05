@@ -6,12 +6,12 @@ import '../modelo_User.dart';
 class ApiServices {
   Dio dio = Dio();
 
-  Future<ApiModel?> getUser({required String user}) async {
+  Future<UserClass?> getUser({required String user}) async {
     try {
       var response = await Dio().get(Apiconstants.urlBaseMock(user));
 
       if (response.statusCode == 200) {
-        return ApiModel.fromJson(response.data);
+        return UserClass.fromJson(response.data);
       }
     } catch (e) {
       print(e.toString());
