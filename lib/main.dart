@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'API/CardEntrada.dart';
 import 'API/controller.dart';
+import 'API/modelo_User.dart';
 
 void main() {
   runApp(const TelaInicial());
@@ -136,15 +137,35 @@ class _MyAppState extends State<TelaInicial> {
                 ),
               ),
 
-              Visibility(
-                  visible: userController.isLoading.value,
-                  child: const Center(
-                    child: CircularProgressIndicator())),
-              Visibility(
-                  visible: !userController.isLoading.value &&
-                      userController.UserAddress.value != null,
-                  child: CardlocationWidget(
-                      User: userController.UserAddress.value)),
+              // Widget que observa e reage às mudanças de isLoading e UserAddress
+              Column(
+                children: [
+                  // Exibe o CircularProgressIndicator enquanto está carregando
+                  ValueListenableBuilder<bool>(
+                    valueListenable: userController.isLoading,
+                    builder: (context, isLoading, child) {
+                      return Visibility(
+                        visible: isLoading,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  // Exibe o CardlocationWidget quando o usuário for encontrado
+                  ValueListenableBuilder<UserClass?>(
+                    valueListenable: userController.UserAddress,
+                    builder: (context, user, child) {
+                      return Visibility(
+                        visible:
+                            !userController.isLoading.value && user != null,
+                        child: CardlocationWidget(User: user),
+                      );
+                    },
+                  ),
+                ],
+              ),
 
               Container(
                 color: Color.fromARGB(255, 168, 88, 9),
@@ -157,7 +178,7 @@ class _MyAppState extends State<TelaInicial> {
                       child: Divider(
                         color: Colors.white,
                         thickness: 2,
-                        indent: 30,  // Espaçamento da borda esquerda
+                        indent: 30, // Espaçamento da borda esquerda
                         endIndent: 10, // Espaçamento antes do texto
                       ),
                     ),
@@ -174,7 +195,7 @@ class _MyAppState extends State<TelaInicial> {
                       child: Divider(
                         color: Colors.white,
                         thickness: 2,
-                        indent: 10,  // Espaçamento antes do texto
+                        indent: 10, // Espaçamento antes do texto
                         endIndent: 30, // Espaçamento da borda direita
                       ),
                     ),

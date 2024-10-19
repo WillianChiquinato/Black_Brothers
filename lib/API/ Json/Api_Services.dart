@@ -2,16 +2,22 @@ import 'package:dio/dio.dart';
 import 'package:projetosflutter/API/constans.dart';
 import '../modelo_User.dart';
 
-//A parte da conexao do JSON;
+// Conexão com a API
 class ApiServices {
   Dio dio = Dio();
 
   Future<UserClass?> getUser({required String user}) async {
     try {
-      var response = await Dio().get(Apiconstants.urlBaseMock(user));
+      var response = await dio.get(Apiconstants.urlBaseMock(user));
 
       if (response.statusCode == 200) {
-        return UserClass.fromJson(response.data);
+        if (response.data is List) {
+          List<dynamic> dataList = response.data;
+
+          if (dataList.isNotEmpty) {
+            return UserClass.fromJson(dataList[0]);
+          }
+        }
       }
     } catch (e) {
       print(e.toString());
@@ -19,3 +25,4 @@ class ApiServices {
     return null;
   }
 }
+
