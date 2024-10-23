@@ -15,11 +15,11 @@ class UserClass {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['Nome'] = this.nome;
-    data['Idade'] = this.idade;
-    data['Plano'] = this.plano;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['Nome'] = nome;
+    data['Idade'] = idade;
+    data['Plano'] = plano;
     return data;
   }
 }

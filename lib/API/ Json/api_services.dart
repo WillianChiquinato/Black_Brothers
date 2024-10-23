@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:projetosflutter/API/constans.dart';
-import '../modelo_User.dart';
+import '../modelo_user.dart';
 
 // Conexão com a API
 class ApiServices {

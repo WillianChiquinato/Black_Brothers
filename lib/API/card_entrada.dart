@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:projetosflutter/API/modelo_User.dart';
+import 'package:projetosflutter/API/modelo_user.dart';
 
 class CardlocationWidget extends StatelessWidget {
-  const CardlocationWidget({super.key, this.User});
-  final UserClass? User;
+  const CardlocationWidget({super.key, this.user});
+  final UserClass? user;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -13,10 +13,10 @@ class CardlocationWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Usuario: ${User?.id}"),
-            Text("Nome: ${User?.nome}"),
-            Text("Idade: ${User?.idade}"),
-            Text("Plano: ${User?.plano}")
+            Text("Usuario: ${user?.id}"),
+            Text("Nome: ${user?.nome}"),
+            Text("Idade: ${user?.idade}"),
+            Text("Plano: ${user?.plano}")
           ],
         ),
       ),

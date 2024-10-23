@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'API/CardEntrada.dart';
+import 'package:projetosflutter/Components/alerta.dart';
+import 'API/card_entrada.dart';
 import 'API/controller.dart';
-import 'API/modelo_User.dart';
+import 'API/modelo_user.dart';
 
 void main() {
   runApp(const TelaInicial());
@@ -29,7 +30,7 @@ class _MyAppState extends State<TelaInicial> {
   }
 
   final TextEditingController nomeSenha = TextEditingController();
-  bool _obscuraSenha = true;
+  final bool _obscuraSenha = true;
 
   String _usuario = "";
   String _senha = "";
@@ -47,11 +48,12 @@ class _MyAppState extends State<TelaInicial> {
       //Um em cima do outro com stack, literalmente em forma de pilha
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 168, 88, 9),
+          toolbarHeight: 40,
+          backgroundColor: const Color.fromARGB(255, 168, 88, 9),
         ),
         body: Container(
           //Filtrando a cor com o RGB, modelando com o fromARGB, mas nao da pra pegar a cor, tem que pegar externa
-          color: Color.fromARGB(255, 168, 88, 9),
+          color: const Color.fromARGB(255, 168, 88, 9),
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
@@ -69,16 +71,16 @@ class _MyAppState extends State<TelaInicial> {
               Padding(
                   padding: const EdgeInsets.only(
                       bottom: 35.0, left: 25.0, right: 25.0),
-                  child: Container(
+                  child: SizedBox(
                     width: 330,
                     height: 60,
                     child: TextField(
                       controller: nomeUsuario,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Usuario',
                         filled: true,
                         fillColor: Colors.white70,
-                        border: const OutlineInputBorder(
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                         ),
                       ),
@@ -87,17 +89,17 @@ class _MyAppState extends State<TelaInicial> {
               Padding(
                   padding: const EdgeInsets.only(
                       bottom: 35.0, left: 25.0, right: 25.0),
-                  child: Container(
+                  child: SizedBox(
                     width: 330,
                     height: 60,
                     child: TextField(
                       controller: nomeSenha,
                       obscureText: _obscuraSenha,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Senha',
                         filled: true,
                         fillColor: Colors.white70,
-                        border: const OutlineInputBorder(
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                         ),
                       ),
@@ -107,8 +109,8 @@ class _MyAppState extends State<TelaInicial> {
                 padding: const EdgeInsets.all(25.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(300, 50),
-                    backgroundColor: Color.fromARGB(255, 77, 37, 0),
+                    minimumSize: const Size(300, 50),
+                    backgroundColor: const Color.fromARGB(255, 77, 37, 0),
                   ),
                   onPressed: () {
                     //Incluindo a API em uma pequena verificação do usuario;
@@ -153,25 +155,33 @@ class _MyAppState extends State<TelaInicial> {
                     },
                   ),
 
-                  // Exibe o CardlocationWidget quando o usuário for encontrado
                   ValueListenableBuilder<UserClass?>(
-                    valueListenable: userController.UserAddress,
+                    valueListenable: userController.userAddress,
                     builder: (context, user, child) {
-                      return Visibility(
-                        visible:
-                            !userController.isLoading.value && user != null,
-                        child: CardlocationWidget(User: user),
-                      );
+                      if (!userController.isLoading.value) {
+                        if (user != null) {
+                          return CardlocationWidget(user: user);
+                        } else {
+                          return const Center(
+                            child: Text(
+                              'Nenhum usuário encontrado',
+                              style: TextStyle(fontSize: 18, color: Colors.red),
+                            ),
+                          );
+                        }
+                      }
+                      // Retorna um sizedBox vazio com o shrink.
+                      return const SizedBox.shrink();
                     },
                   ),
                 ],
               ),
 
               Container(
-                color: Color.fromARGB(255, 168, 88, 9),
+                color: const Color.fromARGB(255, 168, 88, 9),
                 height: 50,
                 width: double.infinity,
-                child: Row(
+                child: const Row(
                   children: [
                     // Linha à esquerda
                     Expanded(
@@ -182,7 +192,7 @@ class _MyAppState extends State<TelaInicial> {
                         endIndent: 10, // Espaçamento antes do texto
                       ),
                     ),
-                    const Text(
+                    Text(
                       'OU',
                       style: TextStyle(
                         color: Colors.white,
@@ -207,8 +217,9 @@ class _MyAppState extends State<TelaInicial> {
                 padding: const EdgeInsets.only(left: 25.0, right: 25.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      minimumSize: Size(300, 50),
-                      backgroundColor: Color.fromARGB(255, 146, 146, 146)),
+                      minimumSize: const Size(300, 50),
+                      backgroundColor:
+                          const Color.fromARGB(255, 146, 146, 146)),
                   onPressed: () {
                     print('Pressionou');
                   },
@@ -224,45 +235,8 @@ class _MyAppState extends State<TelaInicial> {
             ],
           ),
         ),
-        floatingActionButton: AlertaEntrar(text: 'Ola'),
+        floatingActionButton: const AlertaEntrar(text: 'Ola'),
       ),
-    );
-  }
-}
-
-class AlertaEntrar extends StatelessWidget {
-  final String text;
-
-  AlertaEntrar({required this.text});
-
-  void _showPopup(BuildContext context, String nomePlaceholder) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Bem-vindo!"),
-          content: Text(
-              "Aqui esta um text para dizer que o CONTEXT é o conteudo do alerta"),
-          actions: <Widget>[
-            TextButton(
-              child: Text("Fechar"),
-              onPressed: () {
-                Navigator.of(context).pop(); // Fecha o popup
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        _showPopup(context, '$text');
-      },
-      child: Icon(Icons.add_card_rounded),
     );
   }
 }
