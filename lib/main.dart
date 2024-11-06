@@ -24,6 +24,7 @@ class _MyAppState extends State<MainClass> {
         useMaterial3: true,
       ),
       //Home é o nosso BODY no Flutter.
+      //dsd
       home: const TelaInicial(),
     );
   }
