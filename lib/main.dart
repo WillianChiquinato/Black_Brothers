@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projetosflutter/Telas/tela_Inscricao.dart';
+import 'package:projetosflutter/Telas/tela_planos.dart';
 import 'Telas/tela_inicial.dart';
 
 void main() {

@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:projetosflutter/Telas/tela_planos.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TelaInscricao extends StatefulWidget {
@@ -145,7 +146,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Insira uma data válida';
-                                } else if (!RegExp(r'^\d{10}$')
+                                } else if (!RegExp(r'^\d{2}/\d{2}/\d{4}$')
                                     .hasMatch(value)) {
                                   return 'A data precisa estar correta';
                                 }
@@ -256,23 +257,24 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: 'Condições',
-                                          style: TextStyle(
-                                            color: Colors.blue[200],
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () async {
-                                              final Uri url = Uri.parse(
-                                                  'https://www.jusbrasil.com.br/artigos/o-que-sao-termos-de-condicoes/1569717144');
-                                              if (await canLaunchUrl(url)) {
-                                                await launchUrl(url, mode: LaunchMode.externalApplication);
-                                              } else {
-                                                throw 'Não foi possível acessar o site';
-                                              }
-                                            },
-                                        ),
+                                            text: 'Condições',
+                                            style: TextStyle(
+                                              color: Colors.blue[200],
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () async {
+                                                final Uri url = Uri.parse(
+                                                    'https://www.jusbrasil.com.br/artigos/o-que-sao-termos-de-condicoes/1569717144');
+                                                if (await canLaunchUrl(url)) {
+                                                  await launchUrl(url,
+                                                      mode: LaunchMode
+                                                          .externalApplication);
+                                                } else {
+                                                  throw 'Não foi possível acessar o site';
+                                                }
+                                              }),
                                       ],
                                     ),
                                   ),
@@ -294,7 +296,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                           backgroundColor: const Color.fromARGB(
                                               255, 75, 174, 79),
                                         ),
-                                        onPressed: () {
+                                        onPressed: () async {
                                           if (_formKey.currentState!
                                               .validate()) {
                                             print(usuarioInscricao.text);
@@ -310,12 +312,14 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                     'Inscrição realizada com sucesso!'),
                                               ),
                                             );
-
-                                            //Feito para a tela de planos.
-                                            // Navigator.push(
-                                            //     context,
-                                            //     MaterialPageRoute(
-                                            //         builder: (context) => PlanosScreen()));
+                                            await Future.delayed(
+                                                const Duration(seconds: 1));
+                                            // Feito para a tela de planos.
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const TelaPlanos()));
                                           }
                                         },
                                         child: const Text(
