@@ -89,7 +89,11 @@ class _MyAppState extends State<TelaInicial> {
                     child: TextField(
                       controller: nomeUsuario,
                       decoration: const InputDecoration(
-                        hintText: 'Usuário',
+                        hintText: 'USUÁRIO',
+                        hintStyle: TextStyle(
+                          fontSize: 13.0,
+                          fontFamily: 'PadraoLoginBB',
+                        ),
                         filled: true,
                         fillColor: Colors.white70,
                         border: OutlineInputBorder(
@@ -98,6 +102,7 @@ class _MyAppState extends State<TelaInicial> {
                         contentPadding: EdgeInsets.only(
                             top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
                       ),
+                      style: const TextStyle(fontFamily: 'PadraoLoginBB'),
                     ),
                   )),
               Padding(
@@ -109,7 +114,11 @@ class _MyAppState extends State<TelaInicial> {
                       controller: nomeSenha,
                       obscureText: _obscuraSenha,
                       decoration: const InputDecoration(
-                        hintText: 'Senha',
+                        hintText: 'SENHA',
+                        hintStyle: TextStyle(
+                          fontSize: 13.0,
+                          fontFamily: 'PadraoLoginBB',
+                        ),
                         filled: true,
                         fillColor: Colors.white70,
                         border: OutlineInputBorder(
@@ -118,6 +127,7 @@ class _MyAppState extends State<TelaInicial> {
                         contentPadding: EdgeInsets.only(
                             top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
                       ),
+                      style: const TextStyle(fontFamily: 'PadraoLoginBB'),
                     ),
                   )),
               Padding(

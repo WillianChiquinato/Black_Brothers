@@ -4,8 +4,9 @@ import 'package:projetosflutter/Telas/tela_inicial.dart';
 class TelaPlanos extends StatefulWidget {
   final String valorUser;
   final String senhaUser;
-  
-  const TelaPlanos({required this.valorUser, required this.senhaUser, super.key});
+
+  const TelaPlanos(
+      {required this.valorUser, required this.senhaUser, super.key});
 
   @override
   State<TelaPlanos> createState() => _TelaPlanosState();
@@ -22,7 +23,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
     valorUser = widget.valorUser;
     senhaUser = widget.senhaUser;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
@@ -76,8 +77,13 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             Container(
                               height: 150,
                               width: 150,
-                              color: Colors.grey,
-                              child: const Center(),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: const DecorationImage(
+                                  image: AssetImage('Assets/plan_basic.jpg'),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 10),
                             const Text(
@@ -104,8 +110,17 @@ class _TelaPlanosState extends State<TelaPlanos> {
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
-                                await Future.delayed(const Duration(seconds: 1));
-                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TelaInicial(usuarioInscricao: valorUser, senhaInscricao: senhaUser,)), (route) => false,);
+                                await Future.delayed(
+                                    const Duration(seconds: 1));
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TelaInicial(
+                                            usuarioInscricao: valorUser,
+                                            senhaInscricao: senhaUser,
+                                          )),
+                                  (route) => false,
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
@@ -145,8 +160,13 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             Container(
                               height: 150,
                               width: 150,
-                              color: Colors.grey,
-                              child: const Center(),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: const DecorationImage(
+                                  image: AssetImage('Assets/plan_plus.jpg'),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 10),
                             const Text(
@@ -171,9 +191,17 @@ class _TelaPlanosState extends State<TelaPlanos> {
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
-                                await Future.delayed(const Duration(seconds: 1));
-                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TelaInicial(usuarioInscricao: valorUser, senhaInscricao: senhaUser,)), (route) => false,);
-
+                                await Future.delayed(
+                                    const Duration(seconds: 1));
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TelaInicial(
+                                            usuarioInscricao: valorUser,
+                                            senhaInscricao: senhaUser,
+                                          )),
+                                  (route) => false,
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
@@ -213,8 +241,13 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             Container(
                               height: 150,
                               width: 150,
-                              color: Colors.grey,
-                              child: const Center(),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: const DecorationImage(
+                                  image: AssetImage('Assets/plan_gold.jpg'),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 10),
                             const Text(
@@ -239,8 +272,17 @@ class _TelaPlanosState extends State<TelaPlanos> {
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
-                                await Future.delayed(const Duration(seconds: 1));
-                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TelaInicial(usuarioInscricao: valorUser, senhaInscricao: senhaUser,)), (route) => false,);
+                                await Future.delayed(
+                                    const Duration(seconds: 1));
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TelaInicial(
+                                            usuarioInscricao: valorUser,
+                                            senhaInscricao: senhaUser,
+                                          )),
+                                  (route) => false,
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:

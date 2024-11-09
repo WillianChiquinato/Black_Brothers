@@ -69,7 +69,11 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(25)),
                                 ),
-                                hintText: 'Usuário',
+                                hintText: 'USUÁRIO',
+                                hintStyle: TextStyle(
+                                  fontSize: 13.0,
+                                  fontFamily: 'PadraoLoginBB',
+                                ),
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
@@ -100,7 +104,11 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(25)),
                                 ),
-                                hintText: 'E-mail',
+                                hintText: 'E-MAIL',
+                                hintStyle: TextStyle(
+                                  fontSize: 13.0,
+                                  fontFamily: 'PadraoLoginBB',
+                                ),
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
@@ -131,6 +139,10 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                       BorderRadius.all(Radius.circular(25)),
                                 ),
                                 hintText: 'CPF',
+                                hintStyle: TextStyle(
+                                  fontSize: 13.0,
+                                  fontFamily: 'PadraoLoginBB',
+                                ),
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
@@ -160,7 +172,11 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(25)),
                                 ),
-                                hintText: 'Data de nascimento',
+                                hintText: 'DATA DE NASCIMENTO',
+                                hintStyle: TextStyle(
+                                  fontSize: 13.0,
+                                  fontFamily: 'PadraoLoginBB',
+                                ),
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
@@ -190,7 +206,11 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(25)),
                                 ),
-                                hintText: 'Telefone (DDD)',
+                                hintText: 'TELEFONE (DDD)',
+                                hintStyle: TextStyle(
+                                  fontSize: 13.0,
+                                  fontFamily: 'PadraoLoginBB',
+                                ),
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
@@ -220,11 +240,15 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                       BorderRadius.all(Radius.circular(25)),
                                 ),
                                 hintText: 'SENHA',
+                                hintStyle: TextStyle(
+                                  fontSize: 13.0,
+                                  fontFamily: 'PadraoLoginBB',
+                                ),
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
-                             style: const TextStyle(
-                             fontFamily: 'PadraoLoginBB'),
+                              style:
+                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
                             ),
                           ),
                         ),
@@ -298,33 +322,36 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                           backgroundColor: const Color.fromARGB(
                                               255, 75, 174, 79),
                                         ),
-                                        onPressed: () async {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            print(usuarioInscricao.text);
-                                            print(emailInscricao.text);
-                                            print(cpfInscricao.text);
-                                            print(dtnascInscricao.text);
-                                            print(tellInscricao.text);
-                                            print(senhaInscricao.text);
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                    'Inscrição realizada com sucesso!'),
-                                                duration: Duration(seconds: 1),
-                                              ),
-                                            );
-                                            await Future.delayed(
-                                                const Duration(seconds: 1));
-                                            // Feito para a tela de planos.
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        TelaPlanos(valorUser: usuarioInscricao.text, senhaUser: senhaInscricao.text,)));
-                                          }
-                                        },
+                                        onPressed: IsChecked
+                                            ? () async {
+                                                if (_formKey.currentState!
+                                                    .validate()) {
+                                                  print(usuarioInscricao.text);
+                                                  print(emailInscricao.text);
+                                                  print(cpfInscricao.text);
+                                                  print(dtnascInscricao.text);
+                                                  print(tellInscricao.text);
+                                                  print(senhaInscricao.text);
+
+                                                  await Future.delayed(
+                                                      const Duration(
+                                                          seconds: 1));
+                                                  // Feito para a tela de planos.
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              TelaPlanos(
+                                                                valorUser:
+                                                                    usuarioInscricao
+                                                                        .text,
+                                                                senhaUser:
+                                                                    senhaInscricao
+                                                                        .text,
+                                                              )));
+                                                }
+                                              }
+                                            : null,
                                         child: const Text(
                                           'INSCREVER-SE',
                                           style: TextStyle(
