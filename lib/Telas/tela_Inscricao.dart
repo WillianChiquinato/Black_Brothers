@@ -30,11 +30,11 @@ class _TelaInscricaoState extends State<TelaInscricao> {
           child: Scaffold(
               appBar: AppBar(
                 toolbarHeight: 40,
-                backgroundColor: const Color.fromARGB(255, 168, 88, 9),
+                backgroundColor: const Color.fromARGB(255, 143, 82, 25),
               ),
               body: Center(
                   child: Container(
-                      color: const Color.fromARGB(255, 168, 88, 9),
+                      color: const Color.fromARGB(255, 143, 82, 25),
                       child:
                           ListView(scrollDirection: Axis.vertical, children: [
                         Padding(

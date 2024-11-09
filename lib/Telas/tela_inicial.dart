@@ -51,11 +51,11 @@ class _MyAppState extends State<TelaInicial> {
       home: Scaffold(
         appBar: AppBar(
           toolbarHeight: 40,
-          backgroundColor: const Color.fromARGB(255, 168, 88, 9),
+          backgroundColor: const Color.fromARGB(255, 143, 82, 25),
         ),
         body: Container(
           //Filtrando a cor com o RGB, modelando com o fromARGB, mas nao da pra pegar a cor, tem que pegar externa
-          color: const Color.fromARGB(255, 168, 88, 9),
+          color: const Color.fromARGB(255, 143, 82, 25),
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
@@ -64,8 +64,8 @@ class _MyAppState extends State<TelaInicial> {
                 padding: const EdgeInsets.all(40.0),
                 child: Container(
                   color: Colors.transparent,
-                  height: 170,
-                  width: 170,
+                  height: 140,
+                  width: 140,
                   child: Image.asset('Assets/Black_Brother.png',
                       fit: BoxFit.cover),
                 ),
@@ -73,28 +73,27 @@ class _MyAppState extends State<TelaInicial> {
 
               Padding(
                   padding: const EdgeInsets.only(
-                      bottom: 35.0, left: 25.0, right: 25.0),
+                      bottom: 30.0, left: 25.0, right: 25.0),
                   child: SizedBox(
                     width: 330,
-                    height: 60,
                     child: TextField(
                       controller: nomeUsuario,
                       decoration: const InputDecoration(
-                        hintText: 'Usuario',
+                        hintText: 'Usuário',
                         filled: true,
                         fillColor: Colors.white70,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                         ),
+                        contentPadding: EdgeInsets.only(top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
                       ),
                     ),
                   )),
               Padding(
                   padding: const EdgeInsets.only(
-                      bottom: 35.0, left: 25.0, right: 25.0),
+                      bottom: 6.0, left: 25.0, right: 25.0),
                   child: SizedBox(
                     width: 330,
-                    height: 60,
                     child: TextField(
                       controller: nomeSenha,
                       obscureText: _obscuraSenha,
@@ -105,6 +104,7 @@ class _MyAppState extends State<TelaInicial> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                         ),
+                        contentPadding: EdgeInsets.only(top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
                       ),
                     ),
                   )),
@@ -112,8 +112,8 @@ class _MyAppState extends State<TelaInicial> {
                 padding: const EdgeInsets.all(25.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(300, 50),
-                    backgroundColor: const Color.fromARGB(255, 77, 37, 0),
+                    minimumSize: const Size(300, 65),
+                    backgroundColor: const Color.fromARGB(255, 88, 48, 11),
                   ),
                   onPressed: () {
                     //Incluindo a API em uma pequena verificação do usuario;
@@ -181,7 +181,7 @@ class _MyAppState extends State<TelaInicial> {
               ),
 
               Container(
-                color: const Color.fromARGB(255, 168, 88, 9),
+                color: const Color.fromARGB(255, 143, 82, 25),
                 height: 50,
                 width: double.infinity,
                 child: const Row(
@@ -221,9 +221,9 @@ class _MyAppState extends State<TelaInicial> {
                 //Vai para telaIncricao();
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(300, 50),
+                      minimumSize: const Size(300, 65),
                       backgroundColor:
-                          const Color.fromARGB(255, 146, 146, 146)),
+                          const Color.fromARGB(255, 255, 234, 209)),
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const TelaInscricao()));
                   },
