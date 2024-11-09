@@ -34,7 +34,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
                   decoration: ShapeDecoration(
                     color: Colors.black,
                     shape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.white, width: 4.0),
+                      side: const BorderSide(color: Colors.white, width: 4.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -79,7 +79,15 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Assinatura realizada com sucesso!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     const Color.fromARGB(255, 4, 220, 0),
@@ -136,7 +144,15 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Assinatura realizada com sucesso!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     const Color.fromARGB(255, 4, 220, 0),
@@ -193,7 +209,15 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Assinatura realizada com sucesso!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     const Color.fromARGB(255, 4, 220, 0),
