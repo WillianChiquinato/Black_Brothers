@@ -24,9 +24,9 @@ class _MyAppState extends State<MainClass> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      //Home é o nosso BODY no Flutter.
-      //dsd
-      home: const TelaInicial(),
+      home: const TelaInicial(
+        usuarioInscricao: 'usuarioEx', senhaInscricao: 'senhaEx',
+      ),
     );
   }
 }

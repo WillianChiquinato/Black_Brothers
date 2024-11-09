@@ -219,10 +219,12 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(25)),
                                 ),
-                                hintText: 'Senha',
+                                hintText: 'SENHA',
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
+                             style: const TextStyle(
+                             fontFamily: 'PadraoLoginBB'),
                             ),
                           ),
                         ),
@@ -310,6 +312,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                               const SnackBar(
                                                 content: Text(
                                                     'Inscrição realizada com sucesso!'),
+                                                duration: Duration(seconds: 1),
                                               ),
                                             );
                                             await Future.delayed(
@@ -319,7 +322,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        const TelaPlanos()));
+                                                        TelaPlanos(valorUser: usuarioInscricao.text, senhaUser: senhaInscricao.text,)));
                                           }
                                         },
                                         child: const Text(

@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:projetosflutter/Telas/tela_inicial.dart';
 
 class TelaPlanos extends StatefulWidget {
-  const TelaPlanos({super.key});
+  final String valorUser;
+  final String senhaUser;
+  
+  const TelaPlanos({required this.valorUser, required this.senhaUser, super.key});
 
   @override
   State<TelaPlanos> createState() => _TelaPlanosState();
 }
 
 class _TelaPlanosState extends State<TelaPlanos> {
+  late String valorUser;
+  late String senhaUser;
+
+  @override
+  void initState() {
+    super.initState();
+    // Inicializando o valor recebido
+    valorUser = widget.valorUser;
+    senhaUser = widget.senhaUser;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
@@ -79,7 +94,9 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                print(valorUser);
+                                print(senhaUser);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
@@ -87,6 +104,8 @@ class _TelaPlanosState extends State<TelaPlanos> {
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
+                                await Future.delayed(const Duration(seconds: 1));
+                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TelaInicial(usuarioInscricao: valorUser, senhaInscricao: senhaUser,)), (route) => false,);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
@@ -144,7 +163,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
@@ -152,6 +171,9 @@ class _TelaPlanosState extends State<TelaPlanos> {
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
+                                await Future.delayed(const Duration(seconds: 1));
+                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TelaInicial(usuarioInscricao: valorUser, senhaInscricao: senhaUser,)), (route) => false,);
+
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
@@ -209,7 +231,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
@@ -217,6 +239,8 @@ class _TelaPlanosState extends State<TelaPlanos> {
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
+                                await Future.delayed(const Duration(seconds: 1));
+                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TelaInicial(usuarioInscricao: valorUser, senhaInscricao: senhaUser,)), (route) => false,);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:

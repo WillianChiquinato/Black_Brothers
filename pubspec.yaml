@@ -95,4 +95,6 @@ flutter:
 fonts:
     - family: PadraoLoginBB
       fonts:
-        - asset: Assets/fonts/Staatliches-Regular.ttf
+        - asset: Assets/fonts/OpenSans-VariableFont_wdth,wght.ttf
+
+

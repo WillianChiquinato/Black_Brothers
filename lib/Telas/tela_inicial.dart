@@ -1,40 +1,49 @@
 import 'package:projetosflutter/Components/alerta.dart';
 import 'package:flutter/material.dart';
 import 'package:projetosflutter/Telas/tela_Inscricao.dart';
-import '../API/card_entrada.dart';
 import '../API/controller.dart';
-import '../API/modelo_user.dart';
-
-void main() {
-  runApp(const TelaInicial());
-}
 
 //StatelessWidget para tarefas repetitivas.
 //Estatico, sem mudanca de valores, sem atualizar na tela
 class TelaInicial extends StatefulWidget {
-  const TelaInicial({super.key});
+  final String usuarioInscricao;
+  final String senhaInscricao;
+
+  const TelaInicial({
+    super.key,
+    this.usuarioInscricao = '',
+    this.senhaInscricao = '',
+  });
 
   @override
   State<TelaInicial> createState() => _MyAppState();
 }
 
 final TextEditingController nomeUsuario = TextEditingController();
+final TextEditingController nomeSenha = TextEditingController();
 final UserController userController = UserController();
 
 class _MyAppState extends State<TelaInicial> {
+  late String valorUser;
+  late String senhaUser;
+
   @override
   void initState() {
     userController.addListener(() {
       setState(() {});
     });
     super.initState();
+    valorUser = widget.usuarioInscricao;
+    senhaUser = widget.senhaInscricao;
   }
 
-  final TextEditingController nomeSenha = TextEditingController();
   final bool _obscuraSenha = true;
+  bool buttonPress = false;
 
   String _usuario = "";
   String _senha = "";
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +58,7 @@ class _MyAppState extends State<TelaInicial> {
       //Stack, empilhar uma em cima da outra.,
       //Um em cima do outro com stack, literalmente em forma de pilha
       home: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           toolbarHeight: 40,
           backgroundColor: const Color.fromARGB(255, 143, 82, 25),
@@ -85,7 +95,8 @@ class _MyAppState extends State<TelaInicial> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                         ),
-                        contentPadding: EdgeInsets.only(top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
+                        contentPadding: EdgeInsets.only(
+                            top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
                       ),
                     ),
                   )),
@@ -104,7 +115,8 @@ class _MyAppState extends State<TelaInicial> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                         ),
-                        contentPadding: EdgeInsets.only(top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
+                        contentPadding: EdgeInsets.only(
+                            top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
                       ),
                     ),
                   )),
@@ -116,20 +128,33 @@ class _MyAppState extends State<TelaInicial> {
                     backgroundColor: const Color.fromARGB(255, 88, 48, 11),
                   ),
                   onPressed: () {
-                    //Incluindo a API em uma pequena verificação do usuario;
-                    if (nomeUsuario.text.length < 50) {
-                      userController.searchApi(user: nomeUsuario.text);
-                    } else {
-                      const snackBar =
-                          SnackBar(content: Text('O nome esta muito grande'));
-
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
                     setState(() {
                       _usuario = nomeUsuario.text;
                       _senha = nomeSenha.text;
                       print('Usuario: ' + _usuario);
                       print('Senha: ' + _senha);
+                      print(valorUser);
+
+                      if (_usuario == valorUser && _senha == senhaUser) {
+                        print('Inscrito');
+                        // Usando o ScaffoldMessenger correto
+                        ScaffoldMessenger.of(_scaffoldKey.currentContext!)
+                            .showSnackBar(
+                          const SnackBar(
+                            content: Text('Entrando no aplicativo!'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      } else {
+                        print('Cai fora');
+                        ScaffoldMessenger.of(_scaffoldKey.currentContext!)
+                            .showSnackBar(
+                          const SnackBar(
+                            content: Text('Nenhum usuario encontrado!'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
                     });
                   },
                   child: const Text(
@@ -158,25 +183,25 @@ class _MyAppState extends State<TelaInicial> {
                     },
                   ),
 
-                  ValueListenableBuilder<UserClass?>(
-                    valueListenable: userController.userAddress,
-                    builder: (context, user, child) {
-                      if (!userController.isLoading.value) {
-                        if (user != null) {
-                          return CardlocationWidget(user: user);
-                        } else {
-                          return const Center(
-                            child: Text(
-                              'Nenhum usuário encontrado',
-                              style: TextStyle(fontSize: 18, color: Colors.red),
-                            ),
-                          );
-                        }
-                      }
-                      // Retorna um sizedBox vazio com o shrink.
-                      return const SizedBox.shrink();
-                    },
-                  ),
+                  // ValueListenableBuilder<UserClass?>(
+                  //   valueListenable: userController.userAddress,
+                  //   builder: (context, user, child) {
+                  //     if (!userController.isLoading.value) {
+                  //       if (user != null) {
+                  //         return CardlocationWidget(user: user);
+                  //       } else {
+                  //         return const Center(
+                  //           child: Text(
+                  //             'Nenhum usuário encontrado',
+                  //             style: TextStyle(fontSize: 18, color: Colors.red),
+                  //           ),
+                  //         );
+                  //       }
+                  //     }
+                  //     // Retorna um sizedBox vazio com o shrink.
+                  //     return Container();
+                  //   },
+                  // ),
                 ],
               ),
 
@@ -225,7 +250,10 @@ class _MyAppState extends State<TelaInicial> {
                       backgroundColor:
                           const Color.fromARGB(255, 255, 234, 209)),
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const TelaInscricao()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const TelaInscricao()));
                   },
                   child: const Text(
                     'Inscrever-se',
