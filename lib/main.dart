@@ -26,7 +26,7 @@ class _MyAppState extends State<MainClass> {
       ),
       //Home é o nosso BODY no Flutter.
       //dsd
-      home: const TelaPlanos(),
+      home: const TelaInicial(),
     );
   }
 }
