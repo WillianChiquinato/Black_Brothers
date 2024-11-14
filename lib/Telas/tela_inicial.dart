@@ -61,11 +61,11 @@ class _MyAppState extends State<TelaInicial> {
         key: _scaffoldKey,
         appBar: AppBar(
           toolbarHeight: 40,
-          backgroundColor: const Color.fromARGB(255, 143, 82, 25),
+          backgroundColor: const Color.fromARGB(255, 144, 82, 25),
         ),
         body: Container(
           //Filtrando a cor com o RGB, modelando com o fromARGB, mas nao da pra pegar a cor, tem que pegar externa
-          color: const Color.fromARGB(255, 143, 82, 25),
+          color: const Color.fromARGB(255, 144, 82, 25),
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
