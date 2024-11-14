@@ -19,6 +19,49 @@ class _TelaInscricaoState extends State<TelaInscricao> {
   final TextEditingController senhaInscricao = TextEditingController();
   bool IsChecked = false;
 
+  @override
+  void initState() {
+    super.initState();
+    dtnascInscricao.addListener(() {
+      final textData = dtnascInscricao.text;
+
+      if (textData.length == 2 && !textData.contains('/')) {
+        dtnascInscricao.text = textData + '/';
+        dtnascInscricao.selection = TextSelection.fromPosition(
+          TextPosition(offset: dtnascInscricao.text.length),
+        );
+      } else if (textData.length == 5 && textData[4] != '/') {
+        dtnascInscricao.text = textData + '/';
+        dtnascInscricao.selection = TextSelection.fromPosition(
+          TextPosition(offset: dtnascInscricao.text.length),
+        );
+      }
+    });
+
+    tellInscricao.addListener(() {
+      final textTell = tellInscricao.text;
+
+      String CleanText = textTell.replaceAll(RegExp(r'\D'), '');
+
+      if (CleanText.length > 0) {
+        CleanText = '(' + CleanText;
+        if (CleanText.length > 3) {
+          CleanText = '${CleanText.substring(0, 3)})${CleanText.substring(3)}';
+        }
+      }
+
+      if (CleanText.length > 10) {
+        '${CleanText.substring(0, 10)}-${CleanText.substring(10)}';
+      }
+
+      if (CleanText != textTell) {
+        tellInscricao.text = CleanText;
+        tellInscricao.selection = TextSelection.fromPosition(
+            TextPosition(offset: tellInscricao.text.length));
+      }
+    });
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -30,11 +73,11 @@ class _TelaInscricaoState extends State<TelaInscricao> {
           child: Scaffold(
               appBar: AppBar(
                 toolbarHeight: 40,
-                backgroundColor: const Color.fromARGB(255, 143, 82, 25),
+                backgroundColor: const Color.fromARGB(255, 210, 125, 43),
               ),
               body: Center(
                   child: Container(
-                      color: const Color.fromARGB(255, 143, 82, 25),
+                      color: const Color.fromARGB(255, 210, 125, 43),
                       child:
                           ListView(scrollDirection: Axis.vertical, children: [
                         Padding(
@@ -77,7 +120,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
-                              style: const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style:
+                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
                             ),
                           ),
                         ),
@@ -113,7 +157,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
-                              style: const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style:
+                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
                             ),
                           ),
                         ),
@@ -148,7 +193,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
-                              style: const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style:
+                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
                             ),
                           ),
                         ),
@@ -158,6 +204,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                             width: 100,
                             height: 70,
                             child: TextFormField(
+                              controller: dtnascInscricao,
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Insira uma data válida';
@@ -168,7 +215,6 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                 return null;
                               },
                               keyboardType: TextInputType.datetime,
-                              controller: dtnascInscricao,
                               textAlign: TextAlign.left,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
@@ -183,7 +229,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
-                              style: const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style:
+                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
                             ),
                           ),
                         ),
@@ -218,7 +265,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                 fillColor: Colors.white70,
                                 filled: true,
                               ),
-                              style: const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style:
+                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
                             ),
                           ),
                         ),
