@@ -41,23 +41,27 @@ class _TelaInscricaoState extends State<TelaInscricao> {
     tellInscricao.addListener(() {
       final textTell = tellInscricao.text;
 
-      String CleanText = textTell.replaceAll(RegExp(r'\D'), '');
+      String cleanText = textTell.replaceAll(RegExp(r'\D'), '');
 
-      if (CleanText.length > 0) {
-        CleanText = '(' + CleanText;
-        if (CleanText.length > 3) {
-          CleanText = '${CleanText.substring(0, 3)})${CleanText.substring(3)}';
+      if (cleanText.length > 0) {
+        cleanText = '(' + cleanText;
+        if (cleanText.length > 3) {
+          cleanText = '${cleanText.substring(0, 3)})${cleanText.substring(3)}';
+        }
+        if (cleanText.length > 9) {
+          cleanText =
+          '${cleanText.substring(0, 9)}-${cleanText.substring(9)}';
+        }
+        if (cleanText.length > 14) { // Limita o tamanho máximo a 14 caracteres com o formato completo
+          cleanText = cleanText.substring(0, 14);
         }
       }
 
-      if (CleanText.length > 10) {
-        '${CleanText.substring(0, 10)}-${CleanText.substring(10)}';
-      }
-
-      if (CleanText != textTell) {
-        tellInscricao.text = CleanText;
-        tellInscricao.selection = TextSelection.fromPosition(
-            TextPosition(offset: tellInscricao.text.length));
+      if (cleanText != textTell) {
+        tellInscricao.value = TextEditingValue(
+          text: cleanText,
+          selection: TextSelection.collapsed(offset: cleanText.length),
+        );
       }
     });
   }
@@ -243,9 +247,9 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Insira um telefone válido';
-                                } else if (!RegExp(r'^\d{11}$')
+                                } else if (!RegExp(r'^\(\d{2}\)\d{4,5}-\d{4}$')
                                     .hasMatch(value)) {
-                                  return 'O telefone deve conter exatamente 11 dígitos';
+                                  return 'O telefone deve conter exatamente (DDD)XXXXX-XXXX';
                                 }
                                 return null;
                               },

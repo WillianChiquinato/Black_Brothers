@@ -31,10 +31,10 @@ class _TelaPlanosState extends State<TelaPlanos> {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 40,
-          backgroundColor: const Color.fromARGB(255, 168, 88, 9),
+          backgroundColor: const Color.fromARGB(255, 210, 125, 43),
         ),
         body: Container(
-          color: const Color.fromARGB(255, 168, 88, 9),
+          color: const Color.fromARGB(255, 210, 125, 43),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 10, left: 40, right: 40),
             child: Column(
