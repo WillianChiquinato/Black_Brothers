@@ -1,48 +1,35 @@
 import 'package:projetosflutter/Components/alerta.dart';
 import 'package:flutter/material.dart';
+import 'package:projetosflutter/Data/Inherite_Login.dart';
 import 'package:projetosflutter/Telas/tela_Inscricao.dart';
 import '../API/controller.dart';
 
 //StatelessWidget para tarefas repetitivas.
 //Estatico, sem mudanca de valores, sem atualizar na tela
 class TelaInicial extends StatefulWidget {
-  final String usuarioInscricao;
-  final String senhaInscricao;
-
   const TelaInicial({
     super.key,
-    this.usuarioInscricao = '',
-    this.senhaInscricao = '',
   });
 
   @override
   State<TelaInicial> createState() => _MyAppState();
 }
 
-
 final TextEditingController nomeUsuario = TextEditingController();
 final TextEditingController nomeSenha = TextEditingController();
 final UserController userController = UserController();
 
 class _MyAppState extends State<TelaInicial> {
-  late String valorUser;
-  late String senhaUser;
-
   @override
   void initState() {
     userController.addListener(() {
       setState(() {});
     });
     super.initState();
-    valorUser = widget.usuarioInscricao;
-    senhaUser = widget.senhaInscricao;
   }
 
   final bool _obscuraSenha = true;
   bool buttonPress = false;
-
-  String _usuario = "";
-  String _senha = "";
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -140,13 +127,15 @@ class _MyAppState extends State<TelaInicial> {
                   ),
                   onPressed: () {
                     setState(() {
-                      _usuario = nomeUsuario.text;
-                      _senha = nomeSenha.text;
-                      print('Usuario: ' + _usuario);
-                      print('Senha: ' + _senha);
-                      print(valorUser);
+                      LoginInherite.of(context).loginUser;
+                      LoginInherite.of(context).loginSenha;
+                      print('Usuario: ' + LoginInherite.of(context).loginUser);
+                      print('Senha: ' + LoginInherite.of(context).loginSenha);
+                      print('UsuarioInputado: ' + nomeUsuario.text);
+                      print('SenhaInputado: ' + nomeSenha.text);
 
-                      if (_usuario == valorUser && _senha == senhaUser) {
+                      if (nomeUsuario.text == LoginInherite.of(context).loginUser &&
+                          nomeSenha.text == LoginInherite.of(context).loginSenha) {
                         print('Inscrito');
                         // Usando o ScaffoldMessenger correto
                         ScaffoldMessenger.of(_scaffoldKey.currentContext!)
@@ -264,7 +253,7 @@ class _MyAppState extends State<TelaInicial> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const TelaInscricao()));
+                            builder: (contextNew) => TelaInscricao(LoginContext: context,)));
                   },
                   child: const Text(
                     'Inscrever-se',

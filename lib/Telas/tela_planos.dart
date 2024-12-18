@@ -2,26 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:projetosflutter/Telas/tela_inicial.dart';
 
 class TelaPlanos extends StatefulWidget {
-  final String valorUser;
-  final String senhaUser;
-
-  const TelaPlanos(
-      {required this.valorUser, required this.senhaUser, super.key});
+  const TelaPlanos({super.key});
 
   @override
   State<TelaPlanos> createState() => _TelaPlanosState();
 }
 
 class _TelaPlanosState extends State<TelaPlanos> {
-  late String valorUser;
-  late String senhaUser;
-
   @override
   void initState() {
     super.initState();
-    // Inicializando o valor recebido
-    valorUser = widget.valorUser;
-    senhaUser = widget.senhaUser;
   }
 
   @override
@@ -101,8 +91,6 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             const SizedBox(height: 20),
                             ElevatedButton(
                               onPressed: () async {
-                                print(valorUser);
-                                print(senhaUser);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
@@ -115,10 +103,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => TelaInicial(
-                                            usuarioInscricao: valorUser,
-                                            senhaInscricao: senhaUser,
-                                          )),
+                                      builder: (context) => TelaInicial()),
                                   (route) => false,
                                 );
                               },
@@ -196,10 +181,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => TelaInicial(
-                                            usuarioInscricao: valorUser,
-                                            senhaInscricao: senhaUser,
-                                          )),
+                                      builder: (context) => TelaInicial()),
                                   (route) => false,
                                 );
                               },
@@ -277,10 +259,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => TelaInicial(
-                                            usuarioInscricao: valorUser,
-                                            senhaInscricao: senhaUser,
-                                          )),
+                                      builder: (context) => TelaInicial()),
                                   (route) => false,
                                 );
                               },

@@ -1,10 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:projetosflutter/Data/Inherite_Login.dart';
 import 'package:projetosflutter/Telas/tela_planos.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TelaInscricao extends StatefulWidget {
-  const TelaInscricao({Key? key}) : super(key: key);
+  const TelaInscricao({Key? key, required this.LoginContext}) : super(key: key);
+
+  final BuildContext LoginContext;
 
   @override
   State<TelaInscricao> createState() => _TelaInscricaoState();
@@ -49,10 +52,10 @@ class _TelaInscricaoState extends State<TelaInscricao> {
           cleanText = '${cleanText.substring(0, 3)})${cleanText.substring(3)}';
         }
         if (cleanText.length > 9) {
-          cleanText =
-          '${cleanText.substring(0, 9)}-${cleanText.substring(9)}';
+          cleanText = '${cleanText.substring(0, 9)}-${cleanText.substring(9)}';
         }
-        if (cleanText.length > 14) { // Limita o tamanho máximo a 14 caracteres com o formato completo
+        if (cleanText.length > 14) {
+          // Limita o tamanho máximo a 14 caracteres com o formato completo
           cleanText = cleanText.substring(0, 14);
         }
       }
@@ -390,22 +393,17 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                   print(tellInscricao.text);
                                                   print(senhaInscricao.text);
 
+                                                  LoginInherite.of(widget.LoginContext).newLogin(usuarioInscricao.text, senhaInscricao.text);
+
                                                   await Future.delayed(
                                                       const Duration(
                                                           seconds: 1));
                                                   // Feito para a tela de planos.
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              TelaPlanos(
-                                                                valorUser:
-                                                                    usuarioInscricao
-                                                                        .text,
-                                                                senhaUser:
-                                                                    senhaInscricao
-                                                                        .text,
-                                                              )));
+                                                  // Navigator.push(
+                                                  //     context,
+                                                  //     MaterialPageRoute(
+                                                  //         builder: (context) =>
+                                                  //             const TelaPlanos()));
                                                 }
                                               }
                                             : null,

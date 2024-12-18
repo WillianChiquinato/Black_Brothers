@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:projetosflutter/Telas/tela_Inscricao.dart';
-import 'package:projetosflutter/Telas/tela_planos.dart';
+import 'package:projetosflutter/Data/Inherite_Login.dart';
 import 'Telas/tela_inicial.dart';
 
 void main() {
@@ -24,9 +23,7 @@ class _MyAppState extends State<MainClass> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TelaInicial(
-        usuarioInscricao: 'usuarioEx', senhaInscricao: 'senhaEx',
-      ),
+      home: LoginInherite(child: const TelaInicial()),
     );
   }
 }
