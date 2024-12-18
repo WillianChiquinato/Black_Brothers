@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class LoginInherite extends InheritedWidget {
   LoginInherite({
     super.key,
-    required Widget child,
-  }) : super(child: child);
+    required super.child,
+  });
 
   String loginUser = "AdminUser";
   String loginSenha = "AdminSenha";
