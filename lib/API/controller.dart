@@ -1,6 +1,6 @@
 //Conectar Screen com API;
 import 'package:flutter/cupertino.dart';
-import 'package:projetosflutter/API/%20Json/api_services.dart';
+import 'package:projetosflutter/API/Json/api_services.dart';
 import 'modelo_user.dart';
 
 class UserController extends ChangeNotifier {
