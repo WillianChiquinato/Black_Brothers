@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:projetosflutter/Data/Inherite_Login.dart';
+import 'Telas/menu_inicial.dart';
 import 'Telas/tela_inicial.dart';
+
 
 void main() {
   runApp(const MainClass());
@@ -23,7 +25,7 @@ class _MyAppState extends State<MainClass> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginInherite(child: const TelaInicial()),
+      home: LoginInherite(child: const MenuInicial()),
     );
   }
 }

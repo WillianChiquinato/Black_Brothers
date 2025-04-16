@@ -34,6 +34,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  google_fonts: ^6.1.0
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -68,6 +70,11 @@ flutter:
     - Assets/plan_basic.jpg
     - Assets/plan_plus.jpg
     - Assets/plan_gold.jpg
+    - Assets/nutricionista.png
+    - Assets/logo-bb.png
+    - Assets/iam.jpg
+    - Assets/thumb-peito.png
+    - Assets/alongamentos.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
