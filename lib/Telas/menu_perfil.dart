@@ -20,7 +20,7 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+    _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
 
@@ -47,7 +47,7 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.user.plano ?? 'Plano não informado',
+                  widget.user.plano ?? 'Plano não definido',
                   style: GoogleFonts.poppins(
                     color: orange,
                     fontSize: 18,
@@ -126,23 +126,6 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(String label, String initialValue) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: TextFormField(
-        initialValue: initialValue,
-        style: GoogleFonts.poppins(),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: GoogleFonts.poppins(),
-          filled: true,
-          fillColor: lightOrange,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
@@ -270,6 +253,23 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
           ],
         )
       ],
+    );
+  }
+
+  Widget _buildTextField(String label, String initialValue) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        initialValue: initialValue,
+        style: GoogleFonts.poppins(),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: GoogleFonts.poppins(),
+          filled: true,
+          fillColor: lightOrange,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
     );
   }
 

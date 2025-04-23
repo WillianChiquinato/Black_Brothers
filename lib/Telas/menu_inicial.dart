@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:projetosflutter/Telas/menu_comunidade.dart';
 import 'menu_perfil.dart';
 import 'menu_inicial_home.dart';
 import 'package:projetosflutter/API/modelo_user.dart';
+import 'menu_comunidade.dart';
 
 class MenuInicial extends StatefulWidget {
   const MenuInicial({super.key});
@@ -17,15 +18,16 @@ class _MenuInicialState extends State<MenuInicial> {
 
   late UserClass _user;
 
-  void _getUserData() {
-    _user = UserClass(
-    );
+  @override
+  void initState() {
+    super.initState();
+    _user = UserClass();
   }
 
-  final List<Widget> _pages = [
-    MenuPerfil(user: UserClass()),
-    const Placeholder(),
-    const MenuInicialHome(),
+  List<Widget> get _pages => [
+    MenuPerfil(user: _user),
+    MenuComunidade(user: _user),
+    MenuInicialHome(user: _user),
     const Placeholder(),
     const Placeholder(),
   ];
@@ -34,12 +36,6 @@ class _MenuInicialState extends State<MenuInicial> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _getUserData();
   }
 
   @override

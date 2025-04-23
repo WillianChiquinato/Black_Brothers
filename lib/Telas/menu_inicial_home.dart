@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/API/modelo_user.dart';
-import 'package:projetosflutter/API/Json/api_services.dart';
 
 class MenuInicialHome extends StatefulWidget {
-  const MenuInicialHome({super.key});
+  final UserClass user;
+  const MenuInicialHome({super.key, required this.user});
 
   @override
   State<MenuInicialHome> createState() => _MenuInicialHomeState();
 }
 
 class _MenuInicialHomeState extends State<MenuInicialHome> {
-  UserClass _user = UserClass();
+  late UserClass _user;
 
   final Color lightOrange = const Color(0xFFFFF1E6);
   final Color orange = const Color(0xFFFF8C42);
@@ -20,6 +20,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
   @override
   void initState() {
     super.initState();
+    _user = widget.user;
   }
 
   @override
