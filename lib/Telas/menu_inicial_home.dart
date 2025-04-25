@@ -120,14 +120,14 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _user.plano ?? 'Plano não definido',
+                      _user.plano ?? 'Plano GOLD',
                       style: GoogleFonts.poppins(
                         color: orange,
                         fontSize: 16,
                       ),
                     ),
                     Text(
-                      _user.nome ?? 'Nome não informado',
+                      _user.nome ?? 'Renan Silva Pinheiro',
                       style: GoogleFonts.poppins(fontSize: 16),
                     ),
                   ],

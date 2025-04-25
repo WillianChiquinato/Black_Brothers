@@ -47,14 +47,14 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.user.plano ?? 'Plano não definido',
+                  widget.user.plano ?? 'Plano GOLD',
                   style: GoogleFonts.poppins(
                     color: orange,
                     fontSize: 18,
                   ),
                 ),
                 Text(
-                  widget.user.nome ?? 'Nome não informado',
+                  widget.user.nome ?? 'Renan Silva Pinheiro',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 18,
@@ -95,11 +95,11 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
           children: [
             _buildSectionTitle("Informações Pessoais"),
             const SizedBox(height: 12),
-            _buildTextField("Nome", widget.user.nome ?? 'Não informado'),
-            _buildTextField("Data de Nascimento", widget.user.idade ?? 'Não informado'),
-            _buildTextField("CPF", "535.055.728-96"),
+            _buildTextField("Nome", widget.user.nome ?? 'Renan Silva Pinheiro'),
+            _buildTextField("Data de Nascimento", widget.user.idade ?? '30/05/2005'),
+            _buildTextField("CPF", "000.000.000-00"),
             _buildTextField("Telefone", "(11) 95919-7939"),
-            _buildTextField("Email", "renan@email.com"),
+            _buildTextField("Email", "renansilvapinheiro22@gmail.com"),
             const SizedBox(height: 24),
             _buildSectionTitle("Informações Físicas"),
             const SizedBox(height: 12),

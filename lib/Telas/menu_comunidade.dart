@@ -53,14 +53,14 @@ class _MenuComunidadeState extends State<MenuComunidade> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.user.plano ?? 'Plano não definido',
+                    widget.user.plano ?? 'Plano GOLD',
                     style: GoogleFonts.poppins(
                       color: orange,
                       fontSize: 18,
                     ),
                   ),
                   Text(
-                    widget.user.nome ?? 'Nome não informado',
+                    widget.user.nome ?? 'Renan Silva Pinheiro',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 18,
