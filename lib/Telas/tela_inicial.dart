@@ -129,53 +129,66 @@ class _MyAppState extends State<TelaInicial> {
                       style: const TextStyle(fontFamily: 'PadraoLoginBB'),
                     ),
                   )),
-              Padding(
-                padding: const EdgeInsets.all(25.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(300, 65),
-                    backgroundColor: const Color.fromARGB(255, 88, 48, 11),
-                  ),
-                  onPressed: () async {
-                    await _buscarUsuario();
+              Builder(
+                builder: (context) => Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(300, 65),
+                      backgroundColor: const Color.fromARGB(255, 88, 48, 11),
+                    ),
+                    onPressed: () async {
+                      await _buscarUsuario();
 
-                    final usuarioInput = nomeUsuario.text.trim();
-                    final senhaInput = nomeSenha.text.trim();
+                      final usuarioInput = nomeUsuario.text.trim();
+                      final senhaInput = nomeSenha.text.trim();
 
-                    final usuarioEncontrado = usuario.firstWhere(
-                          (u) => u?.login == usuarioInput && u?.senha == senhaInput,
-                      orElse: () => null,
-                    );
-
-                    if (usuarioEncontrado != null) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text("Bem-vindo!"),
-                          content: Text("Olá, ${usuarioEncontrado.login}! Você entrou com sucesso. \n com a senha: ${usuarioEncontrado.senha}!"),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text("OK"),
-                            )
-                          ],
+                      final usuarioEncontrado = usuario.firstWhere(
+                        (u) =>
+                            u != null &&
+                            u.login == usuarioInput &&
+                            u.senha == senhaInput,
+                        orElse: () => UsuarioClass(
+                          id: -1,
+                          login: '',
+                          senha: '',
+                          fK_Pessoa_ID: null,
                         ),
                       );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Usuário ou senha inválidos'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    'ENTRAR',
-                    style: TextStyle(
+
+                      if (usuarioEncontrado != null &&
+                          usuarioEncontrado.id != -1) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text("Bem-vindo!"),
+                            content: Text(
+                                "Olá, ${usuarioEncontrado.login}! Você entrou com sucesso.\nSenha: ${usuarioEncontrado.senha}"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("OK"),
+                              )
+                            ],
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Usuário ou senha inválidos'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'ENTRAR',
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
-                        fontWeight: FontWeight.bold),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -228,7 +241,9 @@ class _MyAppState extends State<TelaInicial> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (contextNew) => TelaInscricao(LoginContext: context,)));
+                            builder: (contextNew) => TelaInscricao(
+                                  LoginContext: context,
+                                )));
                   },
                   child: const Text(
                     'Inscrever-se',

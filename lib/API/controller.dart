@@ -24,7 +24,7 @@ class GenericController<T> {
   Future<T?> update(String id, Map<String, dynamic> data) async {
     try {
       final response = await _api.dio.put(
-        Apiconstants.urlBaseMock('$endpoint/$id'),
+        Apiconstants.urlBaseAPI('$endpoint/$id'),
         data: data,
       );
 
@@ -41,7 +41,7 @@ class GenericController<T> {
   Future<T?> create(Map<String, dynamic> data) async {
     try {
       final response = await _api.dio.post(
-        Apiconstants.urlBaseMock(endpoint),
+        Apiconstants.urlBaseAPI(endpoint),
         data: data,
       );
 
@@ -49,7 +49,7 @@ class GenericController<T> {
         return fromJson(response.data);
       }
     } catch (e) {
-      print('Erro ao atualizar item: $e');
+      print('Erro ao criar item: $e');
     }
     return null;
   }

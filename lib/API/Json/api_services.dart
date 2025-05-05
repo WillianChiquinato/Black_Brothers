@@ -9,7 +9,7 @@ class ApiServices {
     required T Function(Map<String, dynamic>) fromJson,
   }) async {
     try {
-      final response = await dio.get(Apiconstants.urlBaseMock(endpoint));
+      final response = await dio.get(Apiconstants.urlBaseAPI(endpoint));
 
       if (response.statusCode == 200) {
         if (response.data is List && response.data.isNotEmpty) {
@@ -29,7 +29,7 @@ class ApiServices {
     required T Function(Map<String, dynamic>) fromJson,
   }) async {
     try {
-      final response = await dio.get(Apiconstants.urlBaseMock(endpoint));
+      final response = await dio.get(Apiconstants.urlBaseAPI(endpoint));
 
       if (response.statusCode == 200 && response.data is List) {
         return (response.data as List)
