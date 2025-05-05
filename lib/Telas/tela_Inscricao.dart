@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:projetosflutter/Data/Inherite_Login.dart';
 import 'package:projetosflutter/Telas/tela_planos.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -393,17 +392,15 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                   print(tellInscricao.text);
                                                   print(senhaInscricao.text);
 
-                                                  LoginInherite.of(widget.LoginContext).newLogin(usuarioInscricao.text, senhaInscricao.text);
-
                                                   await Future.delayed(
                                                       const Duration(
                                                           seconds: 1));
                                                   // Feito para a tela de planos.
-                                                  // Navigator.push(
-                                                  //     context,
-                                                  //     MaterialPageRoute(
-                                                  //         builder: (context) =>
-                                                  //             const TelaPlanos()));
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const TelaPlanos()));
                                                 }
                                               }
                                             : null,

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:projetosflutter/API/modelo_user.dart';
+import 'package:projetosflutter/API/models/modelo_usuario.dart';
+
+import '../API/controller.dart';
 
 class MenuComunidade extends StatefulWidget {
-  final UserClass user;
+  final UsuarioClass? user;
   const MenuComunidade({super.key, required this.user});
 
   @override
@@ -14,6 +16,19 @@ class _MenuComunidadeState extends State<MenuComunidade> {
   final Color lightOrange = const Color(0xFFFFF1E6);
   final Color orange = const Color(0xFFFF8C42);
   final Color grey = const Color(0xFF333333);
+
+  late GenericController<UsuarioClass> _usuarioController;
+  late UsuarioClass? usuario;
+
+  @override
+  void initState() {
+    usuario = widget.user;
+    super.initState();
+    _usuarioController = GenericController<UsuarioClass>(
+      endpoint: 'usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
+  }
 
   final List<Map<String, String>> historicoFalso = [
     {
@@ -53,14 +68,14 @@ class _MenuComunidadeState extends State<MenuComunidade> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.user.plano ?? 'Plano GOLD',
+                    'Plano GOLD',
                     style: GoogleFonts.poppins(
                       color: orange,
                       fontSize: 18,
                     ),
                   ),
                   Text(
-                    widget.user.nome ?? 'Renan Silva Pinheiro',
+                    usuario?.login ?? 'Renan Silva Pinheiro',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 18,

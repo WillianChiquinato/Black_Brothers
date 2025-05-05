@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/Telas/menu_comunidade.dart';
 import 'menu_perfil.dart';
 import 'menu_inicial_home.dart';
-import 'package:projetosflutter/API/modelo_user.dart';
+import 'package:projetosflutter/API/models/modelo_usuario.dart';
 import 'menu_comunidade.dart';
 
 class MenuInicial extends StatefulWidget {
@@ -16,12 +16,11 @@ class MenuInicial extends StatefulWidget {
 class _MenuInicialState extends State<MenuInicial> {
   int _selectedIndex = 2;
 
-  late UserClass _user;
+  late UsuarioClass? _user;
 
   @override
   void initState() {
     super.initState();
-    _user = UserClass();
   }
 
   List<Widget> get _pages => [

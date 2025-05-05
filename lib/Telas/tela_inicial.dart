@@ -1,6 +1,6 @@
+import 'package:projetosflutter/API/models/modelo_usuario.dart';
 import 'package:projetosflutter/Components/alerta.dart';
 import 'package:flutter/material.dart';
-import 'package:projetosflutter/Data/Inherite_Login.dart';
 import 'package:projetosflutter/Telas/tela_Inscricao.dart';
 import '../API/controller.dart';
 
@@ -17,15 +17,26 @@ class TelaInicial extends StatefulWidget {
 
 final TextEditingController nomeUsuario = TextEditingController();
 final TextEditingController nomeSenha = TextEditingController();
-final UserController userController = UserController();
 
 class _MyAppState extends State<TelaInicial> {
+  late GenericController<UsuarioClass> _usuarioController;
+  late List<UsuarioClass?> usuario;
+
   @override
   void initState() {
-    userController.addListener(() {
-      setState(() {});
-    });
     super.initState();
+    _usuarioController = GenericController<UsuarioClass>(
+      endpoint: 'usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
+  }
+
+  //Buscar todos os usuários (Exemplo).
+  Future<void> _buscarUsuario() async {
+    var resultado = await _usuarioController.getAll();
+    setState(() {
+      usuario = resultado;
+    });
   }
 
   final bool _obscuraSenha = true;
@@ -125,37 +136,39 @@ class _MyAppState extends State<TelaInicial> {
                     minimumSize: const Size(300, 65),
                     backgroundColor: const Color.fromARGB(255, 88, 48, 11),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      LoginInherite.of(context).loginUser;
-                      LoginInherite.of(context).loginSenha;
-                      print('Usuario: ' + LoginInherite.of(context).loginUser);
-                      print('Senha: ' + LoginInherite.of(context).loginSenha);
-                      print('UsuarioInputado: ' + nomeUsuario.text);
-                      print('SenhaInputado: ' + nomeSenha.text);
+                  onPressed: () async {
+                    await _buscarUsuario();
 
-                      if (nomeUsuario.text == LoginInherite.of(context).loginUser &&
-                          nomeSenha.text == LoginInherite.of(context).loginSenha) {
-                        print('Inscrito');
-                        // Usando o ScaffoldMessenger correto
-                        ScaffoldMessenger.of(_scaffoldKey.currentContext!)
-                            .showSnackBar(
-                          const SnackBar(
-                            content: Text('Entrando no aplicativo!'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      } else {
-                        print('Cai fora');
-                        ScaffoldMessenger.of(_scaffoldKey.currentContext!)
-                            .showSnackBar(
-                          const SnackBar(
-                            content: Text('Nenhum usuario encontrado!'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    });
+                    final usuarioInput = nomeUsuario.text.trim();
+                    final senhaInput = nomeSenha.text.trim();
+
+                    final usuarioEncontrado = usuario.firstWhere(
+                          (u) => u?.login == usuarioInput && u?.senha == senhaInput,
+                      orElse: () => null,
+                    );
+
+                    if (usuarioEncontrado != null) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("Bem-vindo!"),
+                          content: Text("Olá, ${usuarioEncontrado.login}! Você entrou com sucesso. \n com a senha: ${usuarioEncontrado.senha}!"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("OK"),
+                            )
+                          ],
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Usuário ou senha inválidos'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
                   },
                   child: const Text(
                     'ENTRAR',
@@ -165,44 +178,6 @@ class _MyAppState extends State<TelaInicial> {
                         fontWeight: FontWeight.bold),
                   ),
                 ),
-              ),
-
-              // Widget que observa e reage às mudanças de isLoading e UserAddress
-              Column(
-                children: [
-                  // Exibe o CircularProgressIndicator enquanto está carregando
-                  ValueListenableBuilder<bool>(
-                    valueListenable: userController.isLoading,
-                    builder: (context, isLoading, child) {
-                      return Visibility(
-                        visible: isLoading,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  // ValueListenableBuilder<UserClass?>(
-                  //   valueListenable: userController.userAddress,
-                  //   builder: (context, user, child) {
-                  //     if (!userController.isLoading.value) {
-                  //       if (user != null) {
-                  //         return CardlocationWidget(user: user);
-                  //       } else {
-                  //         return const Center(
-                  //           child: Text(
-                  //             'Nenhum usuário encontrado',
-                  //             style: TextStyle(fontSize: 18, color: Colors.red),
-                  //           ),
-                  //         );
-                  //       }
-                  //     }
-                  //     // Retorna um sizedBox vazio com o shrink.
-                  //     return Container();
-                  //   },
-                  // ),
-                ],
               ),
 
               Container(

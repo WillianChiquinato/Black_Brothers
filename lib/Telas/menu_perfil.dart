@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:projetosflutter/API/modelo_user.dart';
+import 'package:projetosflutter/API/models/modelo_usuario.dart';
+
+import '../API/controller.dart';
 
 class MenuPerfil extends StatefulWidget {
-  final UserClass user;
+  final UsuarioClass? user;
 
-  const MenuPerfil({super.key, required this.user});
+  const MenuPerfil({super.key, this.user});
 
   @override
   State<MenuPerfil> createState() => _MenuPerfilState();
 }
 
 class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
+  late GenericController<UsuarioClass> _usuarioController;
+  late UsuarioClass? usuario;
+
   late TabController _tabController;
 
   final lightOrange = const Color(0xFFFFF1E6);
@@ -21,7 +26,13 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
+    usuario = widget.user;
     super.initState();
+
+    _usuarioController = GenericController<UsuarioClass>(
+      endpoint: 'usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
   }
 
   @override
@@ -47,14 +58,14 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.user.plano ?? 'Plano GOLD',
+                  'Plano GOLD',
                   style: GoogleFonts.poppins(
                     color: orange,
                     fontSize: 18,
                   ),
                 ),
                 Text(
-                  widget.user.nome ?? 'Renan Silva Pinheiro',
+                  usuario?.login ?? 'novo_usuario',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 18,
@@ -95,16 +106,16 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
           children: [
             _buildSectionTitle("Informações Pessoais"),
             const SizedBox(height: 12),
-            _buildTextField("Nome", widget.user.nome ?? 'Renan Silva Pinheiro'),
-            _buildTextField("Data de Nascimento", widget.user.idade ?? '30/05/2005'),
+            _buildTextField("Nome", 'Renan Silva Pinheiro'),
+            _buildTextField("Data de Nascimento", '30/05/2005'),
             _buildTextField("CPF", "000.000.000-00"),
             _buildTextField("Telefone", "(11) 95919-7939"),
             _buildTextField("Email", "renansilvapinheiro22@gmail.com"),
             const SizedBox(height: 24),
             _buildSectionTitle("Informações Físicas"),
             const SizedBox(height: 12),
-            _buildTextField("Altura", widget.user.idade ?? '1.80m'),
-            _buildTextField("Peso", widget.user.idade ?? '60.6 Kg'),
+            _buildTextField("Altura", '1.80m'),
+            _buildTextField("Peso", '60.6 Kg'),
             const SizedBox(height: 28),
             Center(
               child: ElevatedButton(
@@ -228,25 +239,25 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
           children: [
             Column(
               children: [
-                Text("${widget.user.idade ?? '1.80'}m", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                Text("${'1.80'}m", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                 Text("Altura", style: GoogleFonts.poppins(fontSize: 12)),
               ],
             ),
             Column(
               children: [
-                Text("${widget.user.idade ?? '60.6'} Kg", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                Text("${'60.6'} Kg", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                 Text("Peso", style: GoogleFonts.poppins(fontSize: 12)),
               ],
             ),
             Column(
               children: [
-                Text("${widget.user.idade ?? '48'} Kg", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                Text("${'48'} Kg", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                 Text("Massa Magra", style: GoogleFonts.poppins(fontSize: 12)),
               ],
             ),
             Column(
               children: [
-                Text("${widget.user.idade ?? '37'}%", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                Text("${'37'}%", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                 Text("Gordura", style: GoogleFonts.poppins(fontSize: 12)),
               ],
             ),

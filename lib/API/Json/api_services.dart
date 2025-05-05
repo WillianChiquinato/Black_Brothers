@@ -1,28 +1,46 @@
 import 'package:dio/dio.dart';
 import 'package:projetosflutter/API/constans.dart';
-import '../modelo_user.dart';
 
-// Conexão com a API
 class ApiServices {
-  Dio dio = Dio();
+  final Dio dio = Dio();
 
-  Future<UserClass?> getUser({required String user}) async {
+  Future<T?> getSingle<T>({
+    required String endpoint,
+    required T Function(Map<String, dynamic>) fromJson,
+  }) async {
     try {
-      var response = await dio.get(Apiconstants.urlBaseMock(user));
+      final response = await dio.get(Apiconstants.urlBaseMock(endpoint));
 
       if (response.statusCode == 200) {
-        if (response.data is List) {
-          List<dynamic> dataList = response.data;
-
-          if (dataList.isNotEmpty) {
-            return UserClass.fromJson(dataList[0]);
-          }
+        if (response.data is List && response.data.isNotEmpty) {
+          return fromJson(response.data[0]);
+        } else if (response.data is Map<String, dynamic>) {
+          return fromJson(response.data);
         }
       }
     } catch (e) {
-      print(e.toString());
+      print('Erro ao buscar dados: $e');
     }
     return null;
   }
+
+  Future<List<T>> getList<T>({
+    required String endpoint,
+    required T Function(Map<String, dynamic>) fromJson,
+  }) async {
+    try {
+      final response = await dio.get(Apiconstants.urlBaseMock(endpoint));
+
+      if (response.statusCode == 200 && response.data is List) {
+        return (response.data as List)
+            .map((json) => fromJson(json))
+            .toList();
+      }
+    } catch (e) {
+      print('Erro ao buscar lista: $e');
+    }
+    return [];
+  }
 }
+
 
