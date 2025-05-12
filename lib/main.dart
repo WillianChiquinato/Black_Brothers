@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:projetosflutter/Telas/menu_inicial.dart';
+import 'package:projetosflutter/Telas/menu_inicial_home.dart';
+import 'package:projetosflutter/Telas/menu_perfil.dart';
+import 'package:projetosflutter/Telas/tela_Inscricao.dart';
 import 'Telas/tela_inicial.dart';
 
 

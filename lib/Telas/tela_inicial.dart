@@ -3,6 +3,7 @@ import 'package:projetosflutter/API/models/modelo_pessoa.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
 import 'package:projetosflutter/Components/alerta.dart';
 import 'package:flutter/material.dart';
+import 'package:projetosflutter/Telas/tela_Inscricao.dart';
 import '../API/controller.dart';
 
 //StatelessWidget para tarefas repetitivas.
@@ -341,6 +342,12 @@ class _MyAppState extends State<TelaInicial> {
                         backgroundColor:
                             const Color.fromARGB(255, 255, 234, 209)),
                     onPressed: () async {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const TelaInscricao()));
+
                       final usuarioInput = nomeUsuario.text.trim();
                       final senhaInput = nomeSenha.text.trim();
 

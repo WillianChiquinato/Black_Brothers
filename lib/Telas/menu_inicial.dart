@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/Telas/menu_comunidade.dart';
+import '../API/controller.dart';
 import 'menu_perfil.dart';
 import 'menu_inicial_home.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
@@ -15,12 +16,17 @@ class MenuInicial extends StatefulWidget {
 
 class _MenuInicialState extends State<MenuInicial> {
   int _selectedIndex = 2;
-
-  late UsuarioClass? _user;
+  late GenericController<UsuarioClass> _usuarioController;
+  UsuarioClass? _user;
 
   @override
   void initState() {
     super.initState();
+
+    _usuarioController = GenericController<UsuarioClass>(
+      endpoint: 'usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
   }
 
   List<Widget> get _pages => [

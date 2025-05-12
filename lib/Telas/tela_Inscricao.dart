@@ -4,9 +4,7 @@ import 'package:projetosflutter/Telas/tela_planos.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TelaInscricao extends StatefulWidget {
-  const TelaInscricao({Key? key, required this.LoginContext}) : super(key: key);
-
-  final BuildContext LoginContext;
+  const TelaInscricao({Key? key}) : super(key: key);
 
   @override
   State<TelaInscricao> createState() => _TelaInscricaoState();
@@ -25,17 +23,27 @@ class _TelaInscricaoState extends State<TelaInscricao> {
   void initState() {
     super.initState();
     dtnascInscricao.addListener(() {
-      final textData = dtnascInscricao.text;
+      final textDataNasc = dtnascInscricao.text;
 
-      if (textData.length == 2 && !textData.contains('/')) {
-        dtnascInscricao.text = textData + '/';
-        dtnascInscricao.selection = TextSelection.fromPosition(
-          TextPosition(offset: dtnascInscricao.text.length),
-        );
-      } else if (textData.length == 5 && textData[4] != '/') {
-        dtnascInscricao.text = textData + '/';
-        dtnascInscricao.selection = TextSelection.fromPosition(
-          TextPosition(offset: dtnascInscricao.text.length),
+      String cleanText = textDataNasc.replaceAll(RegExp(r'\D'), '');
+
+      if (cleanText.length > 0) {
+        if (cleanText.length > 2) {
+          cleanText = '${cleanText.substring(0, 2)}/${cleanText.substring(2)}';
+        }
+        if (cleanText.length > 5) {
+          cleanText = '${cleanText.substring(0, 5)}/${cleanText.substring(5)}';
+        }
+        if (cleanText.length > 10) {
+          // Limita o tamanho máximo a 14 caracteres com o formato completo
+          cleanText = cleanText.substring(0, 10);
+        }
+      }
+
+      if (cleanText != textDataNasc) {
+        dtnascInscricao.value = TextEditingValue(
+          text: cleanText,
+          selection: TextSelection.collapsed(offset: cleanText.length),
         );
       }
     });
