@@ -178,7 +178,7 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
                 ],
               ),
               const SizedBox(height: 24),
-              _buildStatusCard("PESO:", "MÉDIO", "Precisa alinhar sua dieta para ter um aumento de peso", orange),
+              _buildStatusCard("Peso:", "MÉDIO", "Precisa alinhar sua dieta para ter um aumento de peso", orange),
               const SizedBox(height: 16),
               _buildStatusCard("Gordura Corporal:", "ELEVADO", "Se alimente e treine melhor para mudar esse quadro", Colors.redAccent),
               const SizedBox(height: 24),

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:projetosflutter/Telas/menu_inicial.dart';
-import 'package:projetosflutter/Telas/menu_inicial_home.dart';
-import 'package:projetosflutter/Telas/menu_perfil.dart';
-import 'package:projetosflutter/Telas/tela_Inscricao.dart';
 import 'Telas/tela_inicial.dart';
 
 
@@ -27,7 +24,7 @@ class _MyAppState extends State<MainClass> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TelaInicial(),
+      home: const MenuInicial(),
     );
   }
 }

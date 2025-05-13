@@ -53,7 +53,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
         actions: [
           Builder(
             builder: (context) => IconButton(
-              icon: const Icon(Icons.menu),
+              icon: const Icon(Icons.menu, color: Colors.white),
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
               },
