@@ -24,7 +24,7 @@ class _MyAppState extends State<MainClass> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MenuInicial(),
+      home: const TelaInicial(),
     );
   }
 }

@@ -1,18 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:projetosflutter/API/models/modelo_aluno.dart';
 import 'package:projetosflutter/Telas/tela_inicial.dart';
 
+import '../API/controller.dart';
+
 class TelaPlanos extends StatefulWidget {
-  const TelaPlanos({super.key});
+  final int usuarioId;
+
+  const TelaPlanos({super.key, required this.usuarioId});
 
   @override
   State<TelaPlanos> createState() => _TelaPlanosState();
 }
 
 class _TelaPlanosState extends State<TelaPlanos> {
+  late GenericController<AlunoClass> _alunoController;
+  late List<AlunoClass> aluno = [];
+
   @override
   void initState() {
     super.initState();
+
+    _alunoController = GenericController<AlunoClass>(
+      endpoint: 'Aluno',
+      fromJson: (json) => AlunoClass.fromJson(json),
+    );
   }
+
+  Future<void> _criarAluno(int usuarioId, int planoId) async {
+    Map<String, dynamic> alunoData = {
+      'FK_Usuario_ID': usuarioId,
+      'FK_Planos_ID': planoId
+    };
+
+    var resultado = await _alunoController.create(alunoData);
+    if (resultado != null) {
+      print('Aluno criado com sucesso!');
+      // Voltar para login
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => TelaInicial()),
+            (route) => false,
+      );
+    } else {
+      print('Erro ao criar aluno');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +125,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             const SizedBox(height: 20),
                             ElevatedButton(
                               onPressed: () async {
+                                await _criarAluno(widget.usuarioId, 1);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
@@ -169,6 +204,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             const SizedBox(height: 20),
                             ElevatedButton(
                               onPressed: () async {
+                                await _criarAluno(widget.usuarioId, 2);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
@@ -247,6 +283,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
                             const SizedBox(height: 20),
                             ElevatedButton(
                               onPressed: () async {
+                                await _criarAluno(widget.usuarioId, 3);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(

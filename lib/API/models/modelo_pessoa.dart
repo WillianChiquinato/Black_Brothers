@@ -1,19 +1,19 @@
-class PessoClass {
-  final String? CPF;
+class PessoaClass {
+  final String CPF;
   final String Nome;
   final String Email;
   final String DtNasc;
   final String FK_Academia_ID;
 
-  PessoClass(
-      {this.CPF,
+  PessoaClass(
+      {required this.CPF,
       required this.Nome,
       required this.Email,
       required this.DtNasc,
       required this.FK_Academia_ID});
 
-  factory PessoClass.fromJson(Map<String, dynamic> json) {
-    return PessoClass(
+  factory PessoaClass.fromJson(Map<String, dynamic> json) {
+    return PessoaClass(
       CPF: json['CPF'] ?? -1,
       Nome: json['Nome'] ?? '',
       Email: json['Email'] ?? '',

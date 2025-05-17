@@ -1,7 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:projetosflutter/API/models/modelo_pessoa.dart';
 import 'package:projetosflutter/Telas/tela_planos.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
+
+import '../API/controller.dart';
+import '../API/models/modelo_usuario.dart';
 
 class TelaInscricao extends StatefulWidget {
   const TelaInscricao({Key? key}) : super(key: key);
@@ -11,6 +16,12 @@ class TelaInscricao extends StatefulWidget {
 }
 
 class _TelaInscricaoState extends State<TelaInscricao> {
+  late GenericController<PessoaClass> _pessoaController;
+  late List<PessoaClass> pessoa = [];
+
+  late GenericController<UsuarioClass> _usuarioController;
+  late List<UsuarioClass> usuario = [];
+
   final TextEditingController usuarioInscricao = TextEditingController();
   final TextEditingController emailInscricao = TextEditingController();
   final TextEditingController cpfInscricao = TextEditingController();
@@ -22,6 +33,35 @@ class _TelaInscricaoState extends State<TelaInscricao> {
   @override
   void initState() {
     super.initState();
+    _pessoaController = GenericController(
+      endpoint: 'Pessoa',
+      fromJson: (json) => PessoaClass.fromJson(json),
+    );
+
+    _usuarioController = GenericController<UsuarioClass>(
+      endpoint: 'Usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
+
+    cpfInscricao.addListener(() {
+      final textCPF = cpfInscricao.text;
+      String cleanText = textCPF.replaceAll(RegExp(r'\D'), '');
+
+      if (cleanText.length > 0) {
+        if (cleanText.length > 11) {
+          // Limita o tamanho máximo a 12 caracteres com o formato completo
+          cleanText = cleanText.substring(0, 11);
+        }
+      }
+
+      if (cleanText != textCPF) {
+        cpfInscricao.value = TextEditingValue(
+          text: cleanText,
+          selection: TextSelection.collapsed(offset: cleanText.length),
+        );
+      }
+    });
+
     dtnascInscricao.addListener(() {
       final textDataNasc = dtnascInscricao.text;
 
@@ -35,7 +75,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
           cleanText = '${cleanText.substring(0, 5)}/${cleanText.substring(5)}';
         }
         if (cleanText.length > 10) {
-          // Limita o tamanho máximo a 14 caracteres com o formato completo
+          // Limita o tamanho máximo a 10 caracteres com o formato completo
           cleanText = cleanText.substring(0, 10);
         }
       }
@@ -74,6 +114,86 @@ class _TelaInscricaoState extends State<TelaInscricao> {
         );
       }
     });
+  }
+
+  //Criar usuário.
+  Future<void> _criarPessoa() async {
+    String? dataFormatada;
+
+    try {
+      // Converte de dd/MM/yyyy para yyyy-MM-dd
+      DateTime data =
+          DateFormat('dd/MM/yyyy').parse(dtnascInscricao.text.trim());
+      dataFormatada = DateFormat('yyyy-MM-dd').format(data);
+    } catch (e) {
+      print('Erro ao formatar a data: $e');
+      return;
+    }
+
+    Map<String, dynamic> data = {
+      'CPF': cpfInscricao.text.trim(),
+      'Nome': usuarioInscricao.text.trim(),
+      'Email': emailInscricao.text.trim(),
+      'DtNasc': dataFormatada,
+      'FK_Academia_ID': '12345678000100'
+    };
+
+    print('Dados enviados: $data');
+
+    var resultado = await _pessoaController.create(data);
+    if (resultado != null) {
+      setState(() {
+        pessoa = [resultado];
+      });
+
+      final pessoaId = resultado.CPF!;
+      await _criarUsuario(pessoaId);
+
+      print('Pessoa criada com sucesso!!');
+    } else {
+      print('Usuario com esse CPF cadastrado');
+    }
+  }
+
+  //Apos o cadastro ja pega o login tambem.
+  Future<void> _criarUsuario(String pessoaId) async {
+    Map<String, dynamic> usuarioData = {
+      'Login': usuarioInscricao.text.trim(),
+      'Senha': senhaInscricao.text.trim(),
+      'FK_Pessoa_ID': pessoaId,
+    };
+
+    var resultado = await _usuarioController.create(usuarioData);
+    if (resultado != null) {
+      print('Usuário criado com sucesso!');
+      // Vá para a tela de planos e passe o ID do usuário
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TelaPlanos(usuarioId: resultado.id!),
+        ),
+      );
+    } else {
+      print('Erro ao criar usuário');
+    }
+  }
+
+  //Update Pessoa.
+  Future<void> _updatePessoa() async {
+    Map<String, dynamic> novosDados = {
+      'CPF': '232253463',
+    };
+
+    var resultado = await _pessoaController.update('0', novosDados);
+
+    if (resultado != null) {
+      setState(() {
+        pessoa = [resultado];
+      });
+      print("Pessoa atualizada");
+    } else {
+      print("Erro ao atualizar pessoa");
+    }
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -187,7 +307,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   return 'Insira um CPF válido';
                                 } else if (!RegExp(r'^\d{11}$')
                                     .hasMatch(value)) {
-                                  return 'CPF precisa conter 11 caracteres';
+                                  return 'CPF precisa conter 11 numeros';
                                 }
                                 return null;
                               },
@@ -403,12 +523,25 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                   await Future.delayed(
                                                       const Duration(
                                                           seconds: 1));
-                                                  // Feito para a tela de planos.
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const TelaPlanos()));
+
+                                                  final cpfInput =
+                                                      cpfInscricao.text.trim();
+
+                                                  if (cpfInput.isEmpty) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                            'Preencha todos os dados'),
+                                                        duration: Duration(
+                                                            seconds: 2),
+                                                      ),
+                                                    );
+                                                    return;
+                                                  } else {
+                                                    await _criarPessoa();
+                                                  }
                                                 }
                                               }
                                             : null,

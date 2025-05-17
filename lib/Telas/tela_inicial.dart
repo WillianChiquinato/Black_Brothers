@@ -3,6 +3,7 @@ import 'package:projetosflutter/API/models/modelo_pessoa.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
 import 'package:projetosflutter/Components/alerta.dart';
 import 'package:flutter/material.dart';
+import 'package:projetosflutter/Telas/menu_inicial.dart';
 import 'package:projetosflutter/Telas/tela_Inscricao.dart';
 import '../API/controller.dart';
 
@@ -21,12 +22,6 @@ final TextEditingController nomeUsuario = TextEditingController();
 final TextEditingController nomeSenha = TextEditingController();
 
 class _MyAppState extends State<TelaInicial> {
-  late GenericController<AcademiaClass> _academiaController;
-  late List<AcademiaClass> academia = [];
-
-  late GenericController<PessoClass> _pessoaController;
-  late List<PessoClass> pessoa = [];
-
   late GenericController<UsuarioClass> _usuarioController;
   late List<UsuarioClass> usuario = [];
 
@@ -34,24 +29,13 @@ class _MyAppState extends State<TelaInicial> {
   void initState() {
     super.initState();
     _usuarioController = GenericController<UsuarioClass>(
-      endpoint: 'usuario',
+      endpoint: 'Usuario',
       fromJson: (json) => UsuarioClass.fromJson(json),
-    );
-
-    _academiaController = GenericController<AcademiaClass>(
-      endpoint: 'academia',
-      fromJson: (json) => AcademiaClass.fromJson(json),
-    );
-
-    _pessoaController = GenericController(
-      endpoint: 'pessoa',
-      fromJson: (json) => PessoClass.fromJson(json),
     );
   }
 
-  //Buscar um elemento so.
+  //Buscar todos os elementos.
   Future<void> _buscarUsuario() async {
-    print('Chamando getOne com ID 0');
     var resultado = await _usuarioController.getAll();
     if (resultado != null) {
       print('Usuário encontrado: ${resultado}');
@@ -60,85 +44,6 @@ class _MyAppState extends State<TelaInicial> {
       });
     } else {
       print("Usuário com ID não encontrado.");
-    }
-  }
-
-  //Criar CNPJ Academia
-  Future<void> _criarCNPJ() async {
-    Map<String, dynamic> data = {
-      'CNPJ': '13.000.000.0',
-      'Nome': 'Black Brothers',
-      'FK_Academia_ID': null
-    };
-
-    var resultado = await _academiaController.create(data);
-    if (resultado != null) {
-      setState(() {
-        academia = [resultado];
-      });
-      print('Academia criada com sucesso');
-    } else {
-      print('Academia nao criada, FALHA!!');
-    }
-  }
-
-  //Criar Pessoa
-  Future<void> _criarPessoa() async {
-    Map<String, dynamic> data = {
-      'CPF': '40457284811',
-      'Nome': 'Willian',
-      'Email': 'WillianChiquinato@hotmail.com',
-      'DtNasc': '16/07/2004',
-      'FK_Academia_ID': '13000'
-    };
-
-    var resultado = await _pessoaController.create(data);
-    if (resultado != null) {
-      setState(() {
-        pessoa = [resultado];
-      });
-      print('Pessoa criada com sucesso!!');
-    } else {
-      print('Não existe academia disponivel');
-    }
-  }
-
-  //Update Pessoa.
-  Future<void> _updatePessoa() async {
-    Map<String, dynamic> novosDados = {
-      'CPF': '232253463',
-    };
-
-    var resultado = await _pessoaController.update('0', novosDados);
-
-    if (resultado != null) {
-      setState(() {
-        pessoa = [resultado];
-      });
-      print("Pessoa atualizada");
-    } else {
-      print("Erro ao atualizar pessoa");
-    }
-  }
-
-  //Criar usuário.
-  Future<void> _criarUsuario() async {
-    Map<String, dynamic> data = {
-      'Login': nomeUsuario.text.trim(),
-      'Senha': nomeSenha.text.trim(),
-      'FK_Pessoa_ID': 232253463
-    };
-
-    print('Dados enviados: $data');
-
-    var resultado = await _usuarioController.create(data);
-    if (resultado != null) {
-      setState(() {
-        usuario = [resultado];
-      });
-      print('Usuario criada com sucesso!!');
-    } else {
-      print('Não existe usuario disponivel');
     }
   }
 
@@ -261,18 +166,10 @@ class _MyAppState extends State<TelaInicial> {
 
                       if (usuarioEncontrado != null &&
                           usuarioEncontrado.id != -1) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text("Bem-vindo!"),
-                            content: Text(
-                                "Olá, ${usuarioEncontrado.login}! Você entrou com sucesso.\nSenha: ${usuarioEncontrado.senha}"),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text("OK"),
-                              )
-                            ],
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MenuInicial(),
                           ),
                         );
                       } else {
@@ -347,23 +244,6 @@ class _MyAppState extends State<TelaInicial> {
                           MaterialPageRoute(
                               builder: (context) =>
                               const TelaInscricao()));
-
-                      final usuarioInput = nomeUsuario.text.trim();
-                      final senhaInput = nomeSenha.text.trim();
-
-                      if (usuarioInput.isEmpty || senhaInput.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Preencha login e senha'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                        return;
-                      }
-                      else
-                      {
-                        await _criarUsuario();
-                      }
                     },
                     child: const Text(
                       'Inscrever-se',
