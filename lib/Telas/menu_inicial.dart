@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:projetosflutter/API/models/modelo_menu.dart';
 import 'package:projetosflutter/Telas/menu_comunidade.dart';
 import 'package:projetosflutter/Telas/menu_frequencia.dart';
 import '../API/controller.dart';
@@ -18,42 +17,24 @@ class MenuInicial extends StatefulWidget {
 
 class _MenuInicialState extends State<MenuInicial> {
   int _selectedIndex = 2;
-  late GenericController<MenuInicialResponse> _menuController;
-  MenuInicialResponse? menuData;
+  late GenericController<UsuarioClass> _usuarioController;
+  UsuarioClass? _user;
 
   @override
   void initState() {
     super.initState();
 
-    _menuController = GenericController<MenuInicialResponse>(
-      endpoint: 'menu_inicial',
-      fromJson: (json) => MenuInicialResponse.fromJson(json),
+    _usuarioController = GenericController<UsuarioClass>(
+      endpoint: 'usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
     );
-    
-    carregarDadosMenu(2);
-  }
-
-  Future<void> carregarDadosMenu(int id) async {
-    try {
-      final response = await _menuController.getOne(id.toString());
-
-      print('Resposta da API: ${response.toString()}');
-      menuData = response;
-
-      print(menuData?.usuario);
-      print(menuData?.plano);
-
-      setState(() {});
-    } catch (e) {
-      print('Erro ao buscar dados do menu: $e');
-    }
   }
 
   List<Widget> get _pages => [
-    MenuPerfil(user: menuData?.usuario, plan: menuData?.plano),
-    MenuComunidade(user: menuData?.usuario, plan: menuData?.plano),
-    MenuInicialHome(user: menuData?.usuario, plan: menuData?.plano),
-    MenuFrequencia(user: menuData?.usuario),
+    MenuPerfil(user: _user),
+    MenuComunidade(user: _user),
+    MenuInicialHome(user: _user),
+    MenuFrequencia(user: _user),
     const Placeholder(),
   ];
 
