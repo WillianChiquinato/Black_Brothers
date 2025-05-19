@@ -3,11 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
 
 import '../API/controller.dart';
+import '../API/models/modelo_tipoPlano.dart';
 
 class MenuInicialHome extends StatefulWidget {
   final UsuarioClass? user;
+  final TipoPlanoClass? plan;
 
-  const MenuInicialHome({super.key, this.user});
+  const MenuInicialHome({super.key, this.user, this.plan});
 
   @override
   State<MenuInicialHome> createState() => _MenuInicialHomeState();
@@ -16,6 +18,7 @@ class MenuInicialHome extends StatefulWidget {
 class _MenuInicialHomeState extends State<MenuInicialHome> {
   late GenericController<UsuarioClass> _usuarioController;
   late UsuarioClass? usuario;
+  late TipoPlanoClass? plano;
 
   final Color lightOrange = const Color(0xFFFFF1E6);
   final Color orange = const Color(0xFFFF8C42);
@@ -24,9 +27,10 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
   @override
   void initState() {
     usuario = widget.user;
+    plano = widget.plan;
     super.initState();
     _usuarioController = GenericController<UsuarioClass>(
-      endpoint: 'usuario',
+      endpoint: 'Usuario',
       fromJson: (json) => UsuarioClass.fromJson(json),
     );
   }
@@ -128,14 +132,14 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      usuario?.login ?? 'Plano GOLD',
+                      '${plano?.nomePlano}',
                       style: GoogleFonts.poppins(
                         color: orange,
                         fontSize: 16,
                       ),
                     ),
                     Text(
-                      usuario?.login ?? 'Renan Silva Pinheiro',
+                      '${usuario?.login}',
                       style: GoogleFonts.poppins(fontSize: 16),
                     ),
                   ],

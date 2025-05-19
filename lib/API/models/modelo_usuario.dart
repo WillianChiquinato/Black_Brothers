@@ -13,7 +13,7 @@ class UsuarioClass {
 
   factory UsuarioClass.fromJson(Map<String, dynamic> json) {
     return UsuarioClass(
-      id: json['ID_Usuario'],
+      id: int.tryParse(json['ID_Usuario']?.toString() ?? '') ?? -1,
       login: json['Login'] ?? '',
       senha: json['Senha'] ?? '',
       fK_Pessoa_ID: json['FK_Pessoa_ID']?.toString() ?? '',

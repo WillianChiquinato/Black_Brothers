@@ -3,10 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
 
 import '../API/controller.dart';
+import '../API/models/modelo_tipoPlano.dart';
 
 class MenuComunidade extends StatefulWidget {
   final UsuarioClass? user;
-  const MenuComunidade({super.key, required this.user});
+  final TipoPlanoClass? plan;
+
+  const MenuComunidade({super.key, this.user, this.plan});
 
   @override
   State<MenuComunidade> createState() => _MenuComunidadeState();
@@ -19,13 +22,15 @@ class _MenuComunidadeState extends State<MenuComunidade> {
 
   late GenericController<UsuarioClass> _usuarioController;
   late UsuarioClass? usuario;
+  late TipoPlanoClass? plano;
 
   @override
   void initState() {
     usuario = widget.user;
+    plano = widget.plan;
     super.initState();
     _usuarioController = GenericController<UsuarioClass>(
-      endpoint: 'usuario',
+      endpoint: 'Usuario',
       fromJson: (json) => UsuarioClass.fromJson(json),
     );
   }
@@ -68,14 +73,14 @@ class _MenuComunidadeState extends State<MenuComunidade> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Plano GOLD',
+                    '${plano?.nomePlano}',
                     style: GoogleFonts.poppins(
                       color: orange,
                       fontSize: 18,
                     ),
                   ),
                   Text(
-                    usuario?.login ?? 'Renan Silva Pinheiro',
+                    '${usuario?.login}',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 18,

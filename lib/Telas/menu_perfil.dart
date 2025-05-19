@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
 
 import '../API/controller.dart';
 
 class MenuPerfil extends StatefulWidget {
   final UsuarioClass? user;
+  final TipoPlanoClass? plan;
 
-  const MenuPerfil({super.key, this.user});
+  const MenuPerfil({super.key, this.user, this.plan});
 
   @override
   State<MenuPerfil> createState() => _MenuPerfilState();
@@ -16,6 +18,7 @@ class MenuPerfil extends StatefulWidget {
 class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   late GenericController<UsuarioClass> _usuarioController;
   late UsuarioClass? usuario;
+  late TipoPlanoClass? plano;
 
   late TabController _tabController;
 
@@ -27,10 +30,11 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
     usuario = widget.user;
+    plano = widget.plan;
     super.initState();
 
     _usuarioController = GenericController<UsuarioClass>(
-      endpoint: 'usuario',
+      endpoint: 'Usuario',
       fromJson: (json) => UsuarioClass.fromJson(json),
     );
   }
@@ -58,14 +62,14 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Plano GOLD',
+                  '${plano?.nomePlano}',
                   style: GoogleFonts.poppins(
                     color: orange,
                     fontSize: 18,
                   ),
                 ),
                 Text(
-                  usuario?.login ?? 'novo_usuario',
+                  '${usuario?.login}',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 18,
