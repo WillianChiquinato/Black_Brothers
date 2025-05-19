@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/Telas/menu_comunidade.dart';
 import 'package:projetosflutter/Telas/menu_frequencia.dart';
+import 'package:projetosflutter/Telas/menu_treino.dart';
 import '../API/controller.dart';
 import 'menu_perfil.dart';
 import 'menu_inicial_home.dart';
@@ -35,7 +36,7 @@ class _MenuInicialState extends State<MenuInicial> {
     MenuComunidade(user: _user),
     MenuInicialHome(user: _user),
     MenuFrequencia(user: _user),
-    const Placeholder(),
+    MenuTreino(user: _user),
   ];
 
   void _onItemTapped(int index) {
