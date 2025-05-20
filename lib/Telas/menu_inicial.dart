@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
@@ -30,19 +32,16 @@ class _MenuInicialState extends State<MenuInicial> {
       fromJson: (json) => MenuInicialResponse.fromJson(json),
     );
 
-    carregarDadosMenu(2);
+    carregarDadosMenu(3);
   }
 
   Future<void> carregarDadosMenu(int id) async {
     try {
       final response = await _menuController.getOne(id.toString());
-
-      print("API: " + response.toString());
-
       menuData = response;
 
-      print(menuData?.usuario);
-      print(menuData?.plano);
+      print("menuData completo: $menuData");
+      print("menuData.usuario: ${menuData?.usuario}");
       setState(() {});
     } catch (e) {
       print('Erro ao buscar dados do menu: $e');

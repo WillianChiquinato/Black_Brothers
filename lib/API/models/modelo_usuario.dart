@@ -28,7 +28,7 @@ class UsuarioClass {
     };
 
     if (id != null) {
-      data['ID_Usuario'] = id as String;
+      data['ID_Usuario'] = id.toString();
     }
 
     return data;

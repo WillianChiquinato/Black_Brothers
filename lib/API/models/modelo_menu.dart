@@ -17,11 +17,21 @@ class MenuInicialResponse {
   });
 
   factory MenuInicialResponse.fromJson(Map<String, dynamic> json) {
+    print("JSON Menu: $json");
     return MenuInicialResponse(
       aluno: AlunoClass.fromJson(json['Aluno']),
       pessoa: PessoaClass.fromJson(json['Pessoa']),
-      plano: TipoPlanoClass.fromJson(json['Tipo_Plano']),
+      plano: TipoPlanoClass.fromJson(json['Plano']),
       usuario: UsuarioClass.fromJson(json['Usuario']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'Aluno': aluno.toJson(),
+      'Pessoa': pessoa.toJson(),
+      'Plano': plano.toJson(),
+      'Usuario': usuario.toJson(),
+    };
   }
 }
