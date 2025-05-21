@@ -1,11 +1,11 @@
 class TipoPlanoClass {
-  final int? id;
+  final int id;
   final String nomePlano;
   final int precoPlano;
   final String beneficiosPlano;
 
   TipoPlanoClass(
-      {this.id,
+      {required this.id,
       required this.nomePlano,
       required this.precoPlano,
       required this.beneficiosPlano});

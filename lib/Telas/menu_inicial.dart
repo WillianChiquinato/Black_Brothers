@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:projetosflutter/API/models/modelo_aluno.dart';
+import 'package:projetosflutter/API/models/modelo_planos.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/Telas/menu_comunidade.dart';
 import 'package:projetosflutter/Telas/menu_frequencia.dart';
 import '../API/controller.dart';
-import '../API/models/modelo_menu.dart';
+import '../API/models/modelo_menu(TESTE).dart';
 import 'menu_perfil.dart';
 import 'menu_inicial_home.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
@@ -21,40 +23,78 @@ class MenuInicial extends StatefulWidget {
 
 class _MenuInicialState extends State<MenuInicial> {
   int _selectedIndex = 2;
-  late GenericController<MenuInicialResponse> _menuController;
-  MenuInicialResponse? menuData;
+  late GenericController<AlunoClass> _alunoController;
+  late List<AlunoClass> alunoData = [];
+  late GenericController<UsuarioClass> _usuarioController;
+  UsuarioClass? userData;
+  late GenericController<PlanoClass> _planoController;
+  PlanoClass? planoData;
+  late GenericController<TipoPlanoClass> _tipoPlanoController;
+  TipoPlanoClass? tipoPlanoData;
+
+  List<Map<String, String>> _dadosExibicao = [];
+  bool _carregando = true;
 
   void initState() {
     super.initState();
 
-    _menuController = GenericController<MenuInicialResponse>(
-      endpoint: 'menu_inicial',
-      fromJson: (json) => MenuInicialResponse.fromJson(json),
+    _alunoController = GenericController<AlunoClass>(
+      endpoint: 'Aluno',
+      fromJson: (json) => AlunoClass.fromJson(json),
     );
 
-    carregarDadosMenu(3);
+    _usuarioController = GenericController<UsuarioClass>(
+      endpoint: 'Usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
+    _planoController = GenericController<PlanoClass>(
+      endpoint: 'Plano',
+      fromJson: (json) => PlanoClass.fromJson(json),
+    );
+    _tipoPlanoController = GenericController<TipoPlanoClass>(
+      endpoint: 'Tipo_Plano',
+      fromJson: (json) => TipoPlanoClass.fromJson(json),
+    );
+
+    _carregarDadosDoAlunoLogado(2);
   }
 
-  Future<void> carregarDadosMenu(int id) async {
-    try {
-      final response = await _menuController.getOne(id.toString());
-      menuData = response;
+  Future<void> _carregarDadosDoAlunoLogado(int matricula) async {
+    final aluno = await _alunoController.getOne(matricula.toString());
 
-      print("menuData completo: $menuData");
-      print("menuData.usuario: ${menuData?.usuario}");
-      setState(() {});
-    } catch (e) {
-      print('Erro ao buscar dados do menu: $e');
+    if (aluno != null) {
+      final usuario =
+          await _usuarioController.getOne(aluno.FK_Usuarios_ID.toString());
+
+      TipoPlanoClass? tipoPlano;
+
+      if (aluno.FK_Planos_ID != null) {
+        final plano =
+            await _planoController.getOne(aluno.FK_Planos_ID.toString());
+
+        if (plano != null && plano.Fk_TipoPlano_ID != null) {
+          tipoPlano =
+              await _tipoPlanoController.getOne(plano.Fk_TipoPlano_ID.toString());
+        }
+      }
+
+      setState(() {
+        userData = usuario;
+        tipoPlanoData = tipoPlano;
+        _carregando = false;
+        print("Usuario: " + userData!.login);
+        print("Plano: " + tipoPlanoData!.nomePlano);
+      });
     }
   }
 
   List<Widget> get _pages => [
-    MenuPerfil(user: menuData?.usuario, plan: menuData?.plano),
-    MenuComunidade(user: menuData?.usuario, plan: menuData?.plano),
-    MenuInicialHome(user: menuData?.usuario, plan: menuData?.plano),
-    MenuFrequencia(user: menuData?.usuario),
-    const Placeholder(),
-  ];
+        MenuPerfil(user: userData, plan: tipoPlanoData),
+        MenuComunidade(user: userData, plan: tipoPlanoData),
+        MenuInicialHome(user: userData, plan: tipoPlanoData),
+        MenuFrequencia(user: userData),
+        const Placeholder(),
+      ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -67,6 +107,12 @@ class _MenuInicialState extends State<MenuInicial> {
     const lightOrange = Color(0xFFFFF1E6);
     const orange = Color(0xFFFF8C42);
     const grey = Color(0xFF333333);
+
+    if (_carregando) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       body: IndexedStack(
@@ -84,10 +130,13 @@ class _MenuInicialState extends State<MenuInicial> {
         unselectedLabelStyle: GoogleFonts.poppins(),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Comunidade'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.people), label: 'Comunidade'),
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Menu'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Frequência'),
-          BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Treino'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart), label: 'Frequência'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.fitness_center), label: 'Treino'),
         ],
       ),
     );

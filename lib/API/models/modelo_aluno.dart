@@ -1,12 +1,12 @@
 class AlunoClass {
   final int? Matricula;
-  final int? FK_Usuarios_ID;
-  final int? FK_Planos_ID;
+  final int FK_Usuarios_ID;
+  final int FK_Planos_ID;
 
   AlunoClass(
       {this.Matricula,
-      this.FK_Usuarios_ID,
-      this.FK_Planos_ID});
+      required this.FK_Usuarios_ID,
+      required this.FK_Planos_ID});
 
   factory AlunoClass.fromJson(Map<String, dynamic> json) {
     return AlunoClass(

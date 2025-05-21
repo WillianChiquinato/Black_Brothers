@@ -16,7 +16,6 @@ class MenuPerfil extends StatefulWidget {
 }
 
 class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
-  late GenericController<UsuarioClass> _usuarioController;
   late UsuarioClass? usuario;
   late TipoPlanoClass? plano;
 
@@ -32,11 +31,6 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
     usuario = widget.user;
     plano = widget.plan;
     super.initState();
-
-    _usuarioController = GenericController<UsuarioClass>(
-      endpoint: 'Usuario',
-      fromJson: (json) => UsuarioClass.fromJson(json),
-    );
   }
 
   @override

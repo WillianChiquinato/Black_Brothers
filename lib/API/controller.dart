@@ -53,4 +53,22 @@ class GenericController<T> {
     }
     return null;
   }
+
+  //Fazendo uma busca especifica.
+  Future<List<T>> getByQuery(String query) async {
+    try {
+      final response = await _api.dio.get(
+        Apiconstants.urlBaseAPI('$endpoint?$query'),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> dataList = response.data;
+        return dataList.map((data) => fromJson(data)).toList();
+      }
+    } catch (e) {
+      print('Erro ao buscar por query: $e');
+    }
+    return [];
+  }
+
 }

@@ -520,10 +520,6 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                   print(tellInscricao.text);
                                                   print(senhaInscricao.text);
 
-                                                  await Future.delayed(
-                                                      const Duration(
-                                                          seconds: 1));
-
                                                   final cpfInput =
                                                       cpfInscricao.text.trim();
 
