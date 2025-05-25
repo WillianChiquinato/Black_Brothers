@@ -23,6 +23,7 @@ final TextEditingController nomeSenha = TextEditingController();
 
 class _MyAppState extends State<TelaInicial> {
   late GenericController<UsuarioClass> _usuarioController;
+  late GenericController<UsuarioClass> _loginController;
   late List<UsuarioClass> usuario = [];
 
   @override
@@ -30,6 +31,10 @@ class _MyAppState extends State<TelaInicial> {
     super.initState();
     _usuarioController = GenericController<UsuarioClass>(
       endpoint: 'Usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
+    _loginController = GenericController(
+      endpoint: 'Usuario/login',
       fromJson: (json) => UsuarioClass.fromJson(json),
     );
   }
@@ -44,6 +49,29 @@ class _MyAppState extends State<TelaInicial> {
       });
     } else {
       print("Usuário com ID não encontrado.");
+    }
+  }
+
+  void FazendoLogin(String login, String senha) async {
+    int? idUsuario = await _loginController.loginUsuario(login, senha);
+
+    if (idUsuario != null) {
+      print('Login OK! ID do usuário: $idUsuario');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MenuInicial(
+            idUsuario: idUsuario,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Falha ao Login'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -166,12 +194,7 @@ class _MyAppState extends State<TelaInicial> {
 
                       if (usuarioEncontrado != null &&
                           usuarioEncontrado.id != -1) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MenuInicial(),
-                          ),
-                        );
+                        FazendoLogin(usuarioInput, senhaInput);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -242,8 +265,7 @@ class _MyAppState extends State<TelaInicial> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                              const TelaInscricao()));
+                              builder: (context) => const TelaInscricao()));
                     },
                     child: const Text(
                       'Inscrever-se',

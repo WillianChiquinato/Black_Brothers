@@ -15,7 +15,9 @@ import 'package:projetosflutter/API/models/modelo_usuario.dart';
 import 'menu_comunidade.dart';
 
 class MenuInicial extends StatefulWidget {
-  const MenuInicial({super.key});
+  final int idUsuario;
+
+  const MenuInicial({super.key, required this.idUsuario});
 
   @override
   State<MenuInicial> createState() => _MenuInicialState();
@@ -56,13 +58,18 @@ class _MenuInicialState extends State<MenuInicial> {
       fromJson: (json) => TipoPlanoClass.fromJson(json),
     );
 
-    _carregarDadosDoAlunoLogado(2);
+    print(widget.idUsuario);
+    _carregarDadosDoAlunoLogado(widget.idUsuario);
   }
 
-  Future<void> _carregarDadosDoAlunoLogado(int matricula) async {
-    final aluno = await _alunoController.getOne(matricula.toString());
+  Future<void> _carregarDadosDoAlunoLogado(int idUsuario) async {
+    // Busca o aluno com base no ID do usuário logado
+    final alunos =
+        await _alunoController.getByQuery('FK_Usuario_ID=$idUsuario');
 
-    if (aluno != null) {
+    if (alunos.isNotEmpty) {
+      final aluno = alunos.first;
+
       final usuario =
           await _usuarioController.getOne(aluno.FK_Usuarios_ID.toString());
 
@@ -73,8 +80,8 @@ class _MenuInicialState extends State<MenuInicial> {
             await _planoController.getOne(aluno.FK_Planos_ID.toString());
 
         if (plano != null && plano.Fk_TipoPlano_ID != null) {
-          tipoPlano =
-              await _tipoPlanoController.getOne(plano.Fk_TipoPlano_ID.toString());
+          tipoPlano = await _tipoPlanoController
+              .getOne(plano.Fk_TipoPlano_ID.toString());
         }
       }
 
@@ -82,9 +89,11 @@ class _MenuInicialState extends State<MenuInicial> {
         userData = usuario;
         tipoPlanoData = tipoPlano;
         _carregando = false;
-        print("Usuario: " + userData!.login);
-        print("Plano: " + tipoPlanoData!.nomePlano);
+        print("Usuário: ${userData?.login}");
+        print("Plano: ${tipoPlanoData?.nomePlano}");
       });
+    } else {
+      print('Nenhum aluno encontrado para o ID de usuário $idUsuario');
     }
   }
 

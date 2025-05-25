@@ -1,4 +1,7 @@
 //Conectar Screen com API;
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:projetosflutter/API/Json/api_services.dart';
 import 'package:projetosflutter/API/constans.dart';
 
@@ -54,7 +57,7 @@ class GenericController<T> {
     return null;
   }
 
-  //Fazendo uma busca especifica.
+  //Fazendo uma busca especifica (No caso de login e senha).
   Future<List<T>> getByQuery(String query) async {
     try {
       final response = await _api.dio.get(
@@ -71,4 +74,31 @@ class GenericController<T> {
     return [];
   }
 
+  //Pegar o login para o menu
+  Future<int?> loginUsuario(String login, String senha) async {
+    try {
+      final response = await _api.dio.post(
+        Apiconstants.urlBaseAPI(endpoint),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+        data: jsonEncode({
+          'login': login,
+          'senha': senha,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+
+        return data['ID_Usuario'] as int?;
+      } else {
+        print('Erro: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Erro ao fazer login: $e');
+      return null;
+    }
+  }
 }
