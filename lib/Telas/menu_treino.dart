@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:projetosflutter/API/models/modelo_planos.dart';
+import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 
 import '../API/models/modelo_usuario.dart';
 
@@ -20,12 +22,14 @@ class Exercicio {
 
 class MenuTreino extends StatelessWidget {
   final UsuarioClass? user;
+  final TipoPlanoClass? plan;
 
-  const MenuTreino({super.key, this.user});
+  const MenuTreino({super.key, this.user, this.plan});
 
   final Color lightOrange = const Color(0xFFFFF1E6);
   final Color orange = const Color(0xFFFF8C42);
   final Color grey = const Color(0xFF333333);
+
 
   @override
   Widget build(BuildContext context) {
@@ -121,11 +125,11 @@ class MenuTreino extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Plano GOLD", style: GoogleFonts.poppins(
+              Text('${plan?.nomePlano}', style: GoogleFonts.poppins(
                 color: orange,
                 fontWeight: FontWeight.bold,
               )),
-              Text("Renan Silva Pinheiro", style: GoogleFonts.poppins(
+              Text('${user?.login}', style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               )),
@@ -141,7 +145,7 @@ class MenuTreino extends StatelessWidget {
                   children: [
                     Icon(Icons.fitness_center, size: 16, color: orange),
                     SizedBox(width: 4),
-                    Text("Treino: João Ramalho", style: GoogleFonts.poppins(
+                    Text("Treino: Professor da Academia", style: GoogleFonts.poppins(
                       fontSize: 12,
                       color: grey,
                     )),

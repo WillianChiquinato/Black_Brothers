@@ -7,6 +7,7 @@ import 'package:projetosflutter/API/models/modelo_planos.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/Telas/menu_comunidade.dart';
 import 'package:projetosflutter/Telas/menu_frequencia.dart';
+import 'package:projetosflutter/Telas/menu_treino.dart';
 import '../API/controller.dart';
 import '../API/models/modelo_menu(TESTE).dart';
 import 'menu_perfil.dart';
@@ -102,6 +103,7 @@ class _MenuInicialState extends State<MenuInicial> {
         MenuComunidade(user: userData, plan: tipoPlanoData),
         MenuInicialHome(user: userData, plan: tipoPlanoData),
         MenuFrequencia(user: userData),
+        MenuTreino(user: userData, plan: tipoPlanoData),
         const Placeholder(),
       ];
 
