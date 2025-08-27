@@ -15,6 +15,7 @@ class MainClass extends StatefulWidget {
 }
 
 class _MyAppState extends State<MainClass> {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,7 +25,7 @@ class _MyAppState extends State<MainClass> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TelaInicial(),
+      home: TelaInicial(),
     );
   }
 }

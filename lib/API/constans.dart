@@ -1,6 +1,6 @@
 class Apiconstants
 {
-  static const String _baseUrl = "https://web-production-5082.up.railway.app";
+  static const String _baseUrl = "http://192.168.0.60:5000";
 
   static String urlBaseAPI(String endpoint) {
     if (endpoint.startsWith('/')) {
