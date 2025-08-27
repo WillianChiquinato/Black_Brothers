@@ -21,6 +21,10 @@ class TelaInicial extends StatefulWidget {
 final TextEditingController nomeUsuario = TextEditingController();
 final TextEditingController nomeSenha = TextEditingController();
 
+final Color lightOrange = const Color(0xFFFFF1E6);
+final Color orange = const Color(0xFFFF8C42);
+final Color grey = const Color(0xFF333333);
+
 class _MyAppState extends State<TelaInicial> {
   late GenericController<UsuarioClass> _usuarioController;
   late GenericController<UsuarioClass> _loginController;
@@ -96,11 +100,11 @@ class _MyAppState extends State<TelaInicial> {
         key: _scaffoldKey,
         appBar: AppBar(
           toolbarHeight: 40,
-          backgroundColor: const Color.fromARGB(255, 210, 125, 43),
+          backgroundColor: orange,
         ),
         body: Container(
           //Filtrando a cor com o RGB, modelando com o fromARGB, mas nao da pra pegar a cor, tem que pegar externa
-          color: const Color.fromARGB(255, 210, 125, 43),
+          color: orange,
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
@@ -217,18 +221,17 @@ class _MyAppState extends State<TelaInicial> {
               ),
 
               Container(
-                color: const Color.fromARGB(255, 210, 125, 43),
+                color: orange,
                 height: 50,
                 width: double.infinity,
                 child: const Row(
                   children: [
-                    // Linha à esquerda
                     Expanded(
                       child: Divider(
                         color: Colors.white,
                         thickness: 2,
-                        indent: 30, // Espaçamento da borda esquerda
-                        endIndent: 10, // Espaçamento antes do texto
+                        indent: 30,
+                        endIndent: 10,
                       ),
                     ),
                     Text(
@@ -239,13 +242,12 @@ class _MyAppState extends State<TelaInicial> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    // Linha à direita
                     Expanded(
                       child: Divider(
                         color: Colors.white,
                         thickness: 2,
-                        indent: 10, // Espaçamento antes do texto
-                        endIndent: 30, // Espaçamento da borda direita
+                        indent: 10,
+                        endIndent: 30,
                       ),
                     ),
                   ],
