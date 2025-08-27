@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../API/controller.dart';
 import '../API/models/modelo_usuario.dart';
+import '../Util/FormatItens.dart';
 
 class TelaInscricao extends StatefulWidget {
   const TelaInscricao({Key? key}) : super(key: key);
@@ -45,72 +46,36 @@ class _TelaInscricaoState extends State<TelaInscricao> {
 
     cpfInscricao.addListener(() {
       final textCPF = cpfInscricao.text;
-      String cleanText = textCPF.replaceAll(RegExp(r'\D'), '');
+      final formatted = FormatUtil.formatCpfInput(textCPF);
 
-      if (cleanText.length > 0) {
-        if (cleanText.length > 11) {
-          // Limita o tamanho máximo a 12 caracteres com o formato completo
-          cleanText = cleanText.substring(0, 11);
-        }
-      }
-
-      if (cleanText != textCPF) {
+      if (formatted != textCPF) {
         cpfInscricao.value = TextEditingValue(
-          text: cleanText,
-          selection: TextSelection.collapsed(offset: cleanText.length),
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
         );
       }
     });
 
     dtnascInscricao.addListener(() {
       final textDataNasc = dtnascInscricao.text;
+      final formatted = FormatUtil.formatDateInput(textDataNasc);
 
-      String cleanText = textDataNasc.replaceAll(RegExp(r'\D'), '');
-
-      if (cleanText.length > 0) {
-        if (cleanText.length > 2) {
-          cleanText = '${cleanText.substring(0, 2)}/${cleanText.substring(2)}';
-        }
-        if (cleanText.length > 5) {
-          cleanText = '${cleanText.substring(0, 5)}/${cleanText.substring(5)}';
-        }
-        if (cleanText.length > 10) {
-          // Limita o tamanho máximo a 10 caracteres com o formato completo
-          cleanText = cleanText.substring(0, 10);
-        }
-      }
-
-      if (cleanText != textDataNasc) {
+      if (formatted != textDataNasc) {
         dtnascInscricao.value = TextEditingValue(
-          text: cleanText,
-          selection: TextSelection.collapsed(offset: cleanText.length),
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
         );
       }
     });
 
     tellInscricao.addListener(() {
       final textTell = tellInscricao.text;
+      final formatted = FormatUtil.formatTellInput(textTell);
 
-      String cleanText = textTell.replaceAll(RegExp(r'\D'), '');
-
-      if (cleanText.length > 0) {
-        cleanText = '(' + cleanText;
-        if (cleanText.length > 3) {
-          cleanText = '${cleanText.substring(0, 3)})${cleanText.substring(3)}';
-        }
-        if (cleanText.length > 9) {
-          cleanText = '${cleanText.substring(0, 9)}-${cleanText.substring(9)}';
-        }
-        if (cleanText.length > 14) {
-          // Limita o tamanho máximo a 14 caracteres com o formato completo
-          cleanText = cleanText.substring(0, 14);
-        }
-      }
-
-      if (cleanText != textTell) {
+      if (formatted != textTell) {
         tellInscricao.value = TextEditingValue(
-          text: cleanText,
-          selection: TextSelection.collapsed(offset: cleanText.length),
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
         );
       }
     });
@@ -175,24 +140,6 @@ class _TelaInscricaoState extends State<TelaInscricao> {
       );
     } else {
       print('Erro ao criar usuário');
-    }
-  }
-
-  //Update Pessoa.
-  Future<void> _updatePessoa() async {
-    Map<String, dynamic> novosDados = {
-      'CPF': '232253463',
-    };
-
-    var resultado = await _pessoaController.update('0', novosDados);
-
-    if (resultado != null) {
-      setState(() {
-        pessoa = [resultado];
-      });
-      print("Pessoa atualizada");
-    } else {
-      print("Erro ao atualizar pessoa");
     }
   }
 

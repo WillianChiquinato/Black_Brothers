@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
 
 import '../API/controller.dart';
+import '../API/models/modelo_pessoa.dart';
+import '../Util/FormatItens.dart';
 
 class MenuPerfil extends StatefulWidget {
   final UsuarioClass? user;
@@ -16,10 +19,21 @@ class MenuPerfil extends StatefulWidget {
 }
 
 class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
+  final dtnascController = TextEditingController();
+  final tellController = TextEditingController();
+  final cpfController = TextEditingController();
+  late GenericController<PessoaClass> _pessoaController;
+
   late UsuarioClass? usuario;
   late TipoPlanoClass? plano;
-
   late TabController _tabController;
+
+  String? usuarioNome;
+  String? usuarioDtNasc;
+  String? usuarioCpf;
+  //Apenas placeholder por enquanto.
+  String? usuarioTell = "(11) 94864-1187";
+  String? usuarioEmail;
 
   final lightOrange = const Color(0xFFFFF1E6);
   final orange = const Color(0xFFFF8C42);
@@ -31,12 +45,123 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
     usuario = widget.user;
     plano = widget.plan;
     super.initState();
+
+    _pessoaController = GenericController(
+      endpoint: 'Pessoa',
+      fromJson: (json) => PessoaClass.fromJson(json),
+    );
+
+    carregarPessoa();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> carregarPessoa() async {
+    final pessoa = await _pessoaController.getOne(usuario!.fK_Pessoa_ID);
+    setState(() {
+      usuarioCpf = pessoa?.CPF;
+      usuarioNome = pessoa?.Nome;
+      usuarioEmail = pessoa?.Email;
+
+      if (pessoa?.DtNasc != null) {
+        DateTime parsedDate = FormatUtil.parseRfc1123(pessoa!.DtNasc!);
+        usuarioDtNasc = DateFormat('dd/MM/yyyy').format(parsedDate);
+        dtnascController.text = usuarioDtNasc!;
+      }
+    });
+
+    //Formatação data de nascimento.
+    dtnascController.text =
+        usuarioDtNasc != null ? FormatUtil.formatDateInput(usuarioDtNasc!) : '';
+
+    dtnascController.addListener(() {
+      final textDataNasc = dtnascController.text;
+      final formatted = FormatUtil.formatDateInput(textDataNasc);
+
+      if (formatted != textDataNasc) {
+        dtnascController.value = TextEditingValue(
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
+        );
+      }
+    });
+
+    //Formatação telefone.
+    tellController.text =
+        usuarioTell != null ? FormatUtil.formatTellInput(usuarioTell!) : '';
+
+    tellController.addListener(() {
+      final textTell = tellController.text;
+      final formatted = FormatUtil.formatTellInput(textTell);
+
+      if (formatted != textTell) {
+        tellController.value = TextEditingValue(
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
+        );
+      }
+    });
+
+    //Formatação CPF.
+    cpfController.text =
+        usuarioCpf != null ? FormatUtil.formatCpfInput(usuarioCpf!) : '';
+
+    cpfController.addListener(() {
+      final texCpf = cpfController.text;
+      final formatted = FormatUtil.formatCpfInput(texCpf);
+
+      if (formatted != texCpf) {
+        cpfController.value = TextEditingValue(
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
+        );
+      }
+    });
+  }
+
+  //Update do perfil.
+  Future<void> _updatePessoa(
+      String newName, String newDate, String newCpf, String newEmail) async {
+    // Verifica se houve alteração
+    if (newName == usuarioNome &&
+        newDate == usuarioDtNasc &&
+        newCpf == usuarioCpf &&
+        newEmail == usuarioEmail) {
+      print("Nada alterado, show message futuramente!");
+      return;
+    }
+
+    var academiaCNPJFixo = "12345678000100";
+
+    try {
+      Map<String, dynamic> novosDados = {
+        'CPF': newCpf,
+        'Nome': newName,
+        'Email': newEmail,
+        'DtNasc': newDate,
+        'FK_Academia_ID': academiaCNPJFixo
+      };
+
+      var resultado = await _pessoaController.update(usuarioCpf!, novosDados);
+
+      if (resultado != null) {
+        setState(() {
+          usuarioCpf = resultado.CPF;
+          usuarioNome = resultado.Nome;
+          usuarioEmail = resultado.Email;
+          usuarioDtNasc = resultado.DtNasc;
+        });
+        print("Pessoa atualizada");
+      } else {
+        print("Erro ao atualizar pessoa");
+      }
+    } catch (e) {
+      print("Erro ao atualizar pessoa: $e");
+    }
   }
 
   @override
@@ -104,11 +229,29 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
           children: [
             _buildSectionTitle("Informações Pessoais"),
             const SizedBox(height: 12),
-            _buildTextField("Nome", 'Renan Silva Pinheiro'),
-            _buildTextField("Data de Nascimento", '30/05/2005'),
-            _buildTextField("CPF", "000.000.000-00"),
-            _buildTextField("Telefone", "(11) 95919-7939"),
-            _buildTextField("Email", "renansilvapinheiro22@gmail.com"),
+            _buildTextField("Nome", usuarioNome ?? "", onChanged: (value) {
+              usuarioNome = value;
+            }),
+            _buildTextField("Data de Nascimento", usuarioDtNasc ?? "",
+                controller: dtnascController, onChanged: (value) {
+              usuarioDtNasc = value;
+            }),
+            _buildTextField(
+              "CPF (Apenas Visualização)",
+              usuarioCpf ?? "",
+              controller: cpfController,
+              onChanged: (value) {
+                usuarioCpf = value;
+              },
+              readOnly: true,
+            ),
+            _buildTextField("Telefone", usuarioTell ?? "",
+                controller: tellController, onChanged: (value) {
+              usuarioTell = value;
+            }),
+            _buildTextField("Email", usuarioEmail ?? "", onChanged: (value) {
+              usuarioEmail = value;
+            }),
             const SizedBox(height: 24),
             _buildSectionTitle("Informações Físicas"),
             const SizedBox(height: 12),
@@ -117,11 +260,20 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
             const SizedBox(height: 28),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  DateTime parsedDate =
+                      DateFormat('dd/MM/yyyy').parse(usuarioDtNasc!);
+                  String apiDate = DateFormat('yyyy-MM-dd').format(parsedDate);
+
+                  await _updatePessoa(
+                      usuarioNome!, apiDate, usuarioCpf!, usuarioEmail!);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: orange,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                   elevation: 2,
                 ),
                 child: Text(
@@ -158,8 +310,11 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.fitness_center, size: 36, color: Colors.black),
-                      Text("100%", style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold)),
+                      const Icon(Icons.fitness_center,
+                          size: 36, color: Colors.black),
+                      Text("100%",
+                          style: GoogleFonts.poppins(
+                              fontSize: 22, fontWeight: FontWeight.bold)),
                       Text("Média", style: GoogleFonts.poppins(color: grey)),
                     ],
                   ),
@@ -176,9 +331,17 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
                 ],
               ),
               const SizedBox(height: 24),
-              _buildStatusCard("Peso:", "MÉDIO", "Precisa alinhar sua dieta para ter um aumento de peso", orange),
+              _buildStatusCard(
+                  "Peso:",
+                  "MÉDIO",
+                  "Precisa alinhar sua dieta para ter um aumento de peso",
+                  orange),
               const SizedBox(height: 16),
-              _buildStatusCard("Gordura Corporal:", "ELEVADO", "Se alimente e treine melhor para mudar esse quadro", Colors.redAccent),
+              _buildStatusCard(
+                  "Gordura Corporal:",
+                  "ELEVADO",
+                  "Se alimente e treine melhor para mudar esse quadro",
+                  Colors.redAccent),
               const SizedBox(height: 24),
               _buildCorpoResumo(),
             ],
@@ -198,7 +361,8 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildStatusCard(String titulo, String nivel, String mensagem, Color cor) {
+  Widget _buildStatusCard(
+      String titulo, String nivel, String mensagem, Color cor) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -217,8 +381,11 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(titulo, style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-                Text(nivel, style: GoogleFonts.poppins(color: cor, fontWeight: FontWeight.bold)),
+                Text(titulo,
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                Text(nivel,
+                    style: GoogleFonts.poppins(
+                        color: cor, fontWeight: FontWeight.bold)),
                 Text(mensagem, style: GoogleFonts.poppins(fontSize: 12)),
               ],
             ),
@@ -237,25 +404,29 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
           children: [
             Column(
               children: [
-                Text("${'1.80'}m", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                Text("${'1.80'}m",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                 Text("Altura", style: GoogleFonts.poppins(fontSize: 12)),
               ],
             ),
             Column(
               children: [
-                Text("${'60.6'} Kg", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                Text("${'60.6'} Kg",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                 Text("Peso", style: GoogleFonts.poppins(fontSize: 12)),
               ],
             ),
             Column(
               children: [
-                Text("${'48'} Kg", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                Text("${'48'} Kg",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                 Text("Massa Magra", style: GoogleFonts.poppins(fontSize: 12)),
               ],
             ),
             Column(
               children: [
-                Text("${'37'}%", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                Text("${'37'}%",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                 Text("Gordura", style: GoogleFonts.poppins(fontSize: 12)),
               ],
             ),
@@ -265,11 +436,20 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildTextField(String label, String initialValue) {
+  Widget _buildTextField(
+    String label,
+    String? initialValue, {
+    TextEditingController? controller,
+    void Function(String)? onChanged,
+    bool readOnly = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
-        initialValue: initialValue,
+        controller: controller,
+        initialValue: controller == null ? initialValue : null,
+        onChanged: onChanged,
+        readOnly: readOnly,
         style: GoogleFonts.poppins(),
         decoration: InputDecoration(
           labelText: label,
