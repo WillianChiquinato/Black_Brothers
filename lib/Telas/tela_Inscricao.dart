@@ -1,12 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:projetosflutter/API/models/modelo_pessoa.dart';
+import 'package:projetosflutter/API/models/modelo_telefone.dart';
+import '../API/models/modelo_usuario.dart';
 import 'package:projetosflutter/Telas/tela_planos.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 
 import '../API/controller.dart';
-import '../API/models/modelo_usuario.dart';
 import '../Util/FormatItens.dart';
 
 class TelaInscricao extends StatefulWidget {
@@ -22,6 +23,9 @@ class _TelaInscricaoState extends State<TelaInscricao> {
 
   late GenericController<UsuarioClass> _usuarioController;
   late List<UsuarioClass> usuario = [];
+
+  late GenericController<TelefoneClass> _telefoneController;
+  late List<TelefoneClass> telefone = [];
 
   final TextEditingController usuarioInscricao = TextEditingController();
   final TextEditingController emailInscricao = TextEditingController();
@@ -42,6 +46,11 @@ class _TelaInscricaoState extends State<TelaInscricao> {
     _usuarioController = GenericController<UsuarioClass>(
       endpoint: 'Usuario',
       fromJson: (json) => UsuarioClass.fromJson(json),
+    );
+
+    _telefoneController = GenericController<TelefoneClass>(
+        endpoint: 'Telefone',
+        fromJson: (json) => TelefoneClass.fromJson(json)
     );
 
     cpfInscricao.addListener(() {
@@ -106,17 +115,50 @@ class _TelaInscricaoState extends State<TelaInscricao> {
     print('Dados enviados: $data');
 
     var resultado = await _pessoaController.create(data);
+    //Resultado Pessoa.
     if (resultado != null) {
       setState(() {
         pessoa = [resultado];
       });
 
-      final pessoaId = resultado.CPF!;
+      final pessoaId = resultado.CPF;
+
+      await _criarTelefone(pessoaId);
       await _criarUsuario(pessoaId);
 
       print('Pessoa criada com sucesso!!');
     } else {
       print('Usuario com esse CPF cadastrado');
+    }
+  }
+
+  Future<void> _criarTelefone(String pessoaId) async {
+    String telefoneLimpo = tellInscricao.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (telefoneLimpo.length != 11) {
+      print("Telefone inválido, precisa ter 11 dígitos");
+      return;
+    }
+
+    Map<String, dynamic> dataTell = {
+      'Telefone01': telefoneLimpo,
+      'Telefone02': telefoneLimpo,
+      'FK_CPF': pessoaId,
+      'FK_TipoTel_ID': 2,
+    };
+
+    print('Telefone enviado: $dataTell');
+
+    var resultadoTell = await _telefoneController.create(dataTell);
+    //Resultado Telefone.
+    if (resultadoTell != null) {
+      setState(() {
+        telefone = [resultadoTell];
+      });
+
+      print('Telefone criado com sucesso!!');
+    } else {
+      print('Telefone não cadastrado');
     }
   }
 

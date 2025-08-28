@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:projetosflutter/API/models/modelo_telefone.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
 
@@ -22,7 +23,10 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   final dtnascController = TextEditingController();
   final tellController = TextEditingController();
   final cpfController = TextEditingController();
+
   late GenericController<PessoaClass> _pessoaController;
+  late GenericController<TelefoneClass> _telefoneController;
+  late TelefoneClass? telefonePessoa;
 
   late UsuarioClass? usuario;
   late TipoPlanoClass? plano;
@@ -31,8 +35,7 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   String? usuarioNome;
   String? usuarioDtNasc;
   String? usuarioCpf;
-  //Apenas placeholder por enquanto.
-  String? usuarioTell = "(11) 94864-1187";
+  String? usuarioTell;
   String? usuarioEmail;
 
   final lightOrange = const Color(0xFFFFF1E6);
@@ -51,6 +54,11 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
       fromJson: (json) => PessoaClass.fromJson(json),
     );
 
+    _telefoneController = GenericController(
+      endpoint: 'Telefone',
+      fromJson: (json) => TelefoneClass.fromJson(json),
+    );
+
     carregarPessoa();
   }
 
@@ -62,13 +70,19 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
 
   Future<void> carregarPessoa() async {
     final pessoa = await _pessoaController.getOne(usuario!.fK_Pessoa_ID);
+
+    final todosTelefones = await _telefoneController.getAll();
+    telefonePessoa =
+        todosTelefones.firstWhere((tel) => tel.FK_CPF == pessoa?.CPF);
+
     setState(() {
       usuarioCpf = pessoa?.CPF;
       usuarioNome = pessoa?.Nome;
       usuarioEmail = pessoa?.Email;
+      usuarioTell = telefonePessoa?.Telefone;
 
       if (pessoa?.DtNasc != null) {
-        DateTime parsedDate = FormatUtil.parseRfc1123(pessoa!.DtNasc!);
+        DateTime parsedDate = FormatUtil.parseRfc1123(pessoa!.DtNasc);
         usuarioDtNasc = DateFormat('dd/MM/yyyy').format(parsedDate);
         dtnascController.text = usuarioDtNasc!;
       }
@@ -124,10 +138,11 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   }
 
   //Update do perfil.
-  Future<void> _updatePessoa(
-      String newName, String newDate, String newCpf, String newEmail) async {
+  Future<void> _updatePessoa(String newName, String newDate, String newCpf,
+      String newEmail, String newTell) async {
     // Verifica se houve alteração
     if (newName == usuarioNome &&
+        newTell == usuarioTell &&
         newDate == usuarioDtNasc &&
         newCpf == usuarioCpf &&
         newEmail == usuarioEmail) {
@@ -136,6 +151,7 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
     }
 
     var academiaCNPJFixo = "12345678000100";
+    String telefoneLimpo = newTell.replaceAll(RegExp(r'[^0-9]'), '');
 
     try {
       Map<String, dynamic> novosDados = {
@@ -146,8 +162,23 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
         'FK_Academia_ID': academiaCNPJFixo
       };
 
+      Map<String, dynamic> novosDadosTell = {
+        'Telefone01': telefoneLimpo,
+        'Telefone02': telefoneLimpo,
+        'FK_CPF': newCpf,
+        'FK_TipoTel_ID': 2,
+      };
+
       var resultado = await _pessoaController.update(usuarioCpf!, novosDados);
 
+      if (telefoneLimpo.length != 11) {
+        print("Telefone inválido, precisa ter 11 dígitos");
+        return;
+      }
+      var resultadoTell = await _telefoneController.update(
+          telefonePessoa!.id.toString(), novosDadosTell);
+
+      //Para Pessoa.
       if (resultado != null) {
         setState(() {
           usuarioCpf = resultado.CPF;
@@ -158,6 +189,16 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
         print("Pessoa atualizada");
       } else {
         print("Erro ao atualizar pessoa");
+      }
+
+      //Para telefone.
+      if (resultado != null) {
+        setState(() {
+          usuarioTell = resultadoTell?.Telefone;
+        });
+        print("Telefone atualizado");
+      } else {
+        print("Erro ao atualizar telefone");
       }
     } catch (e) {
       print("Erro ao atualizar pessoa: $e");
@@ -261,12 +302,29 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  DateTime parsedDate =
-                      DateFormat('dd/MM/yyyy').parse(usuarioDtNasc!);
-                  String apiDate = DateFormat('yyyy-MM-dd').format(parsedDate);
+                  DateTime parsedDate;
+                  print(usuarioDtNasc);
+                  final regexNormal = RegExp(r'^\d{2}/\d{2}/\d{4}$');
 
-                  await _updatePessoa(
-                      usuarioNome!, apiDate, usuarioCpf!, usuarioEmail!);
+                  try {
+                    if (regexNormal.hasMatch(usuarioDtNasc!)) {
+                      // Se for dd/MM/yyyy
+                      parsedDate =
+                          DateFormat('dd/MM/yyyy').parse(usuarioDtNasc!);
+                    } else {
+                      // Caso contrário, tenta parsear como RFC 1123
+                      parsedDate = FormatUtil.parseRfc1123(usuarioDtNasc!);
+                    }
+
+                    String apiDate =
+                        DateFormat('yyyy-MM-dd').format(parsedDate);
+
+                    await _updatePessoa(usuarioNome!, apiDate, usuarioCpf!,
+                        usuarioEmail!, usuarioTell!);
+                  } catch (e) {
+                    print('Erro ao converter a data: $e');
+                    // Aqui você pode tratar o erro ou mostrar mensagem para o usuário
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: orange,

@@ -9,7 +9,6 @@ import 'package:projetosflutter/Telas/menu_comunidade.dart';
 import 'package:projetosflutter/Telas/menu_frequencia.dart';
 import 'package:projetosflutter/Telas/menu_treino.dart';
 import '../API/controller.dart';
-import '../API/models/modelo_menu(TESTE).dart';
 import 'menu_perfil.dart';
 import 'menu_inicial_home.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
