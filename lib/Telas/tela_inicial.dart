@@ -30,6 +30,10 @@ class _MyAppState extends State<TelaInicial> {
   late GenericController<UsuarioClass> _loginController;
   late List<UsuarioClass> usuario = [];
 
+  final Color lightOrange = const Color(0xFFFFF1E6);
+  final Color orange = const Color(0xFFFF8C42);
+  final Color grey = const Color(0xFF333333);
+
   @override
   void initState() {
     super.initState();
@@ -100,23 +104,69 @@ class _MyAppState extends State<TelaInicial> {
         key: _scaffoldKey,
         appBar: AppBar(
           toolbarHeight: 40,
-          backgroundColor: orange,
+          backgroundColor: grey,
         ),
         body: Container(
           //Filtrando a cor com o RGB, modelando com o fromARGB, mas nao da pra pegar a cor, tem que pegar externa
-          color: orange,
+          color: grey,
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
               // Vai ser da imagem
               Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: Container(
-                  color: Colors.transparent,
-                  height: 140,
-                  width: 140,
-                  child: Image.asset('Assets/Black_Brother.png',
-                      fit: BoxFit.cover),
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Logo
+                    SizedBox(
+                        height: 110,
+                        width: 80,
+                        child: Image.asset('Assets/logo-bb.png')),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'BLACK',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 55,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontFamily: 'Poppins',
+                              height: 1,
+                            ),
+                          ),
+                          const Text(
+                            'BROTHERS',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 55,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontFamily: 'Poppins',
+                              height: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    Text(
+                      'ACADEMIA',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 27,
+                        color: orange,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 41),
+                  ],
                 ),
               ),
 
@@ -127,21 +177,26 @@ class _MyAppState extends State<TelaInicial> {
                     width: 330,
                     child: TextField(
                       controller: nomeUsuario,
-                      decoration: const InputDecoration(
-                        hintText: 'USUÁRIO',
-                        hintStyle: TextStyle(
-                          fontSize: 13.0,
-                          fontFamily: 'PadraoLoginBB',
+                      decoration: InputDecoration(
+                        hintText: 'Usuário',
+                        hintStyle: const TextStyle(
+                          fontSize: 16.0,
+                          fontFamily: 'Poppins',
+                          color: Colors.white70,
                         ),
                         filled: true,
-                        fillColor: Colors.white70,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        fillColor: Colors.black45,
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderSide: BorderSide.none,
                         ),
-                        contentPadding: EdgeInsets.only(
+                        contentPadding: const EdgeInsets.only(
                             top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
                       ),
-                      style: const TextStyle(fontFamily: 'PadraoLoginBB'),
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        color: Colors.white,
+                      ),
                     ),
                   )),
               Padding(
@@ -152,30 +207,56 @@ class _MyAppState extends State<TelaInicial> {
                     child: TextField(
                       controller: nomeSenha,
                       obscureText: _obscuraSenha,
-                      decoration: const InputDecoration(
-                        hintText: 'SENHA',
+                      decoration: InputDecoration(
+                        hintText: 'Senha',
                         hintStyle: TextStyle(
-                          fontSize: 13.0,
-                          fontFamily: 'PadraoLoginBB',
+                          fontSize: 16.0,
+                          fontFamily: 'Poppins',
+                          color: Colors.white70,
                         ),
                         filled: true,
-                        fillColor: Colors.white70,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        fillColor: Colors.black45,
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderSide: BorderSide.none,
                         ),
-                        contentPadding: EdgeInsets.only(
+                        contentPadding: const EdgeInsets.only(
                             top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
                       ),
-                      style: const TextStyle(fontFamily: 'PadraoLoginBB'),
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        color: Colors.white,
+                      ),
                     ),
                   )),
+              const SizedBox(height: 11),
+
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 10.0,
+                    bottom: 30.0,
+                  ),
+                  child: Text(
+                    'Esqueceu sua senha?',
+                    style: TextStyle(
+                      color: orange,
+                      fontSize: 14,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ),
+              ),
               Builder(
                 builder: (context) => Padding(
-                  padding: const EdgeInsets.all(25.0),
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(300, 65),
-                      backgroundColor: const Color.fromARGB(255, 88, 48, 11),
+                      backgroundColor: orange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                     ),
                     onPressed: () async {
                       await _buscarUsuario();
@@ -211,73 +292,48 @@ class _MyAppState extends State<TelaInicial> {
                     child: const Text(
                       'ENTRAR',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ),
-              ),
-
-              Container(
-                color: orange,
-                height: 50,
-                width: double.infinity,
-                child: const Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color: Colors.white,
-                        thickness: 2,
-                        indent: 30,
-                        endIndent: 10,
-                      ),
-                    ),
-                    Text(
-                      'OU',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: Colors.white,
-                        thickness: 2,
-                        indent: 10,
-                        endIndent: 30,
-                      ),
-                    ),
-                  ],
                 ),
               ),
               //Para o botao e o Text para adicinar texto e TEXSTYLE para estilizaçao
-              Builder(
-                builder: (context) => Padding(
-                  padding: const EdgeInsets.only(left: 25.0, right: 25.0),
-                  //Vai para telaIncricao();
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(300, 65),
-                        backgroundColor:
-                            const Color.fromARGB(255, 255, 234, 209)),
-                    onPressed: () async {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const TelaInscricao()));
-                    },
-                    child: const Text(
-                      'Inscrever-se',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
+              Padding(
+                padding: const EdgeInsets.only(top: 25.0),
+                // AJUSTE 1: Adicionei espaçamento no topo
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    // AJUSTE 2: Centralizei o conteúdo na linha
+                    children: [
+                      const Text(
+                        'Não tem uma conta? ',
+                        style: TextStyle(
+                          color: Colors.white54, // AJUSTE 3: Cor do texto
+                          fontSize: 14,
+                          fontFamily: 'Poppins'
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () async {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const TelaInscricao()));
+                        },
+                        child: Text(
+                          'Crie uma agora',
+                          style: TextStyle(
+                              color: orange,
+                              fontSize: 14,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ]),
               ),
             ],
           ),
