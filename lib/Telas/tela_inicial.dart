@@ -307,12 +307,11 @@ class _MyAppState extends State<TelaInicial> {
                 // AJUSTE 1: Adicionei espaçamento no topo
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    // AJUSTE 2: Centralizei o conteúdo na linha
                     children: [
                       const Text(
                         'Não tem uma conta? ',
                         style: TextStyle(
-                          color: Colors.white54, // AJUSTE 3: Cor do texto
+                          color: Colors.white54,
                           fontSize: 14,
                           fontFamily: 'Poppins'
                         ),

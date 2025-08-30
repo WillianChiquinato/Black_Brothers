@@ -35,6 +35,10 @@ class _TelaInscricaoState extends State<TelaInscricao> {
   final TextEditingController senhaInscricao = TextEditingController();
   bool IsChecked = false;
 
+  final Color lightOrange = const Color(0xFFFFF1E6);
+  final Color orange = const Color(0xFFFF8C42);
+  final Color grey = const Color(0xFF333333);
+
   @override
   void initState() {
     super.initState();
@@ -196,21 +200,21 @@ class _TelaInscricaoState extends State<TelaInscricao> {
           child: Scaffold(
               appBar: AppBar(
                 toolbarHeight: 40,
-                backgroundColor: const Color.fromARGB(255, 210, 125, 43),
+                backgroundColor: grey,
               ),
               body: Center(
                   child: Container(
-                      color: const Color.fromARGB(255, 210, 125, 43),
+                      color: grey,
                       child:
                           ListView(scrollDirection: Axis.vertical, children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 30, bottom: 25),
                           child: Container(
                             color: Colors.transparent,
-                            height: 100,
-                            width: 200,
+                            height: 50,
+                            width: 50,
                             child: Image.asset(
-                              'Assets/Black_Brother.png',
+                              'Assets/logo-bb.png',
                             ),
                           ),
                         ),
@@ -233,18 +237,21 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(25)),
+                                      BorderRadius.all(Radius.circular(15)),
                                 ),
-                                hintText: 'USUÁRIO',
+                                hintText: 'Usuário',
                                 hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  fontFamily: 'PadraoLoginBB',
+                                  fontSize: 15.0,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white70,
                                 ),
-                                fillColor: Colors.white70,
+                                fillColor: Colors.black45,
                                 filled: true,
                               ),
-                              style:
-                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -270,18 +277,21 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(25)),
+                                      BorderRadius.all(Radius.circular(15)),
                                 ),
-                                hintText: 'E-MAIL',
+                                hintText: 'E-mail',
                                 hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  fontFamily: 'PadraoLoginBB',
+                                  fontSize: 15.0,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white70,
                                 ),
-                                fillColor: Colors.white70,
+                                fillColor: Colors.black45,
                                 filled: true,
                               ),
-                              style:
-                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -306,18 +316,21 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(25)),
+                                      BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'CPF',
                                 hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  fontFamily: 'PadraoLoginBB',
+                                  fontSize: 15.0,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white70,
                                 ),
-                                fillColor: Colors.white70,
+                                fillColor: Colors.black45,
                                 filled: true,
                               ),
-                              style:
-                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -342,18 +355,21 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(25)),
+                                      BorderRadius.all(Radius.circular(15)),
                                 ),
-                                hintText: 'DATA DE NASCIMENTO',
+                                hintText: 'Data de nascimento',
                                 hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  fontFamily: 'PadraoLoginBB',
+                                  fontSize: 15.0,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white70,
                                 ),
-                                fillColor: Colors.white70,
+                                fillColor: Colors.black45,
                                 filled: true,
                               ),
-                              style:
-                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -378,18 +394,21 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(25)),
+                                      BorderRadius.all(Radius.circular(15)),
                                 ),
-                                hintText: 'TELEFONE (DDD)',
+                                hintText: 'Telefone (DDD)',
                                 hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  fontFamily: 'PadraoLoginBB',
+                                  fontSize: 15.0,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white70,
                                 ),
-                                fillColor: Colors.white70,
+                                fillColor: Colors.black45,
                                 filled: true,
                               ),
-                              style:
-                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -413,18 +432,21 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(25)),
+                                      BorderRadius.all(Radius.circular(15)),
                                 ),
-                                hintText: 'SENHA',
+                                hintText: 'Senha',
                                 hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  fontFamily: 'PadraoLoginBB',
+                                  fontSize: 15.0,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white70,
                                 ),
-                                fillColor: Colors.white70,
+                                fillColor: Colors.black45,
                                 filled: true,
                               ),
-                              style:
-                                  const TextStyle(fontFamily: 'PadraoLoginBB'),
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -445,7 +467,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                     },
                                     activeColor: Colors.white,
                                     checkColor: Colors.black,
-                                    side: const BorderSide(color: Colors.black),
+                                    side: const BorderSide(color: Colors.white70),
                                   ),
                                   RichText(
                                     text: TextSpan(
@@ -453,8 +475,9 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                         const TextSpan(
                                           text: 'Termos e ',
                                           style: TextStyle(
-                                            color: Colors.black,
+                                            color: Colors.white70,
                                             fontSize: 15,
+                                            fontFamily: 'Poppins',
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -463,6 +486,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                             style: TextStyle(
                                               color: Colors.blue[200],
                                               fontSize: 15,
+                                              fontFamily: 'Poppins',
                                               fontWeight: FontWeight.bold,
                                             ),
                                             recognizer: TapGestureRecognizer()
@@ -482,6 +506,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 12),
                               Column(
                                 children: [
                                   Padding(
@@ -493,10 +518,10 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                         style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          minimumSize: const Size(200, 40),
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 75, 174, 79),
+                                                  BorderRadius.circular(15)),
+                                          minimumSize: const Size(500, 60),
+                                          backgroundColor: Colors.green,
+                                          disabledBackgroundColor: orange,
                                         ),
                                         onPressed: IsChecked
                                             ? () async {
@@ -533,8 +558,9 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                         child: const Text(
                                           'INSCREVER-SE',
                                           style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 17,
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                            fontFamily: 'Poppins',
                                             fontWeight: FontWeight.bold,
                                           ),
                                           textAlign: TextAlign.center,
