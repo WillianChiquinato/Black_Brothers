@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projetosflutter/API/models/modelo_aluno.dart';
 import 'package:projetosflutter/Telas/tela_inicial.dart';
-
 import '../API/controller.dart';
 
 class TelaPlanos extends StatefulWidget {
@@ -17,10 +16,40 @@ class _TelaPlanosState extends State<TelaPlanos> {
   late GenericController<AlunoClass> _alunoController;
   late List<AlunoClass> aluno = [];
 
+  //page controller par a animacao dos cards.
+  final PageController _pageController = PageController(viewportFraction: 0.85);
+
+  final Color lightOrange = const Color(0xFFFFF1E6);
+  final Color orange = const Color(0xFFFF8C42);
+  final Color grey = const Color(0xFF333333);
+
+  final List<Map<String, dynamic>> planos = [
+    {
+      'id': 1,
+      'nome': 'BASIC',
+      'imagem': 'Assets/plan_basic.jpg',
+      'preco': 'R\$ 69,90/mês',
+      'beneficios': '+ 12 Meses Fidelidade + DashBoard + Treinos Opcionais',
+    },
+    {
+      'id': 2,
+      'nome': 'PLUS',
+      'imagem': 'Assets/plan_plus.jpg',
+      'preco': 'R\$ 84,90/mês',
+      'beneficios': '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses',
+    },
+    {
+      'id': 3,
+      'nome': 'GOLD',
+      'imagem': 'Assets/plan_gold.jpg',
+      'preco': 'R\$ 119,90/mês',
+      'beneficios': '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses + consulta com nutricionista a cada 2 meses + acesso a todas as filiais da black brothers',
+    }
+  ];
+
   @override
   void initState() {
     super.initState();
-
     _alunoController = GenericController<AlunoClass>(
       endpoint: 'Aluno',
       fromJson: (json) => AlunoClass.fromJson(json),
@@ -36,7 +65,6 @@ class _TelaPlanosState extends State<TelaPlanos> {
     var resultado = await _alunoController.create(alunoData);
     if (resultado != null) {
       print('Aluno criado com sucesso!');
-      // Voltar para login
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => TelaInicial()),
@@ -47,282 +75,134 @@ class _TelaPlanosState extends State<TelaPlanos> {
     }
   }
 
+  Widget _buildPlanCard(Map<String, dynamic> plano, BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 100.0),
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black45,
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              plano['nome'],
+              style: TextStyle(fontSize: 30, color: Colors.white),
+            ),
+            SizedBox(height: 10),
+            Container(
+              height: 150,
+              width: 150,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: AssetImage(plano['imagem']),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              plano['preco'],
+              style: TextStyle(fontSize: 24, color: Colors.white),
+            ),
+            SizedBox(height: 10),
+            Text(
+              plano['beneficios'],
+              style: TextStyle(fontSize: 18, color: Colors.white70),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                await _criarAluno(widget.usuarioId, plano['id']);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Assinatura realizada com sucesso!'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 4, 220, 0),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 3),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Assinar',
+                style: TextStyle(fontSize: 20, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
-      style: const TextStyle(fontFamily: 'BlackBrothers'),
+      style: const TextStyle(fontFamily: 'Poppins'),
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 40,
-          backgroundColor: const Color.fromARGB(255, 210, 125, 43),
+          backgroundColor: grey,
         ),
         body: Container(
-          color: const Color.fromARGB(255, 210, 125, 43),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 10, left: 40, right: 40),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Antes de concluir o cadastro, escolha um plano',
-                  style: TextStyle(fontSize: 23, color: Colors.white),
-                ),
-                Container(
-                  height: 600,
-                  width: 600,
-                  decoration: ShapeDecoration(
-                    color: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(color: Colors.white, width: 4.0),
-                      borderRadius: BorderRadius.circular(10),
+          color: grey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 40.0, right: 40.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'BLACK BROTHERS',
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFFF8C42),
+                          fontFamily: 'Poppins'),
+                      textAlign: TextAlign.start,
                     ),
-                  ),
-                  child: ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.all(8.0),
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'BASIC',
-                              style:
-                                  TextStyle(fontSize: 30, color: Colors.white),
-                            ),
-                            const SizedBox(height: 10),
-                            Container(
-                              height: 150,
-                              width: 150,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: const DecorationImage(
-                                  image: AssetImage('Assets/plan_basic.jpg'),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              'R\$ 69,90/mês',
-                              style:
-                                  TextStyle(fontSize: 24, color: Colors.white),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              '+ 12 Meses Fidelidade + DashBoard + Treinos Opcionais',
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.white70),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: () async {
-                                await _criarAluno(widget.usuarioId, 1);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Assinatura realizada com sucesso!'),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                                await Future.delayed(
-                                    const Duration(seconds: 1));
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => TelaInicial()),
-                                  (route) => false,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    const Color.fromARGB(255, 4, 220, 0),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 3),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text(
-                                'Assinar',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
+                    SizedBox(height: 5),
+                    const Text(
+                      'Escolha o seu plano de treino',
+                      style: TextStyle(fontSize: 18,
+                          color: Colors.white70,
+                          fontFamily: 'Poppins'
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(8.0),
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'PLUS',
-                              style:
-                                  TextStyle(fontSize: 30, color: Colors.white),
-                            ),
-                            const SizedBox(height: 10),
-                            Container(
-                              height: 150,
-                              width: 150,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: const DecorationImage(
-                                  image: AssetImage('Assets/plan_plus.jpg'),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              'R\$ 84,90/mês',
-                              style:
-                                  TextStyle(fontSize: 24, color: Colors.white),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses ',
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.white70),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: () async {
-                                await _criarAluno(widget.usuarioId, 2);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Assinatura realizada com sucesso!'),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                                await Future.delayed(
-                                    const Duration(seconds: 1));
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => TelaInicial()),
-                                  (route) => false,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    const Color.fromARGB(255, 4, 220, 0),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 3),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text(
-                                'Assinar',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(8.0),
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'GOLD',
-                              style:
-                                  TextStyle(fontSize: 30, color: Colors.white),
-                            ),
-                            const SizedBox(height: 10),
-                            Container(
-                              height: 150,
-                              width: 150,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: const DecorationImage(
-                                  image: AssetImage('Assets/plan_gold.jpg'),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              'R\$ 119,90/mês',
-                              style:
-                                  TextStyle(fontSize: 24, color: Colors.white),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses + consulta com nutricionista a cada 2 meses + acesso a todas as filiais da black brothers ',
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.white70),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: () async {
-                                await _criarAluno(widget.usuarioId, 3);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Assinatura realizada com sucesso!'),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                                await Future.delayed(
-                                    const Duration(seconds: 1));
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => TelaInicial()),
-                                  (route) => false,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    const Color.fromARGB(255, 4, 220, 0),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 3),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text(
-                                'Assinar',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              SizedBox(height: 20),
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: planos.length,
+                  itemBuilder: (context, index) {
+                    final plano = planos[index];
+                    return _buildPlanCard(plano, context);
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),
