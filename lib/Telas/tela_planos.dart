@@ -77,11 +77,11 @@ class _TelaPlanosState extends State<TelaPlanos> {
 
   Widget _buildPlanCard(Map<String, dynamic> plano, BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 100.0),
+      margin: const EdgeInsets.symmetric(horizontal: 10.0),
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black45,
@@ -95,11 +95,22 @@ class _TelaPlanosState extends State<TelaPlanos> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              plano['nome'],
-              style: TextStyle(fontSize: 30, color: Colors.white),
+            ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: [Colors.orangeAccent, Colors.deepOrange],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: Text(
+                plano['nome'],
+                style: TextStyle(
+                  fontSize: 34,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
             Container(
               height: 150,
               width: 150,
@@ -114,14 +125,49 @@ class _TelaPlanosState extends State<TelaPlanos> {
             SizedBox(height: 10),
             Text(
               plano['preco'],
-              style: TextStyle(fontSize: 24, color: Colors.white),
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    blurRadius: 6,
+                    color: Colors.black,
+                    offset: Offset(2, 2),
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: 10),
-            Text(
-              plano['beneficios'],
-              style: TextStyle(fontSize: 18, color: Colors.white70),
-              textAlign: TextAlign.center,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: (plano['beneficios'] as String)
+                  .split('+')
+                  .where((b) => b.trim().isNotEmpty)
+                  .map((b) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.orangeAccent,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        b.trim(),
+                        style: const TextStyle(fontSize: 18, color: Colors.white70),
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+                  .toList(),
             ),
+
+
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
@@ -163,7 +209,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
         body: Container(
           color: grey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
@@ -191,8 +237,9 @@ class _TelaPlanosState extends State<TelaPlanos> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
-              Expanded(
+              SizedBox(height: 30),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.7,
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: planos.length,
