@@ -35,6 +35,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_secure_storage: ^9.2.4
   google_fonts: ^6.1.0
   lucide_icons: 0.257.0
 

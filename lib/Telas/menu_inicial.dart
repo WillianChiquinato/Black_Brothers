@@ -63,37 +63,42 @@ class _MenuInicialState extends State<MenuInicial> {
   }
 
   Future<void> _carregarDadosDoAlunoLogado(int idUsuario) async {
-    // Busca o aluno com base no ID do usuário logado
     final alunos =
         await _alunoController.getByQuery('FK_Usuario_ID=$idUsuario');
 
     if (alunos.isNotEmpty) {
       final aluno = alunos.first;
 
-      final usuario =
-          await _usuarioController.getOne(aluno.FK_Usuarios_ID.toString());
+      if (aluno.FK_Usuarios_ID != null) {
+        final usuario =
+            await _usuarioController.getOne(aluno.FK_Usuarios_ID.toString());
 
-      TipoPlanoClass? tipoPlano;
+        TipoPlanoClass? tipoPlano;
 
-      if (aluno.FK_Planos_ID != null) {
-        final plano =
-            await _planoController.getOne(aluno.FK_Planos_ID.toString());
+        if (aluno.FK_Planos_ID != null) {
+          final plano =
+              await _planoController.getOne(aluno.FK_Planos_ID.toString());
 
-        if (plano != null && plano.Fk_TipoPlano_ID != null) {
-          tipoPlano = await _tipoPlanoController
-              .getOne(plano.Fk_TipoPlano_ID.toString());
+          if (plano != null && plano.Fk_TipoPlano_ID != null) {
+            tipoPlano = await _tipoPlanoController
+                .getOne(plano.Fk_TipoPlano_ID.toString());
+          }
         }
-      }
 
-      setState(() {
-        userData = usuario;
-        tipoPlanoData = tipoPlano;
-        _carregando = false;
-        print("Usuário: ${userData?.login}");
-        print("Plano: ${tipoPlanoData?.nomePlano}");
-      });
+        setState(() {
+          userData = usuario;
+          tipoPlanoData = tipoPlano;
+          _carregando = false;
+          print("Usuário: ${userData?.login}");
+          print("Plano: ${tipoPlanoData?.nomePlano}");
+        });
+      } else {
+        print('FK_Usuarios_ID do aluno é null');
+        setState(() => _carregando = false);
+      }
     } else {
       print('Nenhum aluno encontrado para o ID de usuário $idUsuario');
+      setState(() => _carregando = false);
     }
   }
 

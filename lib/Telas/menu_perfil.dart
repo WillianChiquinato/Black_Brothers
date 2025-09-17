@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:projetosflutter/API/models/modelo_aluno.dart';
 import 'package:projetosflutter/API/models/modelo_telefone.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
@@ -26,10 +27,12 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
 
   late GenericController<PessoaClass> _pessoaController;
   late GenericController<TelefoneClass> _telefoneController;
+  late GenericController<AlunoClass> _alunoController;
   late TelefoneClass? telefonePessoa;
 
   late UsuarioClass? usuario;
   late TipoPlanoClass? plano;
+  late AlunoClass? aluno;
   late TabController _tabController;
 
   String? usuarioNome;
@@ -37,6 +40,9 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   String? usuarioCpf;
   String? usuarioTell;
   String? usuarioEmail;
+
+  double? altura;
+  double? peso;
 
   final lightOrange = const Color(0xFFFFF1E6);
   final orange = const Color(0xFFFF8C42);
@@ -59,6 +65,11 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
       fromJson: (json) => TelefoneClass.fromJson(json),
     );
 
+    _alunoController = GenericController(
+      endpoint: 'Aluno',
+      fromJson: (json) => AlunoClass.fromJson(json),
+    );
+
     carregarPessoa();
   }
 
@@ -70,6 +81,9 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
 
   Future<void> carregarPessoa() async {
     final pessoa = await _pessoaController.getOne(usuario!.fK_Pessoa_ID);
+    var apiAluUserId = usuario!.id;
+    final alunos =
+        await _alunoController.getByQuery('FK_Usuario_ID=$apiAluUserId');
 
     final todosTelefones = await _telefoneController.getAll();
     telefonePessoa =
@@ -80,6 +94,16 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
       usuarioNome = pessoa?.Nome;
       usuarioEmail = pessoa?.Email;
       usuarioTell = telefonePessoa?.Telefone;
+
+      if (alunos.isNotEmpty) {
+        aluno = alunos.first;
+        altura = aluno!.Altura;
+        peso = aluno!.Peso;
+      } else {
+        aluno = null;
+        altura = null;
+        peso = null;
+      }
 
       if (pessoa?.DtNasc != null) {
         DateTime parsedDate = FormatUtil.parseRfc1123(pessoa!.DtNasc);
@@ -138,14 +162,22 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   }
 
   //Update do perfil.
-  Future<void> _updatePessoa(String newName, String newDate, String newCpf,
-      String newEmail, String newTell) async {
+  Future<void> _updatePessoa(
+      String newName,
+      String newDate,
+      String newCpf,
+      String newEmail,
+      String newTell,
+      double newHeight,
+      double newWeight) async {
     // Verifica se houve alteração
     if (newName == usuarioNome &&
         newTell == usuarioTell &&
         newDate == usuarioDtNasc &&
         newCpf == usuarioCpf &&
-        newEmail == usuarioEmail) {
+        newEmail == usuarioEmail &&
+        newHeight == (altura ?? 0.0) &&
+        newWeight == (peso ?? 0.0)) {
       print("Nada alterado, show message futuramente!");
       return;
     }
@@ -169,6 +201,11 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
         'FK_TipoTel_ID': 2,
       };
 
+      Map<String, dynamic> novoDadosAluno = {
+        'altura': newHeight,
+        'peso': newWeight,
+      };
+
       var resultado = await _pessoaController.update(usuarioCpf!, novosDados);
 
       if (telefoneLimpo.length != 11) {
@@ -177,6 +214,19 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
       }
       var resultadoTell = await _telefoneController.update(
           telefonePessoa!.id.toString(), novosDadosTell);
+
+      final takeMatricula =
+          await _alunoController.getByQuery('FK_Usuario_ID=${usuario!.id}');
+      if (takeMatricula.isEmpty) {
+        print('Nenhum aluno encontrado para este usuário');
+        return;
+      }
+
+      final alunoEncontrado = takeMatricula.first;
+      var resultadoAluno = await _alunoController.update(
+        alunoEncontrado.Matricula.toString(),
+        novoDadosAluno,
+      );
 
       //Para Pessoa.
       if (resultado != null) {
@@ -199,6 +249,14 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
         print("Telefone atualizado");
       } else {
         print("Erro ao atualizar telefone");
+      }
+
+      //Para Aluno.
+      if (resultado != null) {
+        setState(() {
+          altura = resultadoAluno?.Altura;
+          peso = resultadoAluno?.Peso;
+        });
       }
     } catch (e) {
       print("Erro ao atualizar pessoa: $e");
@@ -296,8 +354,13 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
             const SizedBox(height: 24),
             _buildSectionTitle("Informações Físicas"),
             const SizedBox(height: 12),
-            _buildTextField("Altura", '1.80m'),
-            _buildTextField("Peso", '60.6 Kg'),
+            _buildTextField("Altura", altura?.toString() ?? '',
+                onChanged: (value) {
+              altura = double.tryParse(value);
+            }),
+            _buildTextField("Peso", peso?.toString() ?? '', onChanged: (value) {
+              peso = double.tryParse(value);
+            }),
             const SizedBox(height: 28),
             Center(
               child: ElevatedButton(
@@ -319,8 +382,14 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
                     String apiDate =
                         DateFormat('yyyy-MM-dd').format(parsedDate);
 
-                    await _updatePessoa(usuarioNome!, apiDate, usuarioCpf!,
-                        usuarioEmail!, usuarioTell!);
+                    await _updatePessoa(
+                        usuarioNome!,
+                        apiDate,
+                        usuarioCpf!,
+                        usuarioEmail!,
+                        usuarioTell!,
+                        altura ?? 0.0,
+                        peso ?? 0.0);
                   } catch (e) {
                     print('Erro ao converter a data: $e');
                     // Aqui você pode tratar o erro ou mostrar mensagem para o usuário

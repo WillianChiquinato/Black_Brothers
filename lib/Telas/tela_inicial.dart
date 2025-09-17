@@ -60,8 +60,10 @@ class _MyAppState extends State<TelaInicial> {
     }
   }
 
-  void FazendoLogin(String login, String senha) async {
+  Future<int?> FazendoLogin(String login, String senha) async {
+    print('LOGIN: $login, SENHA: $senha');
     int? idUsuario = await _loginController.loginUsuario(login, senha);
+    print("JSON: $idUsuario");
 
     if (idUsuario != null) {
       print('Login OK! ID do usuário: $idUsuario');
@@ -259,34 +261,12 @@ class _MyAppState extends State<TelaInicial> {
                       ),
                     ),
                     onPressed: () async {
-                      await _buscarUsuario();
-
                       final usuarioInput = nomeUsuario.text.trim();
                       final senhaInput = nomeSenha.text.trim();
 
-                      final usuarioEncontrado = usuario.firstWhere(
-                        (u) =>
-                            u != null &&
-                            u.login == usuarioInput &&
-                            u.senha == senhaInput,
-                        orElse: () => UsuarioClass(
-                          id: -1,
-                          login: '',
-                          senha: '',
-                          fK_Pessoa_ID: '',
-                        ),
-                      );
-
-                      if (usuarioEncontrado != null &&
-                          usuarioEncontrado.id != -1) {
-                        FazendoLogin(usuarioInput, senhaInput);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Usuário ou senha inválidos'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
+                      // Chama a função de login que envia dados para a API.
+                      if (usuarioInput != null && senhaInput != null) {
+                        await FazendoLogin(usuarioInput, senhaInput);
                       }
                     },
                     child: const Text(
@@ -305,34 +285,32 @@ class _MyAppState extends State<TelaInicial> {
               Padding(
                 padding: const EdgeInsets.only(top: 25.0),
                 // AJUSTE 1: Adicionei espaçamento no topo
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Não tem uma conta? ',
-                        style: TextStyle(
-                          color: Colors.white54,
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  const Text(
+                    'Não tem uma conta? ',
+                    style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontFamily: 'Poppins'),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const TelaInscricao()));
+                    },
+                    child: Text(
+                      'Crie uma agora',
+                      style: TextStyle(
+                          color: orange,
                           fontSize: 14,
-                          fontFamily: 'Poppins'
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const TelaInscricao()));
-                        },
-                        child: Text(
-                          'Crie uma agora',
-                          style: TextStyle(
-                              color: orange,
-                              fontSize: 14,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ]),
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ]),
               ),
             ],
           ),

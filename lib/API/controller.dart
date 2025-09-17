@@ -1,5 +1,6 @@
 //Conectar Screen com API;
 import 'dart:convert';
+import 'package:projetosflutter/API/Storage/JWT-Auth.dart';
 
 import 'package:dio/dio.dart';
 import 'package:projetosflutter/API/Json/api_services.dart';
@@ -9,6 +10,9 @@ class GenericController<T> {
   final String endpoint;
   final T Function(Map<String, dynamic>) fromJson;
   final ApiServices _api = ApiServices();
+
+  //Token JWT
+  final TokenStorage _tokenStorage = TokenStorage();
 
   //Gerando construtor.
   GenericController({required this.endpoint, required this.fromJson});
@@ -91,7 +95,15 @@ class GenericController<T> {
       if (response.statusCode == 200) {
         final data = response.data;
 
-        return data['ID_Usuario'] as int?;
+        // Salva o token JWT.
+        String token = data['token'];
+        await _tokenStorage.saveToken(token);
+
+        final usuarioData = data['usuario'];
+        final idUsuario = usuarioData['ID_Usuario'] as int?;
+
+        print('ID_Usuario: $idUsuario');
+        return idUsuario;
       } else {
         print('Erro: ${response.statusCode}');
         return null;
