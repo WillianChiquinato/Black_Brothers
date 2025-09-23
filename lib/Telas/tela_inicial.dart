@@ -315,7 +315,7 @@ class _MyAppState extends State<TelaInicial> {
             ],
           ),
         ),
-        floatingActionButton: const AlertaEntrar(text: 'Ola'),
+        floatingActionButton: const AlertaEntrar(text: 'Whatsapp'),
       ),
     );
   }

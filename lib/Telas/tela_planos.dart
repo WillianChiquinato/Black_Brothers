@@ -1,20 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:projetosflutter/API/Models/modelo_planos.dart';
 import 'package:projetosflutter/API/models/modelo_aluno.dart';
 import 'package:projetosflutter/Telas/tela_inicial.dart';
+import '../API/Models/modelo_pessoa.dart';
+import '../API/Models/modelo_telefone.dart';
+import '../API/Models/modelo_usuario.dart';
 import '../API/controller.dart';
 
 class TelaPlanos extends StatefulWidget {
-  final int usuarioId;
+  final String dtNascUser;
+  final String cpfUser;
+  final String nomeUser;
+  final String senhaUser;
+  final String tellUser;
+  final String emailUser;
 
-  const TelaPlanos({super.key, required this.usuarioId});
+  const TelaPlanos(
+      {super.key,
+      required this.dtNascUser,
+      required this.cpfUser,
+      required this.nomeUser,
+      required this.senhaUser,
+      required this.tellUser,
+      required this.emailUser});
 
   @override
   State<TelaPlanos> createState() => _TelaPlanosState();
 }
 
 class _TelaPlanosState extends State<TelaPlanos> {
-  late GenericController<AlunoClass> _alunoController;
-  late List<AlunoClass> aluno = [];
+  late int usuarioId;
+
+  late GenericController<PlanoClass> _planoController;
+  late List<PlanoClass> plano = [];
+
+  late GenericController<PessoaClass> _pessoaController;
+  late List<PessoaClass> pessoa = [];
+
+  late GenericController<UsuarioClass> _usuarioController;
+  late List<UsuarioClass> usuario = [];
+
+  late GenericController<TelefoneClass> _telefoneController;
+  late List<TelefoneClass> telefone = [];
 
   //page controller par a animacao dos cards.
   final PageController _pageController = PageController(viewportFraction: 0.85);
@@ -36,42 +64,158 @@ class _TelaPlanosState extends State<TelaPlanos> {
       'nome': 'PLUS',
       'imagem': 'Assets/plan_plus.jpg',
       'preco': 'R\$ 84,90/mês',
-      'beneficios': '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses',
+      'beneficios':
+          '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses',
     },
     {
       'id': 3,
       'nome': 'GOLD',
       'imagem': 'Assets/plan_gold.jpg',
       'preco': 'R\$ 119,90/mês',
-      'beneficios': '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses + consulta com nutricionista a cada 2 meses + acesso a todas as filiais da black brothers',
+      'beneficios':
+          '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses + consulta com nutricionista a cada 2 meses + acesso a todas as filiais da black brothers',
     }
   ];
 
   @override
   void initState() {
     super.initState();
-    _alunoController = GenericController<AlunoClass>(
-      endpoint: 'Aluno',
-      fromJson: (json) => AlunoClass.fromJson(json),
+    _planoController = GenericController<PlanoClass>(
+      endpoint: 'Plano/register',
+      fromJson: (json) => PlanoClass.fromJson(json),
     );
+
+    _pessoaController = GenericController(
+      endpoint: 'Pessoa/register',
+      fromJson: (json) => PessoaClass.fromJson(json),
+    );
+
+    _usuarioController = GenericController<UsuarioClass>(
+      endpoint: 'Usuario/register',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
+
+    _telefoneController = GenericController<TelefoneClass>(
+        endpoint: 'Telefone/register',
+        fromJson: (json) => TelefoneClass.fromJson(json));
   }
 
-  Future<void> _criarAluno(int usuarioId, int planoId) async {
-    Map<String, dynamic> alunoData = {
-      'FK_Usuario_ID': usuarioId,
-      'FK_Planos_ID': planoId
+  //Criar usuário.
+  Future<void> _criarPessoa() async {
+    String? dataFormatada;
+
+    try {
+      // Converte de dd/MM/yyyy para yyyy-MM-dd
+      DateTime data = DateFormat('dd/MM/yyyy').parse(widget.dtNascUser.trim());
+      dataFormatada = DateFormat('yyyy-MM-dd').format(data);
+    } catch (e) {
+      print('Erro ao formatar a data: $e');
+      return;
+    }
+
+    Map<String, dynamic> data = {
+      'CPF': widget.cpfUser.trim(),
+      'Nome': widget.nomeUser.trim(),
+      'Email': widget.emailUser.trim(),
+      'DtNasc': dataFormatada,
+      'FK_Academia_ID': '12345678000100'
     };
 
-    var resultado = await _alunoController.create(alunoData);
+    print('Dados enviados: $data');
+
+    var resultado = await _pessoaController.registerPessoa(data);
+    //Resultado Pessoa.
     if (resultado != null) {
-      print('Aluno criado com sucesso!');
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => TelaInicial()),
-            (route) => false,
-      );
+      setState(() {
+        pessoa = [resultado];
+      });
+
+      final pessoaId = resultado.CPF;
+
+      await _criarTelefone(pessoaId);
+      await _criarUsuario(pessoaId);
+
+      print('Pessoa criada com sucesso!!');
     } else {
-      print('Erro ao criar aluno');
+      print('Usuario com esse CPF cadastrado');
+    }
+  }
+
+  Future<void> _criarTelefone(String pessoaId) async {
+    String telefoneLimpo = widget.tellUser.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (telefoneLimpo.length != 11) {
+      print("Telefone inválido, precisa ter 11 dígitos");
+      return;
+    }
+
+    Map<String, dynamic> dataTell = {
+      'Telefone01': telefoneLimpo,
+      'Telefone02': telefoneLimpo,
+      'FK_CPF': pessoaId,
+      'FK_TipoTel_ID': 2,
+    };
+
+    print('Telefone enviado: $dataTell');
+
+    var resultadoTell = await _telefoneController.registerTelefone(dataTell);
+    //Resultado Telefone.
+    if (resultadoTell != null) {
+      setState(() {
+        telefone = [resultadoTell];
+      });
+
+      print('Telefone criado com sucesso!!');
+    } else {
+      print('Telefone não cadastrado');
+    }
+  }
+
+  //Apos o cadastro ja pega o login tambem.
+  Future<void> _criarUsuario(String pessoaId) async {
+    Map<String, dynamic> usuarioData = {
+      'Login': widget.nomeUser.trim(),
+      'Senha': widget.senhaUser.trim(),
+      'FK_Pessoa_ID': pessoaId,
+    };
+
+    var resultado = await _usuarioController.registerUsuario(usuarioData);
+    if (resultado != null) {
+      setState(() {
+        usuario = [resultado];
+      });
+      usuarioId = resultado.id!;
+
+      print('Usuário criado com sucesso!');
+    } else {
+      print('Erro ao criar usuário');
+    }
+  }
+
+  Future<void> _criarPlano(int usuarioId, int planoId) async {
+    Map<String, dynamic> planoData = {
+      'FK_Usuario_ID': usuarioId,
+      'FK_TipoPlano_ID': planoId
+    };
+
+    var resultado = await _planoController.registerPlano(planoData);
+    if (resultado != null) {
+      print('Plano criado com sucesso!');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Usuario criado com sucesso!!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => TelaInicial()),
+          (route) => false,
+        );
+      });
+    } else {
+      print('Erro ao criar plano');
     }
   }
 
@@ -145,33 +289,33 @@ class _TelaPlanosState extends State<TelaPlanos> {
                   .split('+')
                   .where((b) => b.trim().isNotEmpty)
                   .map((b) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.check_circle,
-                      color: Colors.orangeAccent,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        b.trim(),
-                        style: const TextStyle(fontSize: 18, color: Colors.white70),
-                      ),
-                    ),
-                  ],
-                ),
-              ))
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.check_circle,
+                              color: Colors.orangeAccent,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                b.trim(),
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.white70),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ))
                   .toList(),
             ),
-
-
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                await _criarAluno(widget.usuarioId, plano['id']);
+                await _criarPessoa();
+                await _criarPlano(usuarioId, plano['id']);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Assinatura realizada com sucesso!'),
@@ -181,7 +325,8 @@ class _TelaPlanosState extends State<TelaPlanos> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 4, 220, 0),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 3),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 3),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -229,10 +374,10 @@ class _TelaPlanosState extends State<TelaPlanos> {
                     SizedBox(height: 5),
                     const Text(
                       'Escolha o seu plano de treino',
-                      style: TextStyle(fontSize: 18,
+                      style: TextStyle(
+                          fontSize: 18,
                           color: Colors.white70,
-                          fontFamily: 'Poppins'
-                      ),
+                          fontFamily: 'Poppins'),
                     ),
                   ],
                 ),

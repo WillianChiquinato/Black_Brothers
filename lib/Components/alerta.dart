@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AlertaEntrar extends StatefulWidget {
   final String text;
@@ -17,7 +18,7 @@ class _AlertaEntrarState extends State<AlertaEntrar> {
         return AlertDialog(
           title: const Text("Bem-vindo!"),
           content: const Text(
-              "Aqui esta um text para dizer que o CONTEXT é o conteudo do alerta"),
+              "Whatsapp redirecionamento será aqui"),
           actions: <Widget>[
             TextButton(
               child: const Text("Fechar"),
@@ -34,10 +35,11 @@ class _AlertaEntrarState extends State<AlertaEntrar> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      backgroundColor: const Color(0xFF25D366),
       onPressed: () {
         _showPopup(context, widget.text);
       },
-      child: const Icon(Icons.add_card_rounded),
+      child: const FaIcon(FontAwesomeIcons.whatsapp),
     );
   }
 }

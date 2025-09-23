@@ -1,5 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:projetosflutter/API/Models/modelo_feedback.dart';
+import 'package:projetosflutter/API/Models/modelo_tipoFeedback.dart';
+import 'package:projetosflutter/API/Models/modelo_videos.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
 
 import '../API/controller.dart';
@@ -17,22 +22,99 @@ class MenuInicialHome extends StatefulWidget {
 
 class _MenuInicialHomeState extends State<MenuInicialHome> {
   late GenericController<UsuarioClass> _usuarioController;
+  late GenericController<VideosClass> _videoController;
+  late GenericController<FeedbackClass> _feedbackController;
+  late GenericController<TipoFeedbackClass> _tipoFeedBackController;
   late UsuarioClass? usuario;
   late TipoPlanoClass? plano;
+  late List<FeedbackClass> feedbacks;
+  late TipoFeedbackClass? tipoFeedbacks;
+  late Future<List<VideosClass>> videos;
 
   final Color lightOrange = const Color(0xFFFFF1E6);
   final Color orange = const Color(0xFFFF8C42);
   final Color grey = const Color(0xFF333333);
 
+  final List<Map<String, dynamic>> topicos = [
+    {'id': 1, 'nome': 'EQUIPAMENTO'},
+    {'id': 2, 'nome': 'INFRAESTRUTURA'},
+    {'id': 3, 'nome': 'PROFESSORES'},
+    {'id': 4, 'nome': 'ATENDIMENTO'},
+    {'id': 5, 'nome': 'FAQ'},
+  ];
+
+  late final Map<int, TextEditingController> controllers;
+
   @override
   void initState() {
+    super.initState();
+
     usuario = widget.user;
     plano = widget.plan;
-    super.initState();
     _usuarioController = GenericController<UsuarioClass>(
       endpoint: 'Usuario',
       fromJson: (json) => UsuarioClass.fromJson(json),
     );
+
+    _videoController = GenericController<VideosClass>(
+      endpoint: 'Videos',
+      fromJson: (json) => VideosClass.fromJson(json),
+    );
+
+    _feedbackController = GenericController<FeedbackClass>(
+      endpoint: 'Feedbacks',
+      fromJson: (json) => FeedbackClass.fromJson(json),
+    );
+
+    _tipoFeedBackController = GenericController<TipoFeedbackClass>(
+      endpoint: 'Tipo_Feedbacks',
+      fromJson: (json) => TipoFeedbackClass.fromJson(json),
+    );
+
+    videos = carregarRandomVideos();
+    controllers = {for (var t in topicos) t['id']: TextEditingController()};
+  }
+
+  @override
+  void dispose() {
+    for (var controller in controllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<List<VideosClass>> carregarRandomVideos() async {
+    final videosRequest = await _videoController.getAll();
+    if (videosRequest == null || videosRequest.isEmpty) return [];
+
+    final random = Random();
+    final List shuffled = List.from(videosRequest)..shuffle(random);
+    final List randomVideos = shuffled.take(3).toList();
+
+    return randomVideos.cast<VideosClass>();
+  }
+
+  Future<void> _criarFeedback(int TopicoID, String Mensagem) async {
+    var resultadoTipoFeedback =
+        await _tipoFeedBackController.getOne(TopicoID.toString());
+    if (resultadoTipoFeedback != null) {
+      Map<String, dynamic> data = {
+        'Mensagem': Mensagem,
+        'FK_TipoFeedbacks_ID': TopicoID,
+      };
+
+      var resultadoFeedback = await _feedbackController.create(data);
+
+      if (resultadoFeedback != null) {
+        setState(() {
+          feedbacks = [resultadoFeedback];
+        });
+
+        print('Feedback criado com sucesso!!');
+      } else {
+        print('Feedback deu errado!!');
+      }
+    }
   }
 
   @override
@@ -160,18 +242,22 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 backgroundColor: lightOrange,
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
             const SizedBox(height: 24),
-            Text("MEU TREINO", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+            Text("MEU TREINO",
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("PROGRESSO\n25%", style: GoogleFonts.poppins()),
-                Text("Data Treino:\n30/03 - 30/09", style: GoogleFonts.poppins()),
+                Text("Data Treino:\n30/03 - 30/09",
+                    style: GoogleFonts.poppins()),
               ],
             ),
             const SizedBox(height: 8),
@@ -189,9 +275,11 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: grey,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
-                icon: const Icon(Icons.fitness_center_rounded, color: Colors.white),
+                icon: const Icon(Icons.fitness_center_rounded,
+                    color: Colors.white),
                 label: Text(
                   "VER MEU TREINO",
                   style: GoogleFonts.poppins(color: Colors.white),
@@ -199,7 +287,8 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
               ),
             ),
             const SizedBox(height: 24),
-            Text("INFORMAÇÕES", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+            Text("INFORMAÇÕES",
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
@@ -213,72 +302,82 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                   Column(
                     children: [
                       const Icon(Icons.calendar_today_outlined),
-                      Text("3", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-                      Text("Dias de treino", style: GoogleFonts.poppins(fontSize: 12)),
+                      Text("3",
+                          style:
+                              GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                      Text("Dias de treino",
+                          style: GoogleFonts.poppins(fontSize: 12)),
                     ],
                   ),
                   Column(
                     children: [
                       const Icon(Icons.timer_outlined),
-                      Text("8H 36M", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-                      Text("Horas treinadas", style: GoogleFonts.poppins(fontSize: 12)),
+                      Text("8H 36M",
+                          style:
+                              GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                      Text("Horas treinadas",
+                          style: GoogleFonts.poppins(fontSize: 12)),
                     ],
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            Text("VÍDEOS", style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+            Text("VÍDEOS",
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
-            Column(
-              children: [
-                {
-                  'thumbnail': 'Assets/thumb-peito.png',
-                  'title': 'Treino de Peito Avançado',
-                },
-                {
-                  'thumbnail': 'Assets/nutricionista.png',
-                  'title': 'Dicas de Alimentação Pós-Treino',
-                },
-                {
-                  'thumbnail': 'Assets/alongamentos.png',
-                  'title': 'Alongamentos Essenciais',
-                },
-              ].map((video) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: lightOrange,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                          child: Image.asset(
-                            video['thumbnail']!,
-                            height: 180,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
+            //Lista assincrona de videos.
+            FutureBuilder<List<VideosClass>>(
+              future: carregarRandomVideos(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Erro ao carregar vídeos'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('Nenhum vídeo disponível'));
+                }
+
+                final videos = snapshot.data!;
+                return Column(
+                  children: videos.map((video) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: lightOrange,
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            video['title']!,
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(16)),
+                              child: Image.network(
+                                video.thumbnail,
+                                height: 180,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                video.titulo,
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  }).toList(),
                 );
-              }).toList(),
+              },
             ),
             const SizedBox(height: 16),
             Center(
@@ -287,7 +386,8 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                   showModalBottomSheet(
                     context: context,
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     backgroundColor: Colors.white,
                     isScrollControlled: true,
@@ -312,22 +412,17 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                           const SizedBox(height: 8),
                           Text(
                             'Envie dúvidas, feedbacks ou reclamações. Selecione a categoria abaixo:',
-                            style: GoogleFonts.poppins(fontSize: 12, color: Colors.black54),
+                            style: GoogleFonts.poppins(
+                                fontSize: 12, color: Colors.black54),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 24),
-                          ...[
-                            'INFRAESTRUTURA',
-                            'EQUIPAMENTO',
-                            'PROFESSORES',
-                            'ATENDIMENTO',
-                            'FAQ',
-                          ].map(
-                                (item) => Padding(
+                          ...topicos.map(
+                            (item) => Padding(
                               padding: const EdgeInsets.only(bottom: 12.0),
                               child: ExpansionTile(
                                 title: Text(
-                                  item,
+                                  item['nome'],
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w600,
                                     color: orange,
@@ -335,17 +430,21 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                                 ),
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8),
                                     child: TextFormField(
+                                      controller: controllers[item['id']],
                                       maxLines: 4,
                                       style: GoogleFonts.poppins(fontSize: 14),
                                       decoration: InputDecoration(
                                         hintText: 'Escreva sua mensagem...',
-                                        hintStyle: GoogleFonts.poppins(fontSize: 14),
+                                        hintStyle:
+                                            GoogleFonts.poppins(fontSize: 14),
                                         filled: true,
                                         fillColor: lightOrange,
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
@@ -353,9 +452,19 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                                   ),
                                   const SizedBox(height: 12),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8),
                                     child: ElevatedButton.icon(
-                                      onPressed: () => Navigator.pop(context),
+                                      onPressed: () {
+                                        final mensagem =
+                                            controllers[item['id']]!
+                                                .text
+                                                .trim();
+                                        if (mensagem.isEmpty) return;
+
+                                        Navigator.pop(context);
+                                        _criarFeedback(item['id'], mensagem);
+                                      },
                                       label: Text(
                                         'Enviar',
                                         style: GoogleFonts.poppins(
@@ -365,9 +474,11 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                                       ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.green,
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 12),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
                                       ),
                                     ),
@@ -384,15 +495,18 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                 icon: const Icon(Icons.message, color: Colors.white),
                 label: Text(
                   "FALE CONOSCO",
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white),
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: orange,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),

@@ -18,15 +18,6 @@ class TelaInscricao extends StatefulWidget {
 }
 
 class _TelaInscricaoState extends State<TelaInscricao> {
-  late GenericController<PessoaClass> _pessoaController;
-  late List<PessoaClass> pessoa = [];
-
-  late GenericController<UsuarioClass> _usuarioController;
-  late List<UsuarioClass> usuario = [];
-
-  late GenericController<TelefoneClass> _telefoneController;
-  late List<TelefoneClass> telefone = [];
-
   final TextEditingController usuarioInscricao = TextEditingController();
   final TextEditingController emailInscricao = TextEditingController();
   final TextEditingController cpfInscricao = TextEditingController();
@@ -42,20 +33,6 @@ class _TelaInscricaoState extends State<TelaInscricao> {
   @override
   void initState() {
     super.initState();
-    _pessoaController = GenericController(
-      endpoint: 'Pessoa',
-      fromJson: (json) => PessoaClass.fromJson(json),
-    );
-
-    _usuarioController = GenericController<UsuarioClass>(
-      endpoint: 'Usuario',
-      fromJson: (json) => UsuarioClass.fromJson(json),
-    );
-
-    _telefoneController = GenericController<TelefoneClass>(
-        endpoint: 'Telefone',
-        fromJson: (json) => TelefoneClass.fromJson(json)
-    );
 
     cpfInscricao.addListener(() {
       final textCPF = cpfInscricao.text;
@@ -92,101 +69,6 @@ class _TelaInscricaoState extends State<TelaInscricao> {
         );
       }
     });
-  }
-
-  //Criar usuário.
-  Future<void> _criarPessoa() async {
-    String? dataFormatada;
-
-    try {
-      // Converte de dd/MM/yyyy para yyyy-MM-dd
-      DateTime data =
-          DateFormat('dd/MM/yyyy').parse(dtnascInscricao.text.trim());
-      dataFormatada = DateFormat('yyyy-MM-dd').format(data);
-    } catch (e) {
-      print('Erro ao formatar a data: $e');
-      return;
-    }
-
-    Map<String, dynamic> data = {
-      'CPF': cpfInscricao.text.trim(),
-      'Nome': usuarioInscricao.text.trim(),
-      'Email': emailInscricao.text.trim(),
-      'DtNasc': dataFormatada,
-      'FK_Academia_ID': '12345678000100'
-    };
-
-    print('Dados enviados: $data');
-
-    var resultado = await _pessoaController.create(data);
-    //Resultado Pessoa.
-    if (resultado != null) {
-      setState(() {
-        pessoa = [resultado];
-      });
-
-      final pessoaId = resultado.CPF;
-
-      await _criarTelefone(pessoaId);
-      await _criarUsuario(pessoaId);
-
-      print('Pessoa criada com sucesso!!');
-    } else {
-      print('Usuario com esse CPF cadastrado');
-    }
-  }
-
-  Future<void> _criarTelefone(String pessoaId) async {
-    String telefoneLimpo = tellInscricao.text.replaceAll(RegExp(r'[^0-9]'), '');
-
-    if (telefoneLimpo.length != 11) {
-      print("Telefone inválido, precisa ter 11 dígitos");
-      return;
-    }
-
-    Map<String, dynamic> dataTell = {
-      'Telefone01': telefoneLimpo,
-      'Telefone02': telefoneLimpo,
-      'FK_CPF': pessoaId,
-      'FK_TipoTel_ID': 2,
-    };
-
-    print('Telefone enviado: $dataTell');
-
-    var resultadoTell = await _telefoneController.create(dataTell);
-    //Resultado Telefone.
-    if (resultadoTell != null) {
-      setState(() {
-        telefone = [resultadoTell];
-      });
-
-      print('Telefone criado com sucesso!!');
-    } else {
-      print('Telefone não cadastrado');
-    }
-  }
-
-  //Apos o cadastro ja pega o login tambem.
-  Future<void> _criarUsuario(String pessoaId) async {
-    Map<String, dynamic> usuarioData = {
-      'Login': usuarioInscricao.text.trim(),
-      'Senha': senhaInscricao.text.trim(),
-      'FK_Pessoa_ID': pessoaId,
-    };
-
-    var resultado = await _usuarioController.create(usuarioData);
-    if (resultado != null) {
-      print('Usuário criado com sucesso!');
-      // Vá para a tela de planos e passe o ID do usuário
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TelaPlanos(usuarioId: resultado.id!),
-        ),
-      );
-    } else {
-      print('Erro ao criar usuário');
-    }
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -550,7 +432,21 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                     );
                                                     return;
                                                   } else {
-                                                    await _criarPessoa();
+                                                    Future.delayed(const Duration(seconds: 1), () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (_) => TelaPlanos(
+                                                            dtNascUser: dtnascInscricao.text.trim(),
+                                                            cpfUser: cpfInscricao.text.trim(),
+                                                            nomeUser: usuarioInscricao.text.trim(),
+                                                            senhaUser: senhaInscricao.text.trim(),
+                                                            tellUser: tellInscricao.text.trim(),
+                                                            emailUser: emailInscricao.text.trim(),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    });
                                                   }
                                                 }
                                               }

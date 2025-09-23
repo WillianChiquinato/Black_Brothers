@@ -113,4 +113,94 @@ class GenericController<T> {
       return null;
     }
   }
+
+  //Cadastros iniciais.
+  Future<T?> registerUsuario(Map<String, dynamic> data) async {
+    try {
+      final response = await _api.dio.post(
+        Apiconstants.urlBaseAPI(endpoint),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            "X-Registration-Secret": "BufferedReader123@rz.com"
+          },
+        ),
+        data: data,
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return fromJson(response.data);
+      }
+    } catch (e) {
+      print('Erro ao criar item: $e');
+    }
+    return null;
+  }
+
+  Future<T?> registerTelefone(Map<String, dynamic> data) async {
+    try {
+      final response = await _api.dio.post(
+        Apiconstants.urlBaseAPI(endpoint),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            "X-Registration-Secret": "BufferedReader123@rz.com"
+          },
+        ),
+        data: data,
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return fromJson(response.data);
+      }
+    } catch (e) {
+      print('Erro ao criar item: $e');
+    }
+    return null;
+  }
+
+  Future<T?> registerPlano(Map<String, dynamic> data) async {
+    try {
+      final response = await _api.dio.post(
+        Apiconstants.urlBaseAPI(endpoint),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            "X-Registration-Secret": "BufferedReader123@rz.com"
+          },
+        ),
+        data: data,
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return fromJson(response.data);
+      }
+    } catch (e) {
+      print('Erro ao criar item: $e');
+    }
+    return null;
+  }
+
+  Future<T?> registerPessoa(Map<String, dynamic> data) async {
+    try {
+      print(jsonEncode(data));
+      final response = await _api.dio.post(
+        Apiconstants.urlBaseAPI(endpoint),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            "X-Registration-Secret": "BufferedReader123@rz.com"
+          },
+        ),
+        data: data,
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return fromJson(response.data);
+      }
+    } catch (e) {
+      print('Erro ao criar item: $e');
+    }
+    return null;
+  }
 }
