@@ -65,7 +65,7 @@ class _MenuComunidadeState extends State<MenuComunidade> {
           title: Row(
             children: [
               const CircleAvatar(
-                backgroundImage: AssetImage('Assets/iam.jpg'),
+                backgroundImage: AssetImage('Assets/UserIcon.png'),
                 radius: 25,
               ),
               const SizedBox(width: 12),
