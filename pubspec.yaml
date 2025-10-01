@@ -79,6 +79,9 @@ flutter:
     - Assets/UserIcon.png
     - Assets/thumb-peito.png
     - Assets/alongamentos.png
+    - Assets/basicPlan.png
+    - Assets/goldPlan.png
+    - Assets/plusPlan.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

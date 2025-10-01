@@ -55,14 +55,14 @@ class _TelaPlanosState extends State<TelaPlanos> {
     {
       'id': 1,
       'nome': 'BASIC',
-      'imagem': 'Assets/plan_basic.jpg',
+      'imagem': 'Assets/basicPlan.png',
       'preco': 'R\$ 69,90/mês',
       'beneficios': '+ 12 Meses Fidelidade + DashBoard + Treinos Opcionais',
     },
     {
       'id': 2,
       'nome': 'PLUS',
-      'imagem': 'Assets/plan_plus.jpg',
+      'imagem': 'Assets/plusPlan.png',
       'preco': 'R\$ 84,90/mês',
       'beneficios':
           '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses',
@@ -70,7 +70,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
     {
       'id': 3,
       'nome': 'GOLD',
-      'imagem': 'Assets/plan_gold.jpg',
+      'imagem': 'Assets/goldPlan.png',
       'preco': 'R\$ 119,90/mês',
       'beneficios':
           '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses + consulta com nutricionista a cada 2 meses + acesso a todas as filiais da black brothers',

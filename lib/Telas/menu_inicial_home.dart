@@ -45,6 +45,12 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
 
   late final Map<int, TextEditingController> controllers;
 
+  int? _expandedIndex;
+  int _selectedIndex = -1;
+  int _rating = 0;
+
+  final PageStorageBucket bucket = PageStorageBucket();
+
   @override
   void initState() {
     super.initState();
@@ -185,6 +191,11 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
               onTap: () => Navigator.pop(context),
             ),
             ListTile(
+              leading: const Icon(Icons.emoji_events),
+              title: Text('Eventos', style: GoogleFonts.poppins()),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
               leading: const Icon(Icons.settings),
               title: Text('Configurações', style: GoogleFonts.poppins()),
               onTap: () => Navigator.pop(context),
@@ -301,11 +312,11 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                 children: [
                   Column(
                     children: [
-                      const Icon(Icons.calendar_today_outlined),
+                      const Icon(Icons.calendar_month_outlined),
                       Text("3",
                           style:
                               GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-                      Text("Dias de treino",
+                      Text("Quantidade de treinos",
                           style: GoogleFonts.poppins(fontSize: 12)),
                     ],
                   ),
@@ -387,109 +398,153 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                     context: context,
                     shape: const RoundedRectangleBorder(
                       borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
+                      BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     backgroundColor: Colors.white,
                     isScrollControlled: true,
-                    builder: (context) => Padding(
-                      padding: EdgeInsets.only(
-                        top: 24,
-                        left: 16,
-                        right: 16,
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'FALE CONOSCO',
-                            style: GoogleFonts.poppins(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: grey,
-                            ),
+                    builder: (context) {
+                      return SingleChildScrollView(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: 24,
+                            left: 16,
+                            right: 16,
+                            bottom: MediaQuery.of(context).viewInsets.bottom +
+                                24,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Envie dúvidas, feedbacks ou reclamações. Selecione a categoria abaixo:',
-                            style: GoogleFonts.poppins(
-                                fontSize: 12, color: Colors.black54),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 24),
-                          ...topicos.map(
-                            (item) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12.0),
-                              child: ExpansionTile(
-                                title: Text(
-                                  item['nome'],
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w600,
-                                    color: orange,
-                                  ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize
+                                .min,
+                            children: [
+                              Text(
+                                'FALE CONOSCO',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: grey,
                                 ),
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: TextFormField(
-                                      controller: controllers[item['id']],
-                                      maxLines: 4,
-                                      style: GoogleFonts.poppins(fontSize: 14),
-                                      decoration: InputDecoration(
-                                        hintText: 'Escreva sua mensagem...',
-                                        hintStyle:
-                                            GoogleFonts.poppins(fontSize: 14),
-                                        filled: true,
-                                        fillColor: lightOrange,
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: ElevatedButton.icon(
-                                      onPressed: () {
-                                        final mensagem =
-                                            controllers[item['id']]!
-                                                .text
-                                                .trim();
-                                        if (mensagem.isEmpty) return;
-
-                                        Navigator.pop(context);
-                                        _criarFeedback(item['id'], mensagem);
-                                      },
-                                      label: Text(
-                                        'Enviar',
-                                        style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.green,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
                               ),
-                            ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Envie dúvidas, feedbacks ou reclamações. Selecione a categoria abaixo:',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12, color: Colors.black54),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 24),
+                              ...topicos.asMap().entries.map(
+                                    (entry) {
+                                  final index = entry.key;
+                                  final item = entry.value;
+
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12.0),
+                                    child: ExpansionTile(
+                                      key: ValueKey(item['id']),
+                                      initiallyExpanded: index == _expandedIndex,
+                                      onExpansionChanged: (isExpanded) {
+                                        setState(() {
+                                          _expandedIndex = isExpanded ? index : null;
+                                        });
+                                      },
+                                      title: Text(
+                                        item['nome'],
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.w600,
+                                          color: orange,
+                                        ),
+                                      ),
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: TextFormField(
+                                            controller: controllers[item['id']],
+                                            maxLines: 1,
+                                            style:
+                                            GoogleFonts.poppins(fontSize: 14),
+                                            decoration: InputDecoration(
+                                              hintText: 'Escreva sua mensagem...',
+                                              hintStyle: GoogleFonts.poppins(
+                                                  fontSize: 14),
+                                              filled: true,
+                                              fillColor: lightOrange,
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(12),
+                                                borderSide: BorderSide.none,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                          children: List.generate(
+                                            5,
+                                                (starIndex) {
+                                              return IconButton(
+                                                icon: Icon(
+                                                  starIndex < _rating
+                                                      ? Icons.star
+                                                      : Icons.star_border,
+                                                  color: orange,
+                                                  size: 30,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _rating = starIndex + 1;
+                                                  });
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: ElevatedButton.icon(
+                                            onPressed: () {
+                                              final mensagem =
+                                              controllers[item['id']]!
+                                                  .text
+                                                  .trim();
+                                              if (mensagem.isEmpty) return;
+
+                                              Navigator.pop(context);
+                                              _criarFeedback(
+                                                  item['id'], mensagem);
+                                            },
+                                            label: Text(
+                                              'Enviar',
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.green,
+                                              padding: const EdgeInsets.symmetric(
+                                                  vertical: 12),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                    },
+                              ).toList(),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   );
                 },
                 icon: const Icon(Icons.message, color: Colors.white),
@@ -501,7 +556,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: orange,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
