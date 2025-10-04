@@ -96,14 +96,7 @@ class MenuTreino extends StatelessWidget {
         children: [
           _buildInfoUsuario(),
           _buildDiasSemana(),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              "PEITO / TRÍCEPS",
-              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(child: _buildListaExercicios()),
+          _buildTiposTreino(context),
         ],
       ),
     );
@@ -116,7 +109,6 @@ class MenuTreino extends StatelessWidget {
       onTap: () => Navigator.pop(context),
     );
   }
-
   Widget _buildInfoUsuario() {
     return Padding(
       padding: EdgeInsets.all(10),
@@ -129,16 +121,19 @@ class MenuTreino extends StatelessWidget {
                 color: orange,
                 fontWeight: FontWeight.bold,
               )),
+              SizedBox(height: 4),
               Text('${user?.login}', style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               )),
-              SizedBox(height: 4),
+
+              SizedBox(height: 18),
+
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: lightOrange,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -152,12 +147,14 @@ class MenuTreino extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 4),
+
+              SizedBox(height: 12),
+
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -168,6 +165,8 @@ class MenuTreino extends StatelessWidget {
                       fontSize: 12,
                       color: grey,
                     )),
+
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -181,7 +180,6 @@ class MenuTreino extends StatelessWidget {
   Widget _buildDiasSemana() {
     final dias = ["Sex", "Sab", "Dom", "Seg", "Ter", "Qua"];
     final datas = ["12", "13", "14", "15", "16", "17"];
-    final tipos = ["PT", "CB", "PG", "PG", "OM", "-"];
     final diaAtual = "17";
 
     return Container(
@@ -238,14 +236,6 @@ class MenuTreino extends StatelessWidget {
                       color: isToday ? Colors.white : orange.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Text(
-                      tipos[index],
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                        color: orange,
-                      ),
-                    ),
                   )
                 ],
               ),
@@ -256,7 +246,70 @@ class MenuTreino extends StatelessWidget {
     );
   }
 
-  Widget _buildListaExercicios() {
+  Widget _buildTiposTreino(BuildContext context) {
+    final List<Map<String, dynamic>> treinos = [
+      {"tipo": "A", "icone": Icons.directions_run, "descricao": "Treino para Força", "tituloTreino": "PEITO / TRÍCEPS"},
+      {"tipo": "B", "icone": Icons.fitness_center, "descricao": "Treino para Hipertrofia", "tituloTreino": "COSTAS / BÍCEPS"},
+      {"tipo": "C", "icone": Icons.pool, "descricao": "Treino para Resistência", "tituloTreino": "PERNAS / PANTURRILHA"},
+      {"tipo": "D", "icone": Icons.ac_unit, "descricao": "Treino para Definição", "tituloTreino": "OMBRO / ABDOMEN"},
+    ];
+
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 16.0,
+          crossAxisSpacing: 16.0,
+          children: treinos.map((treino) {
+            return InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  builder: (BuildContext context) {
+                    return _buildListaExerciciosSheet(treino['tituloTreino']);
+                  },
+                );
+              },
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(treino['icone'], size: 48, color: orange),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Treino ${treino['tipo']}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: grey,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      treino['descricao'],
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListaExerciciosSheet(String titulo) {
     final List<Exercicio> exercicios = [
       Exercicio(
         nome: "Supino Reto na barra",
@@ -270,36 +323,60 @@ class MenuTreino extends StatelessWidget {
         imagem: "Assets/thumb-peito.png",
         temVideo: false,
       ),
+      Exercicio(
+        nome: "Flexão Inclinada",
+        series: "3 x 15",
+        imagem: "Assets/thumb-peito.png",
+        temVideo: true,
+      ),
     ];
 
-    return ListView.builder(
-      itemCount: exercicios.length,
-      itemBuilder: (context, index) {
-        final ex = exercicios[index];
-        return Card(
-          margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Checkbox(value: false, onChanged: (_) {}),
-                Image.asset(ex.imagem, height: 50),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(ex.nome, style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-                      Text(ex.series, style: GoogleFonts.poppins(color: Colors.grey[600])),
-                    ],
-                  ),
-                ),
-                Icon(ex.temVideo ? Icons.chevron_right : Icons.chevron_right),
-              ],
+    return Container(
+      height: 600, // ajustar a altura se necessário
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Text(
+              titulo,
+              style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
-        );
-      },
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              itemCount: exercicios.length,
+              itemBuilder: (context, index) {
+                final ex = exercicios[index];
+                return Card(
+                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Checkbox(value: false, onChanged: (_) {}),
+                        Image.asset(ex.imagem, height: 50),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(ex.nome, style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                              Text(ex.series, style: GoogleFonts.poppins(color: Colors.grey[600])),
+                            ],
+                          ),
+                        ),
+                        Icon(ex.temVideo ? Icons.smart_display : Icons.chevron_right),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
