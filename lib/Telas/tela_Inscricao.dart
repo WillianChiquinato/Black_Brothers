@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 
 import '../API/controller.dart';
+import '../Components/ToastMessage.dart';
 import '../Util/FormatItens.dart';
 
 class TelaInscricao extends StatefulWidget {
@@ -349,7 +350,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                     },
                                     activeColor: Colors.white,
                                     checkColor: Colors.black,
-                                    side: const BorderSide(color: Colors.white70),
+                                    side:
+                                        const BorderSide(color: Colors.white70),
                                   ),
                                   RichText(
                                     text: TextSpan(
@@ -416,38 +418,41 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                   print(tellInscricao.text);
                                                   print(senhaInscricao.text);
 
-                                                  final cpfInput =
-                                                      cpfInscricao.text.trim();
-
-                                                  if (cpfInput.isEmpty) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                            'Preencha todos os dados'),
-                                                        duration: Duration(
-                                                            seconds: 2),
+                                                  showToast(context, "Dados Enviados!", type: ToastType.success);
+                                                  Future.delayed(
+                                                      const Duration(
+                                                          seconds: 1), () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            TelaPlanos(
+                                                          dtNascUser:
+                                                              dtnascInscricao
+                                                                  .text
+                                                                  .trim(),
+                                                          cpfUser: cpfInscricao
+                                                              .text
+                                                              .trim(),
+                                                          nomeUser:
+                                                              usuarioInscricao
+                                                                  .text
+                                                                  .trim(),
+                                                          senhaUser:
+                                                              senhaInscricao
+                                                                  .text
+                                                                  .trim(),
+                                                          tellUser:
+                                                              tellInscricao.text
+                                                                  .trim(),
+                                                          emailUser:
+                                                              emailInscricao
+                                                                  .text
+                                                                  .trim(),
+                                                        ),
                                                       ),
                                                     );
-                                                    return;
-                                                  } else {
-                                                    Future.delayed(const Duration(seconds: 1), () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (_) => TelaPlanos(
-                                                            dtNascUser: dtnascInscricao.text.trim(),
-                                                            cpfUser: cpfInscricao.text.trim(),
-                                                            nomeUser: usuarioInscricao.text.trim(),
-                                                            senhaUser: senhaInscricao.text.trim(),
-                                                            tellUser: tellInscricao.text.trim(),
-                                                            emailUser: emailInscricao.text.trim(),
-                                                          ),
-                                                        ),
-                                                      );
-                                                    });
-                                                  }
+                                                  });
                                                 }
                                               }
                                             : null,

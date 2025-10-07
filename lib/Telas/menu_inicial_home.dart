@@ -9,6 +9,7 @@ import 'package:projetosflutter/API/models/modelo_usuario.dart';
 
 import '../API/controller.dart';
 import '../API/models/modelo_tipoPlano.dart';
+import '../Components/ToastMessage.dart';
 
 class MenuInicialHome extends StatefulWidget {
   final UsuarioClass? user;
@@ -398,7 +399,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                     context: context,
                     shape: const RoundedRectangleBorder(
                       borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(20)),
+                          BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     backgroundColor: Colors.white,
                     isScrollControlled: true,
@@ -409,12 +410,11 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                             top: 24,
                             left: 16,
                             right: 16,
-                            bottom: MediaQuery.of(context).viewInsets.bottom +
-                                24,
+                            bottom:
+                                MediaQuery.of(context).viewInsets.bottom + 24,
                           ),
                           child: Column(
-                            mainAxisSize: MainAxisSize
-                                .min,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 'FALE CONOSCO',
@@ -433,18 +433,21 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                               ),
                               const SizedBox(height: 24),
                               ...topicos.asMap().entries.map(
-                                    (entry) {
+                                (entry) {
                                   final index = entry.key;
                                   final item = entry.value;
 
                                   return Padding(
-                                    padding: const EdgeInsets.only(bottom: 12.0),
+                                    padding:
+                                        const EdgeInsets.only(bottom: 12.0),
                                     child: ExpansionTile(
                                       key: ValueKey(item['id']),
-                                      initiallyExpanded: index == _expandedIndex,
+                                      initiallyExpanded:
+                                          index == _expandedIndex,
                                       onExpansionChanged: (isExpanded) {
                                         setState(() {
-                                          _expandedIndex = isExpanded ? index : null;
+                                          _expandedIndex =
+                                              isExpanded ? index : null;
                                         });
                                       },
                                       title: Text(
@@ -461,17 +464,18 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                                           child: TextFormField(
                                             controller: controllers[item['id']],
                                             maxLines: 1,
-                                            style:
-                                            GoogleFonts.poppins(fontSize: 14),
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14),
                                             decoration: InputDecoration(
-                                              hintText: 'Escreva sua mensagem...',
+                                              hintText:
+                                                  'Escreva sua mensagem...',
                                               hintStyle: GoogleFonts.poppins(
                                                   fontSize: 14),
                                               filled: true,
                                               fillColor: lightOrange,
                                               border: OutlineInputBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(12),
+                                                    BorderRadius.circular(12),
                                                 borderSide: BorderSide.none,
                                               ),
                                             ),
@@ -480,10 +484,10 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                                         const SizedBox(height: 12),
                                         Row(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                              MainAxisAlignment.center,
                                           children: List.generate(
                                             5,
-                                                (starIndex) {
+                                            (starIndex) {
                                               return IconButton(
                                                 icon: Icon(
                                                   starIndex < _rating
@@ -508,14 +512,28 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                                           child: ElevatedButton.icon(
                                             onPressed: () {
                                               final mensagem =
-                                              controllers[item['id']]!
-                                                  .text
-                                                  .trim();
-                                              if (mensagem.isEmpty) return;
+                                                  controllers[item['id']]!
+                                                      .text
+                                                      .trim();
+                                              if (mensagem.isEmpty) {
+                                                showToast(context,
+                                                    "Digite algo para enviar!",
+                                                    type: ToastType.error);
+                                                return;
+                                              }
 
-                                              Navigator.pop(context);
                                               _criarFeedback(
                                                   item['id'], mensagem);
+
+                                              controllers.clear();
+                                              showToast(context,
+                                                  "Feedback enviar com sucesso!",
+                                                  type: ToastType.success);
+                                              Future.delayed(
+                                                  const Duration(
+                                                      milliseconds: 500), () {
+                                                Navigator.pop(context);
+                                              });
                                             },
                                             label: Text(
                                               'Enviar',
@@ -526,11 +544,12 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                                             ),
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.green,
-                                              padding: const EdgeInsets.symmetric(
-                                                  vertical: 12),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                BorderRadius.circular(10),
+                                                    BorderRadius.circular(10),
                                               ),
                                             ),
                                           ),
@@ -538,7 +557,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                                       ],
                                     ),
                                   );
-                                    },
+                                },
                               ).toList(),
                             ],
                           ),
@@ -556,7 +575,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: orange,
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),

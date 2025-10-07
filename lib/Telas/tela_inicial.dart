@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:projetosflutter/Telas/menu_inicial.dart';
 import 'package:projetosflutter/Telas/tela_Inscricao.dart';
 import '../API/controller.dart';
+import '../Components/ToastMessage.dart';
 
 //StatelessWidget para tarefas repetitivas.
 //Estatico, sem mudanca de valores, sem atualizar na tela
@@ -62,26 +63,33 @@ class _MyAppState extends State<TelaInicial> {
 
   Future<int?> FazendoLogin(String login, String senha) async {
     print('LOGIN: $login, SENHA: $senha');
+
+    if (login == null || login.isEmpty || senha == null || senha.isEmpty) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        showToast(context, "Preencha todos os campos!", type: ToastType.error);
+      });
+      return null;
+    }
+
     int? idUsuario = await _loginController.loginUsuario(login, senha);
     print("JSON: $idUsuario");
 
     if (idUsuario != null) {
       print('Login OK! ID do usuário: $idUsuario');
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MenuInicial(
-            idUsuario: idUsuario,
+      showToast(context, "Usuário encontrado!", type: ToastType.success);
+      Future.delayed(const Duration(seconds: 1), () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                MenuInicial(
+                  idUsuario: idUsuario,
+                ),
           ),
-        ),
-      );
+        );
+      });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Falha ao Login'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      showToast(context, "Usuário nao encontrado!", type: ToastType.success);
     }
   }
 

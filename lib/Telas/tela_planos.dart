@@ -7,6 +7,7 @@ import '../API/Models/modelo_pessoa.dart';
 import '../API/Models/modelo_telefone.dart';
 import '../API/Models/modelo_usuario.dart';
 import '../API/controller.dart';
+import '../Components/ToastMessage.dart';
 
 class TelaPlanos extends StatefulWidget {
   final String dtNascUser;
@@ -136,6 +137,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
       await _criarUsuario(pessoaId);
 
       print('Pessoa criada com sucesso!!');
+      showToast(context, "Usuário criado com sucesso!", type: ToastType.success);
     } else {
       print('Usuario com esse CPF cadastrado');
     }
@@ -201,12 +203,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
     var resultado = await _planoController.registerPlano(planoData);
     if (resultado != null) {
       print('Plano criado com sucesso!');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Usuario criado com sucesso!!'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+
       Future.delayed(const Duration(seconds: 2), () {
         Navigator.pushAndRemoveUntil(
           context,
@@ -316,12 +313,6 @@ class _TelaPlanosState extends State<TelaPlanos> {
               onPressed: () async {
                 await _criarPessoa();
                 await _criarPlano(usuarioId, plano['id']);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Assinatura realizada com sucesso!'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 4, 220, 0),
