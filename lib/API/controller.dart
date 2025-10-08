@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:projetosflutter/API/Storage/JWT-Auth.dart';
 
 import 'package:dio/dio.dart';
-import 'package:projetosflutter/API/Json/api_services.dart';
+import 'package:projetosflutter/API/Json/service.dart';
 import 'package:projetosflutter/API/constans.dart';
 
 class GenericController<T> {

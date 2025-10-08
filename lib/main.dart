@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:projetosflutter/Telas/menu_inicial.dart';
 import 'Telas/tela_inicial.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(const MainClass());
@@ -19,6 +20,7 @@ class _MyAppState extends State<MainClass> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      navigatorKey: navigatorKey,
       theme: ThemeData(
         fontFamily: 'BlackBrothers',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

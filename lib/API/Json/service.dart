@@ -1,13 +1,19 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import '../../Telas/tela_inicial.dart';
+import '../../main.dart';
 import 'package:projetosflutter/API/constans.dart';
 import 'package:projetosflutter/API/Storage/JWT-Auth.dart';
+
+import '../../Components/ToastMessage.dart';
 
 class ApiServices {
   final Dio dio = Dio();
   final TokenStorage _tokenStorage = TokenStorage();
 
   ApiServices() {
-    // Interceptor para adicionar o token JWT automaticamente
+    // Interceptor para adicionar o token JWT automaticamente.
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -17,7 +23,32 @@ class ApiServices {
           }
           return handler.next(options);
         },
-        onError: (e, handler) {
+        onError: (e, handler) async {
+          if (e.response?.statusCode == 401 &&
+              e.response?.data is Map<String, dynamic> &&
+              e.response?.data['msg'] == "Token has expired") {
+            // Apaga o token
+            await _tokenStorage.deleteToken();
+
+            final context = navigatorKey.currentContext;
+            if (context != null) {
+              showToast(
+                context,
+                "Token expirado. Faça login novamente!",
+                type: ToastType.warning,
+              );
+
+              await Future.delayed(const Duration(seconds: 1));
+
+              // Redireciona para tela de login limpando histórico.
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => TelaInicial()),
+                (route) => false,
+              );
+            }
+          }
+
           return handler.next(e);
         },
       ),
