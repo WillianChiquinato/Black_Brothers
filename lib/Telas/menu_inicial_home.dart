@@ -6,6 +6,7 @@ import 'package:projetosflutter/API/Models/modelo_feedback.dart';
 import 'package:projetosflutter/API/Models/modelo_tipoFeedback.dart';
 import 'package:projetosflutter/API/Models/modelo_videos.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
+import 'menu_treino.dart';
 
 import '../API/controller.dart';
 import '../API/models/modelo_tipoPlano.dart';
@@ -283,7 +284,14 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MenuTreino(user: usuario, plan: plano,),
+                    ),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: grey,
                   padding: const EdgeInsets.symmetric(vertical: 14),
