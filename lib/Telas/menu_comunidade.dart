@@ -24,6 +24,25 @@ class _MenuComunidadeState extends State<MenuComunidade> {
   late UsuarioClass? usuario;
   late TipoPlanoClass? plano;
 
+  final List<Map<String, dynamic>> postsComunidade = [
+    {
+      "usuario": "GustavoPablo_fit",
+      "horario": "2h atrás",
+      "fotoPerfil": "Assets/UserIcon.png",
+      "fotoPost": "Assets/legday.png",
+      "legenda": "Treino de pernas concluído! Foco total nos ganhos. 🚀 #fitness #legday",
+      "curtidas": 156,
+    },
+    {
+      "usuario": "Lucia_Personal",
+      "horario": "5h atrás",
+      "fotoPerfil": "Assets/UserIcon.png",
+      "fotoPost": "Assets/shake.png",
+      "legenda": "Receita de shake proteico pós-treino: rápido e delicioso! 🥛💪",
+      "curtidas": 305,
+    },
+  ];
+
   @override
   void initState() {
     usuario = widget.user;
@@ -107,49 +126,126 @@ class _MenuComunidadeState extends State<MenuComunidade> {
             _buildHistoricoTab(),
           ],
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Criar novo post! (Implementar navegação)")),
+            );
+          },
+          backgroundColor: orange,
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPostCard(Map<String, dynamic> post) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 8,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: AssetImage(post['fotoPerfil']),
+                  radius: 20,
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      post['usuario'],
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                    Text(
+                      post['horario'],
+                      style: GoogleFonts.poppins(color: Colors.grey, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          Image.asset(
+            post['fotoPost'],
+            width: double.infinity,
+            height: 300,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                height: 300,
+                color: Colors.grey[300],
+                child: Center(
+                  child: Text(
+                    "Imagem do Post não Encontrada",
+                    style: GoogleFonts.poppins(color: Colors.grey[600]),
+                  ),
+                ),
+              );
+            },
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.favorite_border),
+                  onPressed: () {
+                  },
+                  color: grey,
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Text(
+              "${post['curtidas']} curtidas",
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 12.0),
+            child: RichText(
+              text: TextSpan(
+                style: GoogleFonts.poppins(fontSize: 14, color: grey),
+                children: [
+                  TextSpan(
+                    text: post['usuario'],
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: grey),
+                  ),
+                  const TextSpan(text: ' '),
+                  TextSpan(
+                    text: post['legenda'],
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.normal, color: grey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildCompartilharTab() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 40),
-          Text(
-            "QUER COMPARTILHAR SEU DASHBOARD?",
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: Text("COMPARTILHAR", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-          const SizedBox(height: 40),
-          Text(
-            "CASO QUEIRA ATUALIZAR SEUS DADOS NO DASHBOARD,\nAPERTE AQUI",
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: Text("ATUALIZAR DASHBOARD", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-        ],
+    return Container(
+      color: lightOrange,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: postsComunidade.length,
+        itemBuilder: (context, index) {
+          return _buildPostCard(postsComunidade[index]);
+        },
       ),
     );
   }

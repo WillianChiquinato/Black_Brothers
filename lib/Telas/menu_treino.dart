@@ -332,7 +332,7 @@ class MenuTreino extends StatelessWidget {
     ];
 
     return Container(
-      height: 600, // ajustar a altura se necessário
+      height: 800, // ajustar a altura se necessário
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
