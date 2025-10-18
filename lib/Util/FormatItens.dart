@@ -21,7 +21,7 @@ class FormatUtil {
   static String formatTellInput(String value) {
     String cleanText = value.replaceAll(RegExp(r'\D'), '');
 
-    if (cleanText.length > 0) {
+    if (cleanText.isNotEmpty) {
       cleanText = '(' + cleanText;
       if (cleanText.length > 3) {
         cleanText = '${cleanText.substring(0, 3)})${cleanText.substring(3)}';
@@ -38,17 +38,23 @@ class FormatUtil {
     return cleanText;
   }
 
+  /// formata o CPF automaticamente enquanto o usuário digita
   static String formatCpfInput(String value) {
     String cleanText = value.replaceAll(RegExp(r'\D'), '');
 
-    if (cleanText.length > 0) {
-      if (cleanText.length > 11) {
-        // Limita o tamanho máximo a 12 caracteres com o formato completo
-        cleanText = cleanText.substring(0, 11);
-      }
+    if (cleanText.length > 11) {
+      cleanText = cleanText.substring(0, 11);
     }
 
-    return cleanText;
+    if (cleanText.length >= 10) {
+      return '${cleanText.substring(0, 3)}.${cleanText.substring(3, 6)}.${cleanText.substring(6, 9)}-${cleanText.substring(9)}';
+    } else if (cleanText.length >= 7) {
+      return '${cleanText.substring(0, 3)}.${cleanText.substring(3, 6)}.${cleanText.substring(6)}';
+    } else if (cleanText.length >= 4) {
+      return '${cleanText.substring(0, 3)}.${cleanText.substring(3)}';
+    } else {
+      return cleanText;
+    }
   }
 
   static DateTime parseRfc1123(String rfcString) {

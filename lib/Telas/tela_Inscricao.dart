@@ -5,6 +5,7 @@ import 'package:projetosflutter/API/models/modelo_telefone.dart';
 import '../API/models/modelo_usuario.dart';
 import 'package:projetosflutter/Telas/tela_planos.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 
 import '../API/controller.dart';
@@ -73,6 +74,19 @@ class _TelaInscricaoState extends State<TelaInscricao> {
   }
 
   final _formKey = GlobalKey<FormState>();
+
+  // função para abrir a URL do termos e condicoes
+  Future<void> _launchURL() async {
+    const String urlString = 'https://www.google.com.br/'; // link URL (a definir)
+    final Uri url = Uri.parse(urlString);
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      showToast(context, 'Não foi possível acessar os Termos e Condições.', type: ToastType.error);
+      throw 'Não foi possível acessar $urlString';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,10 +201,15 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Insira um CPF válido';
-                                } else if (!RegExp(r'^\d{11}$')
-                                    .hasMatch(value)) {
-                                  return 'CPF precisa conter 11 numeros';
                                 }
+
+                                // lógica para permitir o ponto e hífen
+                                final cleanValue = value.replaceAll(RegExp(r'\D'), '');
+
+                                if (!RegExp(r'^\d{11}$').hasMatch(cleanValue)) {
+                                  return 'CPF precisa conter 11 números';
+                                }
+
                                 return null;
                               },
                               keyboardType: TextInputType.number,
@@ -374,17 +393,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                               fontWeight: FontWeight.bold,
                                             ),
                                             recognizer: TapGestureRecognizer()
-                                              ..onTap = () async {
-                                                final Uri url = Uri.parse(
-                                                    'https://www.jusbrasil.com.br/artigos/o-que-sao-termos-de-condicoes/1569717144');
-                                                if (await canLaunchUrl(url)) {
-                                                  await launchUrl(url,
-                                                      mode: LaunchMode
-                                                          .externalApplication);
-                                                } else {
-                                                  throw 'Não foi possível acessar o site';
-                                                }
-                                              }),
+                                              ..onTap = _launchURL,
+                                        ),
                                       ],
                                     ),
                                   ),
