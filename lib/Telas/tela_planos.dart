@@ -104,6 +104,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
   //Criar usuário.
   Future<void> _criarPessoa() async {
     String? dataFormatada;
+    String cpfLimpo = widget.cpfUser.replaceAll(RegExp(r'[^0-9]'), '');
 
     try {
       // Converte de dd/MM/yyyy para yyyy-MM-dd
@@ -115,7 +116,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
     }
 
     Map<String, dynamic> data = {
-      'CPF': widget.cpfUser.trim(),
+      'CPF': cpfLimpo,
       'Nome': widget.nomeUser.trim(),
       'Email': widget.emailUser.trim(),
       'DtNasc': dataFormatada,
@@ -312,7 +313,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
             ElevatedButton(
               onPressed: () async {
                 await _criarPessoa();
-                await _criarPlano(usuarioId, plano['id']);
+                // await _criarPlano(usuarioId, plano['id']);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 4, 220, 0),
