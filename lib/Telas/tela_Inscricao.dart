@@ -21,6 +21,7 @@ class TelaInscricao extends StatefulWidget {
 
 class _TelaInscricaoState extends State<TelaInscricao> {
   final TextEditingController usuarioInscricao = TextEditingController();
+  final TextEditingController nomeInscricao = TextEditingController();
   final TextEditingController emailInscricao = TextEditingController();
   final TextEditingController cpfInscricao = TextEditingController();
   final TextEditingController dtnascInscricao = TextEditingController();
@@ -77,13 +78,15 @@ class _TelaInscricaoState extends State<TelaInscricao> {
 
   // função para abrir a URL do termos e condicoes
   Future<void> _launchURL() async {
-    const String urlString = 'https://www.google.com.br/'; // link URL (a definir)
+    const String urlString =
+        'https://www.google.com.br/'; // link URL (a definir)
     final Uri url = Uri.parse(urlString);
 
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
-      showToast(context, 'Não foi possível acessar os Termos e Condições.', type: ToastType.error);
+      showToast(context, 'Não foi possível acessar os Termos e Condições.',
+          type: ToastType.error);
       throw 'Não foi possível acessar $urlString';
     }
   }
@@ -105,7 +108,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                       child:
                           ListView(scrollDirection: Axis.vertical, children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 30, bottom: 25),
+                          padding: const EdgeInsets.only(top: 10, bottom: 25),
                           child: Container(
                             color: Colors.transparent,
                             height: 50,
@@ -137,6 +140,43 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                       BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'Usuário',
+                                hintStyle: TextStyle(
+                                  fontSize: 15.0,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white70,
+                                ),
+                                fillColor: Colors.black45,
+                                filled: true,
+                              ),
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30, right: 30),
+                          child: SizedBox(
+                            width: 100,
+                            height: 70,
+                            child: TextFormField(
+                              validator: (String? value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Insira um nome válido';
+                                } else if (value.length < 3) {
+                                  return 'Nome precisa ter o minimo 3 caracteres';
+                                }
+                                return null;
+                              },
+                              controller: nomeInscricao,
+                              textAlign: TextAlign.left,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                ),
+                                hintText: 'Nome Completo',
                                 hintStyle: TextStyle(
                                   fontSize: 15.0,
                                   fontFamily: 'Poppins',
@@ -204,7 +244,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                 }
 
                                 // lógica para permitir o ponto e hífen
-                                final cleanValue = value.replaceAll(RegExp(r'\D'), '');
+                                final cleanValue =
+                                    value.replaceAll(RegExp(r'\D'), '');
 
                                 if (!RegExp(r'^\d{11}$').hasMatch(cleanValue)) {
                                   return 'CPF precisa conter 11 números';
@@ -385,15 +426,15 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                           ),
                                         ),
                                         TextSpan(
-                                            text: 'Condições',
-                                            style: TextStyle(
-                                              color: Colors.blue[200],
-                                              fontSize: 15,
-                                              fontFamily: 'Poppins',
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = _launchURL,
+                                          text: 'Condições',
+                                          style: TextStyle(
+                                            color: Colors.blue[200],
+                                            fontSize: 15,
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = _launchURL,
                                         ),
                                       ],
                                     ),
@@ -412,8 +453,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                         style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(15)),
-                                          minimumSize: const Size(500, 60),
+                                                  BorderRadius.circular(7)),
+                                          minimumSize: const Size(400, 50),
                                           backgroundColor: Colors.green,
                                           disabledBackgroundColor: orange,
                                         ),
@@ -422,13 +463,16 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                 if (_formKey.currentState!
                                                     .validate()) {
                                                   print(usuarioInscricao.text);
+                                                  print(nomeInscricao.text);
                                                   print(emailInscricao.text);
                                                   print(cpfInscricao.text);
                                                   print(dtnascInscricao.text);
                                                   print(tellInscricao.text);
                                                   print(senhaInscricao.text);
 
-                                                  showToast(context, "Dados Enviados!", type: ToastType.success);
+                                                  showToast(context,
+                                                      "Dados Enviados!",
+                                                      type: ToastType.success);
                                                   Future.delayed(
                                                       const Duration(
                                                           seconds: 1), () {
@@ -448,6 +492,8 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                                               usuarioInscricao
                                                                   .text
                                                                   .trim(),
+                                                          nomeCompletoUser:
+                                                              nomeInscricao.text.trim(),
                                                           senhaUser:
                                                               senhaInscricao
                                                                   .text

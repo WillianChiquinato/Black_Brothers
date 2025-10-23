@@ -1,7 +1,7 @@
 class TipoPlanoClass {
   final int id;
   final String nomePlano;
-  final int precoPlano;
+  final double precoPlano;
   final String beneficiosPlano;
 
   TipoPlanoClass(
@@ -14,7 +14,7 @@ class TipoPlanoClass {
     return TipoPlanoClass(
         id: int.tryParse(json['ID_TipoPlanos']?.toString() ?? '') ?? -1,
         nomePlano: json['Nome'] ?? '',
-        precoPlano: int.tryParse(json['Preco']?.toString() ?? '') ?? -1,
+        precoPlano: double.tryParse(json['Preco']?.toString() ?? '0.0') ?? 0.0,
         beneficiosPlano: json['Beneficios'] ?? '');
   }
 

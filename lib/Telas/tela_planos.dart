@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:projetosflutter/API/Models/modelo_planos.dart';
-import 'package:projetosflutter/API/models/modelo_aluno.dart';
+import 'package:projetosflutter/API/Models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/Telas/tela_inicial.dart';
 import '../API/Models/modelo_pessoa.dart';
 import '../API/Models/modelo_telefone.dart';
@@ -13,6 +13,7 @@ class TelaPlanos extends StatefulWidget {
   final String dtNascUser;
   final String cpfUser;
   final String nomeUser;
+  final String nomeCompletoUser;
   final String senhaUser;
   final String tellUser;
   final String emailUser;
@@ -22,6 +23,7 @@ class TelaPlanos extends StatefulWidget {
       required this.dtNascUser,
       required this.cpfUser,
       required this.nomeUser,
+      required this.nomeCompletoUser,
       required this.senhaUser,
       required this.tellUser,
       required this.emailUser});
@@ -35,6 +37,9 @@ class _TelaPlanosState extends State<TelaPlanos> {
 
   late GenericController<PlanoClass> _planoController;
   late List<PlanoClass> plano = [];
+
+  late GenericController<TipoPlanoClass> _tipoPlanoController;
+  late List<TipoPlanoClass> tipoPlano = [];
 
   late GenericController<PessoaClass> _pessoaController;
   late List<PessoaClass> pessoa = [];
@@ -52,31 +57,33 @@ class _TelaPlanosState extends State<TelaPlanos> {
   final Color orange = const Color(0xFFFF8C42);
   final Color grey = const Color(0xFF333333);
 
-  final List<Map<String, dynamic>> planos = [
-    {
-      'id': 1,
-      'nome': 'BASIC',
-      'imagem': 'Assets/basicPlan.png',
-      'preco': 'R\$ 69,90/mês',
-      'beneficios': '+ 12 Meses Fidelidade + DashBoard + Treinos Opcionais',
-    },
-    {
-      'id': 2,
-      'nome': 'PLUS',
-      'imagem': 'Assets/plusPlan.png',
-      'preco': 'R\$ 84,90/mês',
-      'beneficios':
-          '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses',
-    },
-    {
-      'id': 3,
-      'nome': 'GOLD',
-      'imagem': 'Assets/goldPlan.png',
-      'preco': 'R\$ 119,90/mês',
-      'beneficios':
-          '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses + consulta com nutricionista a cada 2 meses + acesso a todas as filiais da black brothers',
-    }
-  ];
+  late Future<List<TipoPlanoClass>> planos;
+
+  // final List<Map<String, dynamic>> planos = [
+  //   {
+  //     'id': 1,
+  //     'nome': 'BASIC',
+  //     'imagem': 'Assets/basicPlan.png',
+  //     'preco': 'R\$ 69,90/mês',
+  //     'beneficios': '+ 12 Meses Fidelidade + DashBoard + Treinos Opcionais',
+  //   },
+  //   {
+  //     'id': 2,
+  //     'nome': 'PLUS',
+  //     'imagem': 'Assets/plusPlan.png',
+  //     'preco': 'R\$ 84,90/mês',
+  //     'beneficios':
+  //         '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses',
+  //   },
+  //   {
+  //     'id': 3,
+  //     'nome': 'GOLD',
+  //     'imagem': 'Assets/goldPlan.png',
+  //     'preco': 'R\$ 119,90/mês',
+  //     'beneficios':
+  //         '+ 12 ausência de fidelidade + dashboard + treinos opcionais + treinos particulares a cada 6 meses + consulta com nutricionista a cada 2 meses + acesso a todas as filiais da black brothers',
+  //   }
+  // ];
 
   @override
   void initState() {
@@ -91,6 +98,11 @@ class _TelaPlanosState extends State<TelaPlanos> {
       fromJson: (json) => PessoaClass.fromJson(json),
     );
 
+    _tipoPlanoController = GenericController(
+      endpoint: 'Tipo_Plano/register',
+      fromJson: (json) => TipoPlanoClass.fromJson(json),
+    );
+
     _usuarioController = GenericController<UsuarioClass>(
       endpoint: 'Usuario/register',
       fromJson: (json) => UsuarioClass.fromJson(json),
@@ -99,6 +111,19 @@ class _TelaPlanosState extends State<TelaPlanos> {
     _telefoneController = GenericController<TelefoneClass>(
         endpoint: 'Telefone/register',
         fromJson: (json) => TelefoneClass.fromJson(json));
+
+    planos = carregarPlanos();
+  }
+
+  Future<List<TipoPlanoClass>> carregarPlanos() async {
+    final planosRegister = await _tipoPlanoController.getAll();
+    for (var plano in planosRegister) {
+      print(
+          'ID: ${plano.id}, Nome: ${plano.nomePlano}, Preço: ${plano.precoPlano}, Benefícios: ${plano.beneficiosPlano}');
+    }
+    if (planosRegister == null || planosRegister.isEmpty) return [];
+
+    return planosRegister.cast<TipoPlanoClass>();
   }
 
   //Criar usuário.
@@ -117,7 +142,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
 
     Map<String, dynamic> data = {
       'CPF': cpfLimpo,
-      'Nome': widget.nomeUser.trim(),
+      'Nome': widget.nomeCompletoUser.trim(),
       'Email': widget.emailUser.trim(),
       'DtNasc': dataFormatada,
       'FK_Academia_ID': '12345678000100'
@@ -138,7 +163,8 @@ class _TelaPlanosState extends State<TelaPlanos> {
       await _criarUsuario(pessoaId);
 
       print('Pessoa criada com sucesso!!');
-      showToast(context, "Usuário criado com sucesso!", type: ToastType.success);
+      showToast(context, "Usuário criado com sucesso!",
+          type: ToastType.success);
     } else {
       print('Usuario com esse CPF cadastrado');
     }
@@ -218,6 +244,21 @@ class _TelaPlanosState extends State<TelaPlanos> {
   }
 
   Widget _buildPlanCard(Map<String, dynamic> plano, BuildContext context) {
+    final imagemPlano = AssetImage(
+      () {
+        switch (plano['id']) {
+          case 1:
+            return 'Assets/basicPlan.png';
+          case 2:
+            return 'Assets/plusPlan.png';
+          case 3:
+            return 'Assets/goldPlan.png';
+          default:
+            return 'Assets/goldPlan.png';
+        }
+      }(),
+    );
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10.0),
       padding: const EdgeInsets.all(16.0),
@@ -259,14 +300,14 @@ class _TelaPlanosState extends State<TelaPlanos> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
-                  image: AssetImage(plano['imagem']),
+                  image: imagemPlano,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             SizedBox(height: 10),
             Text(
-              plano['preco'],
+              'R\$ ${plano['preco'].toStringAsFixed(2)}/Mês',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -284,7 +325,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: (plano['beneficios'] as String)
-                  .split('+')
+                  .split(';')
                   .where((b) => b.trim().isNotEmpty)
                   .map((b) => Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -313,7 +354,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
             ElevatedButton(
               onPressed: () async {
                 await _criarPessoa();
-                // await _criarPlano(usuarioId, plano['id']);
+                await _criarPlano(usuarioId, plano['id']);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 4, 220, 0),
@@ -377,12 +418,34 @@ class _TelaPlanosState extends State<TelaPlanos> {
               SizedBox(height: 30),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.7,
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: planos.length,
-                  itemBuilder: (context, index) {
-                    final plano = planos[index];
-                    return _buildPlanCard(plano, context);
+                child: FutureBuilder<List<TipoPlanoClass>>(
+                  future: planos,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Erro: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(
+                          child: Text('Nenhum plano disponível'));
+                    }
+
+                    final planosData = snapshot.data!;
+                    return PageView.builder(
+                      controller: _pageController,
+                      itemCount: planosData.length,
+                      itemBuilder: (context, index) {
+                        final plano = planosData[index];
+                        // Se você quer continuar usando _buildPlanCard, transforme o plano em Map:
+                        return _buildPlanCard({
+                          'id': plano.id,
+                          'nome': plano.nomePlano,
+                          'imagem': '',
+                          'preco': plano.precoPlano,
+                          'beneficios': plano.beneficiosPlano,
+                        }, context);
+                      },
+                    );
                   },
                 ),
               ),
