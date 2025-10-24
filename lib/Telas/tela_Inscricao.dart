@@ -1,14 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:projetosflutter/API/models/modelo_pessoa.dart';
-import 'package:projetosflutter/API/models/modelo_telefone.dart';
-import '../API/models/modelo_usuario.dart';
 import 'package:projetosflutter/Telas/tela_planos.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:intl/intl.dart';
 
-import '../API/controller.dart';
 import '../Components/ToastMessage.dart';
 import '../Util/FormatItens.dart';
 
@@ -28,6 +22,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
   final TextEditingController tellInscricao = TextEditingController();
   final TextEditingController senhaInscricao = TextEditingController();
   bool IsChecked = false;
+  bool _obscureText = true;
 
   final Color lightOrange = const Color(0xFFFFF1E6);
   final Color orange = const Color(0xFFFF8C42);
@@ -370,21 +365,32 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                 return null;
                               },
                               controller: senhaInscricao,
-                              obscureText: true,
+                              obscureText: _obscureText,
                               textAlign: TextAlign.left,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'Senha',
-                                hintStyle: TextStyle(
+                                hintStyle: const TextStyle(
                                   fontSize: 15.0,
                                   fontFamily: 'Poppins',
                                   color: Colors.white70,
                                 ),
                                 fillColor: Colors.black45,
                                 filled: true,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                                    color: Colors.white70,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText; // alterna visibilidade
+                                    });
+                                  },
+                                ),
                               ),
                               style: const TextStyle(
                                 fontFamily: 'Poppins',

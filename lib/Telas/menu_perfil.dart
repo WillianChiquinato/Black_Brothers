@@ -5,6 +5,7 @@ import 'package:projetosflutter/API/models/modelo_aluno.dart';
 import 'package:projetosflutter/API/models/modelo_telefone.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
+import '../Components/ToastMessage.dart';
 
 import '../API/controller.dart';
 import '../API/models/modelo_pessoa.dart';
@@ -25,6 +26,7 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   final tellController = TextEditingController();
   final cpfController = TextEditingController();
 
+  late GenericController<UsuarioClass> _usuarioController;
   late GenericController<PessoaClass> _pessoaController;
   late GenericController<TelefoneClass> _telefoneController;
   late GenericController<AlunoClass> _alunoController;
@@ -34,6 +36,9 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   late TipoPlanoClass? plano;
   late AlunoClass? aluno;
   late TabController _tabController;
+
+  String? usuarioLogin;
+  String? usuarioPassWord;
 
   String? usuarioNome;
   String? usuarioDtNasc;
@@ -54,6 +59,11 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
     usuario = widget.user;
     plano = widget.plan;
     super.initState();
+
+    _usuarioController = GenericController(
+      endpoint: 'Usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
 
     _pessoaController = GenericController(
       endpoint: 'Pessoa',
@@ -85,11 +95,14 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
     final alunos =
         await _alunoController.getByQuery('FK_Usuario_ID=$apiAluUserId');
 
+    final usuarioAPI = await _usuarioController.getOne(apiAluUserId.toString());
     final todosTelefones = await _telefoneController.getAll();
     telefonePessoa =
         todosTelefones.firstWhere((tel) => tel.FK_CPF == pessoa?.CPF);
 
     setState(() {
+      usuarioLogin = usuarioAPI?.login;
+      usuarioPassWord = usuarioAPI?.senha;
       usuarioCpf = pessoa?.CPF;
       usuarioNome = pessoa?.Nome;
       usuarioEmail = pessoa?.Email;
@@ -163,6 +176,8 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
 
   //Update do perfil.
   Future<void> _updatePessoa(
+      String newLogin,
+      String newSenha,
       String newName,
       String newDate,
       String newCpf,
@@ -171,7 +186,9 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
       double newHeight,
       double newWeight) async {
     // Verifica se houve alteração
-    if (newName == usuarioNome &&
+    if (newLogin == usuarioLogin &&
+        newSenha == usuarioPassWord &&
+        newName == usuarioNome &&
         newTell == usuarioTell &&
         newDate == usuarioDtNasc &&
         newCpf == usuarioCpf &&
@@ -194,6 +211,12 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
         'FK_Academia_ID': academiaCNPJFixo
       };
 
+      Map<String, dynamic> novosDadosUsuario = {
+        'Login': newLogin,
+        'Senha': newSenha,
+        'FK_Pessoa_ID': newCpf,
+      };
+
       Map<String, dynamic> novosDadosTell = {
         'Telefone01': telefoneLimpo,
         'Telefone02': telefoneLimpo,
@@ -207,6 +230,8 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
       };
 
       var resultado = await _pessoaController.update(usuarioCpf!, novosDados);
+
+      var resultadoUser = await _usuarioController.update(usuario!.id.toString(), novosDadosUsuario);
 
       if (telefoneLimpo.length != 11) {
         print("Telefone inválido, precisa ter 11 dígitos");
@@ -241,6 +266,17 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
         print("Erro ao atualizar pessoa");
       }
 
+      //Para Usuario.
+      if (resultadoUser != null) {
+        setState(() {
+          usuarioLogin = resultadoUser.login;
+          usuarioPassWord = resultadoUser.senha;
+        });
+        print("Usuario atualizado");
+      } else {
+        print("Erro ao atualizar pessoa");
+      }
+
       //Para telefone.
       if (resultado != null) {
         setState(() {
@@ -258,8 +294,15 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
           peso = resultadoAluno?.Peso;
         });
       }
+
+      Future.delayed(const Duration(milliseconds: 200), () {
+        showToast(context, "Dados Atualizados!", type: ToastType.success);
+      });
     } catch (e) {
       print("Erro ao atualizar pessoa: $e");
+      Future.delayed(const Duration(milliseconds: 200), () {
+        showToast(context, "Erro ao atualizar os dados!", type: ToastType.error);
+      });
     }
   }
 
@@ -326,6 +369,15 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildSectionTitle("Informações do Login"),
+            const SizedBox(height: 12),
+            _buildTextField("Login", usuarioLogin ?? "", onChanged: (value) {
+              usuarioLogin = value;
+            }),
+            _buildTextField("Senha", usuarioPassWord ?? "", obscureText: true,
+                onChanged: (value) {
+              usuarioPassWord = value;
+            }),
             _buildSectionTitle("Informações Pessoais"),
             const SizedBox(height: 12),
             _buildTextField("Nome", usuarioNome ?? "", onChanged: (value) {
@@ -383,6 +435,8 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
                         DateFormat('yyyy-MM-dd').format(parsedDate);
 
                     await _updatePessoa(
+                        usuarioLogin!,
+                        usuarioPassWord!,
                         usuarioNome!,
                         apiDate,
                         usuarioCpf!,
@@ -566,25 +620,47 @@ class _MenuPerfilState extends State<MenuPerfil> with TickerProviderStateMixin {
   Widget _buildTextField(
     String label,
     String? initialValue, {
+    bool obscureText = false,
     TextEditingController? controller,
     void Function(String)? onChanged,
     bool readOnly = false,
   }) {
+    final obscureTextNotifier = ValueNotifier<bool>(obscureText);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: TextFormField(
-        controller: controller,
-        initialValue: controller == null ? initialValue : null,
-        onChanged: onChanged,
-        readOnly: readOnly,
-        style: GoogleFonts.poppins(),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: GoogleFonts.poppins(),
-          filled: true,
-          fillColor: lightOrange,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        ),
+      child: ValueListenableBuilder<bool>(
+        valueListenable: obscureTextNotifier,
+        builder: (context, isObscured, child) {
+          return TextFormField(
+            controller: controller,
+            obscureText: isObscured,
+            initialValue: controller == null ? initialValue : null,
+            onChanged: onChanged,
+            readOnly: readOnly,
+            style: GoogleFonts.poppins(),
+            decoration: InputDecoration(
+              labelText: label,
+              labelStyle: GoogleFonts.poppins(),
+              filled: true,
+              fillColor: lightOrange,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              // Adiciona o botão do olhinho apenas se for campo de senha
+              suffixIcon: obscureText
+                  ? IconButton(
+                      icon: Icon(
+                        isObscured ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        obscureTextNotifier.value = !isObscured;
+                      },
+                    )
+                  : null,
+            ),
+          );
+        },
       ),
     );
   }

@@ -89,11 +89,11 @@ class _MyAppState extends State<TelaInicial> {
         );
       });
     } else {
-      showToast(context, "Usuário nao encontrado!", type: ToastType.success);
+      showToast(context, "Usuário nao encontrado!", type: ToastType.error);
     }
   }
 
-  final bool _obscuraSenha = true;
+  bool _obscuraSenha = true;
   bool buttonPress = false;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -226,6 +226,17 @@ class _MyAppState extends State<TelaInicial> {
                         ),
                         filled: true,
                         fillColor: Colors.black45,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscuraSenha ? Icons.visibility_off : Icons.visibility,
+                            color: Colors.white70,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscuraSenha = !_obscuraSenha; // alterna visibilidade
+                            });
+                          },
+                        ),
                         border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                           borderSide: BorderSide.none,
