@@ -47,10 +47,6 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
 
   late final Map<int, TextEditingController> controllers;
 
-  int? _expandedIndex;
-  int _selectedIndex = -1;
-  int _rating = 0;
-
   final PageStorageBucket bucket = PageStorageBucket();
 
   @override
@@ -104,7 +100,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
 
   Future<void> _criarFeedback(int TopicoID, String Mensagem) async {
     var resultadoTipoFeedback =
-        await _tipoFeedBackController.getOne(TopicoID.toString());
+    await _tipoFeedBackController.getOne(TopicoID.toString());
     if (resultadoTipoFeedback != null) {
       Map<String, dynamic> data = {
         'Mensagem': Mensagem,
@@ -256,7 +252,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                 elevation: 0,
                 backgroundColor: lightOrange,
                 padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
               ),
@@ -324,7 +320,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                       const Icon(Icons.calendar_month_outlined),
                       Text("3",
                           style:
-                              GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                          GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                       Text("Quantidade de treinos",
                           style: GoogleFonts.poppins(fontSize: 12)),
                     ],
@@ -334,7 +330,7 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                       const Icon(Icons.timer_outlined),
                       Text("8H 36M",
                           style:
-                              GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                          GoogleFonts.poppins(fontWeight: FontWeight.bold)),
                       Text("Horas treinadas",
                           style: GoogleFonts.poppins(fontSize: 12)),
                     ],
@@ -407,169 +403,18 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                     context: context,
                     shape: const RoundedRectangleBorder(
                       borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
+                      BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     backgroundColor: Colors.white,
                     isScrollControlled: true,
                     builder: (context) {
-                      return SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            top: 24,
-                            left: 16,
-                            right: 16,
-                            bottom:
-                                MediaQuery.of(context).viewInsets.bottom + 24,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'FALE CONOSCO',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: grey,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Envie dúvidas, feedbacks ou reclamações. Selecione a categoria abaixo:',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 12, color: Colors.black54),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 24),
-                              ...topicos.asMap().entries.map(
-                                (entry) {
-                                  final index = entry.key;
-                                  final item = entry.value;
-
-                                  return Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 12.0),
-                                    child: ExpansionTile(
-                                      key: ValueKey(item['id']),
-                                      initiallyExpanded:
-                                          index == _expandedIndex,
-                                      onExpansionChanged: (isExpanded) {
-                                        setState(() {
-                                          _expandedIndex =
-                                              isExpanded ? index : null;
-                                        });
-                                      },
-                                      title: Text(
-                                        item['nome'],
-                                        style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.w600,
-                                          color: orange,
-                                        ),
-                                      ),
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          child: TextFormField(
-                                            controller: controllers[item['id']],
-                                            maxLines: 1,
-                                            style: GoogleFonts.poppins(
-                                                fontSize: 14),
-                                            decoration: InputDecoration(
-                                              hintText:
-                                                  'Escreva sua mensagem...',
-                                              hintStyle: GoogleFonts.poppins(
-                                                  fontSize: 14),
-                                              filled: true,
-                                              fillColor: lightOrange,
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                borderSide: BorderSide.none,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: List.generate(
-                                            5,
-                                            (starIndex) {
-                                              return IconButton(
-                                                icon: Icon(
-                                                  starIndex < _rating
-                                                      ? Icons.star
-                                                      : Icons.star_border,
-                                                  color: orange,
-                                                  size: 30,
-                                                ),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _rating = starIndex + 1;
-                                                  });
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          child: ElevatedButton.icon(
-                                            onPressed: () {
-                                              final mensagem =
-                                                  controllers[item['id']]!
-                                                      .text
-                                                      .trim();
-                                              if (mensagem.isEmpty) {
-                                                showToast(context,
-                                                    "Digite algo para enviar!",
-                                                    type: ToastType.error);
-                                                return;
-                                              }
-
-                                              _criarFeedback(
-                                                  item['id'], mensagem);
-
-                                              controllers.clear();
-                                              showToast(context,
-                                                  "Feedback enviar com sucesso!",
-                                                  type: ToastType.success);
-                                              Future.delayed(
-                                                  const Duration(
-                                                      milliseconds: 500), () {
-                                                Navigator.pop(context);
-                                              });
-                                            },
-                                            label: Text(
-                                              'Enviar',
-                                              style: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.green,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 12),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ).toList(),
-                            ],
-                          ),
-                        ),
+                      return _FaleConoscoModal(
+                        topicos: topicos,
+                        grey: grey,
+                        orange: orange,
+                        lightOrange: lightOrange,
+                        criarFeedback: _criarFeedback,
+                        controllers: controllers,
                       );
                     },
                   );
@@ -583,12 +428,201 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: orange,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FaleConoscoModal extends StatefulWidget {
+  final List<Map<String, dynamic>> topicos;
+  final Color grey;
+  final Color orange;
+  final Color lightOrange;
+  final Future<void> Function(int TopicoID, String Mensagem) criarFeedback;
+  final Map<int, TextEditingController> controllers;
+
+  const _FaleConoscoModal({
+    required this.topicos,
+    required this.grey,
+    required this.orange,
+    required this.lightOrange,
+    required this.criarFeedback,
+    required this.controllers,
+  });
+
+  @override
+  State<_FaleConoscoModal> createState() => __FaleConoscoModalState();
+}
+
+class __FaleConoscoModalState extends State<_FaleConoscoModal> {
+  int? _expandedIndex;
+  Map<int, int> _ratings = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _ratings = {for (var t in widget.topicos) t['id']: 0};
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: 24,
+          left: 16,
+          right: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'FALE CONOSCO',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: widget.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Envie dúvidas, feedbacks ou reclamações. Selecione a categoria abaixo:',
+              style: GoogleFonts.poppins(
+                  fontSize: 12, color: Colors.black54),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ...widget.topicos.asMap().entries.map(
+                  (entry) {
+                final index = entry.key;
+                final item = entry.value;
+                final currentTopicId = item['id'] as int;
+                final currentRating = _ratings[currentTopicId] ?? 0;
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: ExpansionTile(
+                    key: ValueKey(item['id']),
+                    initiallyExpanded: index == _expandedIndex,
+                    onExpansionChanged: (isExpanded) {
+                      setState(() {
+                        _expandedIndex = isExpanded ? index : null;
+                      });
+                    },
+                    title: Text(
+                      item['nome'],
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        color: widget.orange,
+                      ),
+                    ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: TextFormField(
+                          controller: widget.controllers[item['id']],
+                          maxLines: 1,
+                          style: GoogleFonts.poppins(fontSize: 14),
+                          decoration: InputDecoration(
+                            hintText: 'Escreva sua mensagem...',
+                            hintStyle: GoogleFonts.poppins(fontSize: 14),
+                            filled: true,
+                            fillColor: widget.lightOrange,
+                            border: OutlineInputBorder(
+                              borderRadius:
+                              BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          5,
+                              (starIndex) {
+                            return IconButton(
+                              icon: Icon(
+                                starIndex < currentRating
+                                    ? Icons.star
+                                    : Icons.star_border,
+                                color: widget.orange,
+                                size: 30,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _ratings[currentTopicId] = starIndex + 1;
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8),
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final mensagem =
+                            widget.controllers[item['id']]!.text.trim();
+                            if (mensagem.isEmpty) {
+                              showToast(context,
+                                  "Digite algo para enviar!",
+                                  type: ToastType.error);
+                              return;
+                            }
+
+                            await widget.criarFeedback(item['id'], mensagem);
+
+                            widget.controllers[item['id']]!.clear();
+                            setState(() {
+                              _ratings[currentTopicId] = 0;
+                              _expandedIndex = null;
+                            });
+
+                            showToast(context,
+                                "Feedback enviado com sucesso!",
+                                type: ToastType.success);
+
+                            Future.delayed(
+                                const Duration(milliseconds: 500), () {
+                              Navigator.pop(context);
+                            });
+                          },
+                          label: Text(
+                            'Enviar',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding:
+                            const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                              BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ).toList(),
           ],
         ),
       ),
