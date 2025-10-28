@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/API/Models/modelo_aluno.dart';
 import 'package:projetosflutter/API/Models/modelo_exercicio.dart';
 import 'package:projetosflutter/API/Models/modelo_instrutor.dart';
+import 'package:projetosflutter/API/Models/modelo_pessoa.dart';
 import 'package:projetosflutter/API/Models/modelo_treinoExercicio.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/API/Models/modelo_treino.dart';
@@ -28,10 +29,13 @@ class _MenuTreinoState extends State<MenuTreino> {
   late GenericController<AlunoClass> _alunoController;
   late GenericController<ExercicioClass> _exercicioController;
   late GenericController<InstrutorClass> _instrutorController;
+  late GenericController<UsuarioClass> _usuarioController;
+  late GenericController<PessoaClass> _pessoaController;
 
   late List<ExercicioClass> exercicios = [];
   late List<TreinoExercicioClass> treinoExercicios = [];
   InstrutorClass? instrutor;
+  late List<PessoaClass> UsuarioNameInstrutor = [];
 
   @override
   void initState() {
@@ -62,16 +66,42 @@ class _MenuTreinoState extends State<MenuTreino> {
       fromJson: (json) => InstrutorClass.fromJson(json),
     );
 
+    _usuarioController = GenericController(
+      endpoint: 'Usuario',
+      fromJson: (json) => UsuarioClass.fromJson(json),
+    );
+
+    _pessoaController = GenericController(
+      endpoint: 'Pessoa',
+      fromJson: (json) => PessoaClass.fromJson(json),
+    );
+
     carregarTreinos();
   }
 
   Future<void> carregarTreinos() async {
     final treinos = await carregarTreinosDoAlunoEInstrutor(widget.user?.id);
+    UsuarioNameInstrutor = await carregarInstrutor(widget.user?.id);
     print('Treinos carregados: ${treinos.length}');
   }
 
+  //Pega o nome do instrutor.
+  Future<List<PessoaClass>> carregarInstrutor(int? usuarioId) async {
+    if (usuarioId == null) return [];
+
+    final usuarios = await _usuarioController.getByQuery('ID_Usuario=$usuarioId');
+    if (usuarios == null || usuarios.isEmpty) return [];
+
+    final usuario = usuarios.first;
+    final pessoa = await _pessoaController.getOne(usuario.fK_Pessoa_ID.toString());
+    if (pessoa == null) return [];
+
+    return [pessoa];
+  }
+
   // Carrega treinos do aluno
-  Future<List<TreinoClass>> carregarTreinosDoAlunoEInstrutor(int? usuarioId) async {
+  Future<List<TreinoClass>> carregarTreinosDoAlunoEInstrutor(
+      int? usuarioId) async {
     if (usuarioId == null) return [];
 
     final aluno = await _getAlunoPorUsuarioId(usuarioId);
@@ -80,26 +110,9 @@ class _MenuTreinoState extends State<MenuTreino> {
     final treinos = await _getTreinosDoAluno(aluno.Matricula);
     if (treinos.isEmpty) return [];
 
-    instrutor = (await _getIntrutorDosTreinos(aluno.Matricula)) as InstrutorClass;
-    print('CUZIN: ' + instrutor.toString());
     await _carregarExerciciosDosTreinos(treinos);
 
     return treinos;
-  }
-
-  //Busca instrutor.
-  Future<List<InstrutorClass>> _getIntrutorDosTreinos(int alunoId) async {
-    final treinos = await _treinoController.getAll();
-
-    if (treinos == null || treinos.isEmpty) return [];
-
-    final treinosDoAluno = treinos.where((t) => t.FK_Aluno_ID == alunoId).toList();
-    if (treinosDoAluno.isEmpty) return [];
-
-    final instrutoresIds = treinosDoAluno.map((t) => t.FK_Instrutor_ID).toSet().toList();
-    final instrutores = await _instrutorController.getByQuery('ID IN (${instrutoresIds.join(',')})');
-
-    return instrutores ?? [];
   }
 
   // Busca aluno pelo usuário
@@ -229,7 +242,7 @@ class _MenuTreinoState extends State<MenuTreino> {
                   children: [
                     Icon(Icons.fitness_center, size: 16, color: orange),
                     const SizedBox(width: 4),
-                    Text("Treino: ${instrutor?.descricao}",
+                    Text("Treino: ${UsuarioNameInstrutor.first.Nome}",
                         style: GoogleFonts.poppins(fontSize: 12, color: grey)),
                   ],
                 ),
