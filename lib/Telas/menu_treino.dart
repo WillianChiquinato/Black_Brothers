@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/API/Models/modelo_aluno.dart';
 import 'package:projetosflutter/API/Models/modelo_exercicio.dart';
+import 'package:projetosflutter/API/Models/modelo_instrutor.dart';
 import 'package:projetosflutter/API/Models/modelo_treinoExercicio.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/API/Models/modelo_treino.dart';
@@ -26,9 +27,11 @@ class _MenuTreinoState extends State<MenuTreino> {
   late GenericController<TreinoClass> _treinoController;
   late GenericController<AlunoClass> _alunoController;
   late GenericController<ExercicioClass> _exercicioController;
+  late GenericController<InstrutorClass> _instrutorController;
 
   late List<ExercicioClass> exercicios = [];
   late List<TreinoExercicioClass> treinoExercicios = [];
+  InstrutorClass? instrutor;
 
   @override
   void initState() {
@@ -54,16 +57,21 @@ class _MenuTreinoState extends State<MenuTreino> {
       fromJson: (json) => ExercicioClass.fromJson(json),
     );
 
+    _instrutorController = GenericController(
+      endpoint: 'Empregado',
+      fromJson: (json) => InstrutorClass.fromJson(json),
+    );
+
     carregarTreinos();
   }
 
   Future<void> carregarTreinos() async {
-    final treinos = await carregarTreinosDoAluno(widget.user?.id);
+    final treinos = await carregarTreinosDoAlunoEInstrutor(widget.user?.id);
     print('Treinos carregados: ${treinos.length}');
   }
 
   // Carrega treinos do aluno
-  Future<List<TreinoClass>> carregarTreinosDoAluno(int? usuarioId) async {
+  Future<List<TreinoClass>> carregarTreinosDoAlunoEInstrutor(int? usuarioId) async {
     if (usuarioId == null) return [];
 
     final aluno = await _getAlunoPorUsuarioId(usuarioId);
@@ -72,9 +80,26 @@ class _MenuTreinoState extends State<MenuTreino> {
     final treinos = await _getTreinosDoAluno(aluno.Matricula);
     if (treinos.isEmpty) return [];
 
+    instrutor = (await _getIntrutorDosTreinos(aluno.Matricula)) as InstrutorClass;
+    print('CUZIN: ' + instrutor.toString());
     await _carregarExerciciosDosTreinos(treinos);
 
     return treinos;
+  }
+
+  //Busca instrutor.
+  Future<List<InstrutorClass>> _getIntrutorDosTreinos(int alunoId) async {
+    final treinos = await _treinoController.getAll();
+
+    if (treinos == null || treinos.isEmpty) return [];
+
+    final treinosDoAluno = treinos.where((t) => t.FK_Aluno_ID == alunoId).toList();
+    if (treinosDoAluno.isEmpty) return [];
+
+    final instrutoresIds = treinosDoAluno.map((t) => t.FK_Instrutor_ID).toSet().toList();
+    final instrutores = await _instrutorController.getByQuery('ID IN (${instrutoresIds.join(',')})');
+
+    return instrutores ?? [];
   }
 
   // Busca aluno pelo usuário
@@ -127,7 +152,7 @@ class _MenuTreinoState extends State<MenuTreino> {
           _buildDiasSemana(),
           Expanded(
             child: FutureBuilder<List<TreinoClass>>(
-              future: carregarTreinosDoAluno(widget.user?.id),
+              future: carregarTreinosDoAlunoEInstrutor(widget.user?.id),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -204,7 +229,7 @@ class _MenuTreinoState extends State<MenuTreino> {
                   children: [
                     Icon(Icons.fitness_center, size: 16, color: orange),
                     const SizedBox(width: 4),
-                    Text("Treino: Professor da Academia",
+                    Text("Treino: ${instrutor?.descricao}",
                         style: GoogleFonts.poppins(fontSize: 12, color: grey)),
                   ],
                 ),
