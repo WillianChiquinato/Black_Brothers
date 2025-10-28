@@ -1,34 +1,116 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:projetosflutter/API/models/modelo_planos.dart';
+import 'package:projetosflutter/API/Models/modelo_aluno.dart';
+import 'package:projetosflutter/API/Models/modelo_exercicio.dart';
+import 'package:projetosflutter/API/Models/modelo_treinoExercicio.dart';
 import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
-import '../API/models/modelo_usuario.dart';
+import 'package:projetosflutter/API/Models/modelo_treino.dart';
+import 'package:projetosflutter/API/models/modelo_usuario.dart';
+import 'package:projetosflutter/API/controller.dart';
+import 'package:projetosflutter/Components/ToastMessage.dart';
 
-class Exercicio {
-  final String nome;
-  final String series;
-  final String imagem;
-  final bool temVideo;
-  bool concluido;
-  bool expandido;
-
-  Exercicio({
-    required this.nome,
-    required this.series,
-    required this.imagem,
-    required this.temVideo,
-    this.concluido = false,
-    this.expandido = false,
-  });
-}
-
-// tela principal
-class MenuTreino extends StatelessWidget {
+class MenuTreino extends StatefulWidget {
   final UsuarioClass? user;
   final TipoPlanoClass? plan;
 
   const MenuTreino({super.key, this.user, this.plan});
+
+  @override
+  State<MenuTreino> createState() => _MenuTreinoState();
+}
+
+class _MenuTreinoState extends State<MenuTreino> {
+  late GenericController<TreinoExercicioClass> _treinoExercicioController;
+  late GenericController<TreinoClass> _treinoController;
+  late GenericController<AlunoClass> _alunoController;
+  late GenericController<ExercicioClass> _exercicioController;
+
+  late List<ExercicioClass> exercicios = [];
+  late List<TreinoExercicioClass> treinoExercicios = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _treinoExercicioController = GenericController(
+      endpoint: 'treino_exercicio',
+      fromJson: (json) => TreinoExercicioClass.fromJson(json),
+    );
+
+    _treinoController = GenericController(
+      endpoint: 'Treino',
+      fromJson: (json) => TreinoClass.fromJson(json),
+    );
+
+    _alunoController = GenericController(
+      endpoint: 'Aluno',
+      fromJson: (json) => AlunoClass.fromJson(json),
+    );
+
+    _exercicioController = GenericController(
+      endpoint: 'Exercicio',
+      fromJson: (json) => ExercicioClass.fromJson(json),
+    );
+
+    carregarTreinos();
+  }
+
+  Future<void> carregarTreinos() async {
+    final treinos = await carregarTreinosDoAluno(widget.user?.id);
+    print('Treinos carregados: ${treinos.length}');
+  }
+
+  // Carrega treinos do aluno
+  Future<List<TreinoClass>> carregarTreinosDoAluno(int? usuarioId) async {
+    if (usuarioId == null) return [];
+
+    final aluno = await _getAlunoPorUsuarioId(usuarioId);
+    if (aluno == null) return [];
+
+    final treinos = await _getTreinosDoAluno(aluno.Matricula);
+    if (treinos.isEmpty) return [];
+
+    await _carregarExerciciosDosTreinos(treinos);
+
+    return treinos;
+  }
+
+  // Busca aluno pelo usuário
+  Future<AlunoClass?> _getAlunoPorUsuarioId(int usuarioId) async {
+    final alunos =
+        await _alunoController.getByQuery('FK_Usuario_ID=$usuarioId');
+    if (alunos == null || alunos.isEmpty) return null;
+    return alunos.first;
+  }
+
+  // Busca treinos do aluno
+  Future<List<TreinoClass>> _getTreinosDoAluno(int alunoId) async {
+    final todosTreinos = await _treinoController.getAll();
+    if (todosTreinos == null || todosTreinos.isEmpty) return [];
+    return todosTreinos.where((t) => t.FK_Aluno_ID == alunoId).toList();
+  }
+
+  // Carrega todos os exercícios relacionados aos treinos
+  Future<void> _carregarExerciciosDosTreinos(List<TreinoClass> treinos) async {
+    final treinoIds = treinos.map((t) => t.id).toList();
+    if (treinoIds.isEmpty) return;
+
+    final treinoExercicioRelacionado = await _treinoExercicioController
+        .getByQuery('FK_Treino_ID IN (${treinoIds.join(',')})');
+
+    treinoExercicios = treinoExercicioRelacionado ?? [];
+
+    final exercicioIds =
+        treinoExercicioRelacionado?.map((te) => te.FK_Exercicio_ID).toList() ??
+            [];
+
+    if (exercicioIds.isNotEmpty) {
+      exercicios = await _exercicioController
+          .getByQuery('ID IN (${exercicioIds.join(',')})');
+    }
+  }
 
   final Color lightOrange = const Color(0xFFFFF1E6);
   final Color orange = const Color(0xFFFF8C42);
@@ -38,37 +120,63 @@ class MenuTreino extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: grey,
-        title: Row(
-          children: [
-            Image.asset('Assets/logo-bb.png', height: 40, width: 40),
-            const SizedBox(width: 8),
-            Text(
-              "Black Brothers",
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: _buildAppBar(),
       body: Column(
         children: [
           _buildInfoUsuario(),
           _buildDiasSemana(),
-          _buildTiposTreino(context),
+          Expanded(
+            child: FutureBuilder<List<TreinoClass>>(
+              future: carregarTreinosDoAluno(widget.user?.id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Erro ao carregar treinos.",
+                        style: GoogleFonts.poppins(color: Colors.red)),
+                  );
+                }
+
+                final treinos = snapshot.data ?? [];
+                if (treinos.isEmpty) {
+                  return Center(
+                    child: Text("Nenhum treino disponível.",
+                        style:
+                            GoogleFonts.poppins(color: grey.withOpacity(0.6))),
+                  );
+                }
+
+                return _buildGridTreinos(context, treinos);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      backgroundColor: grey,
+      title: Row(
+        children: [
+          Image.asset('Assets/logo-bb.png', height: 40, width: 40),
+          const SizedBox(width: 8),
+          Text(
+            "Black Brothers",
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildInfoUsuario() {
-    final Color lightOrange = const Color(0xFFFFF1E6);
-    final Color orange = const Color(0xFFFF8C42);
-    final Color grey = const Color(0xFF333333);
-
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Row(
@@ -76,17 +184,17 @@ class MenuTreino extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${plan?.nomePlano}',
+              Text('${widget.plan?.nomePlano}',
                   style: GoogleFonts.poppins(
                       color: orange, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text('${user?.login}',
+              Text('${widget.user?.login}',
                   style: GoogleFonts.poppins(
                       fontSize: 14, fontWeight: FontWeight.w600)),
               const SizedBox(height: 18),
               Container(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: lightOrange,
                   borderRadius: BorderRadius.circular(8),
@@ -150,14 +258,6 @@ class MenuTreino extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isToday ? orange : lightOrange,
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      if (isToday)
-                        BoxShadow(
-                          color: orange.withOpacity(0.4),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                    ],
                     border: Border.all(
                       color: isToday ? orange : grey.withOpacity(0.2),
                       width: isToday ? 2 : 1,
@@ -180,98 +280,78 @@ class MenuTreino extends StatelessWidget {
     );
   }
 
-  Widget _buildTiposTreino(BuildContext context) {
-    final Color orange = const Color(0xFFFF8C42);
-    final Color grey = const Color(0xFF333333);
-    final Color lightOrange = const Color(0xFFFFF1E6);
-
-    final List<Map<String, dynamic>> treinos = [
-      {
-        "tipo": "A",
-        "icone": Icons.directions_run,
-        "descricao": "Treino para Força",
-        "tituloTreino": "PEITO / TRÍCEPS"
-      },
-      {
-        "tipo": "B",
-        "icone": Icons.fitness_center,
-        "descricao": "Treino para Hipertrofia",
-        "tituloTreino": "COSTAS / BÍCEPS"
-      },
-      {
-        "tipo": "C",
-        "icone": Icons.pool,
-        "descricao": "Treino para Resistência",
-        "tituloTreino": "PERNAS / PANTURRILHA"
-      },
-      {
-        "tipo": "D",
-        "icone": Icons.ac_unit,
-        "descricao": "Treino para Definição",
-        "tituloTreino": "OMBRO / ABDOMEN"
-      },
-    ];
-
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
+  Widget _buildGridTreinos(BuildContext context, List<TreinoClass> treinos) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GridView.builder(
+        itemCount: treinos.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisSpacing: 16.0,
-          crossAxisSpacing: 16.0,
-          children: treinos.map((treino) {
-            return InkWell(
-              // abre os detalhes dos treinos
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(20)),
-                  ),
-                  builder: (BuildContext context) {
-                    return _TreinoDetalheSheet(titulo: treino['tituloTreino']);
-                  },
-                );
-              },
-              child: Card(
-                elevation: 6,
-                color: lightOrange,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(treino['icone'], size: 40, color: orange),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Treino ${treino['tipo']}',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: grey),
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+        ),
+        itemBuilder: (context, index) {
+          final treino = treinos[index];
+
+          return InkWell(
+            onTap: () {
+              final exerciciosDoTreino = treinoExercicios
+                  .where((te) => te.FK_Treino_ID == treino.id)
+                  .map((te) => exercicios
+                      .firstWhere((ex) => ex.id == te.FK_Exercicio_ID))
+                  .toList();
+
+              // Mostra detalhes do treino
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (BuildContext context) {
+                  return _TreinoDetalheSheet(
+                    titulo: treino.nome ?? '',
+                    exerciciosTreino: exerciciosDoTreino,
+                  );
+                },
+              );
+            },
+            child: Card(
+              elevation: 6,
+              color: lightOrange,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.fitness_center, size: 40, color: orange),
+                    const SizedBox(height: 8),
+                    Text(
+                      treino.nome ?? 'Treino',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: grey),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      treino.nome ?? '',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: grey.withOpacity(0.8),
+                        fontWeight: FontWeight.w500,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        treino['tituloTreino'],
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: grey.withOpacity(0.8),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          }).toList(),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -279,7 +359,9 @@ class MenuTreino extends StatelessWidget {
 
 class _TreinoDetalheSheet extends StatefulWidget {
   final String titulo;
-  const _TreinoDetalheSheet({required this.titulo});
+  final List<ExercicioClass> exerciciosTreino;
+  const _TreinoDetalheSheet(
+      {required this.titulo, required this.exerciciosTreino});
 
   @override
   State<_TreinoDetalheSheet> createState() => _TreinoDetalheSheetState();
@@ -296,28 +378,10 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
   int segundos = 0;
   Timer? timer;
 
-  late List<Exercicio> exercicios = [
-    Exercicio(
-        nome: "Supino Reto na barra",
-        series: "4 x 10 a 12",
-        imagem: "Assets/thumb-peito.png",
-        temVideo: true),
-    Exercicio(
-        nome: "Crucifixo na Polia alta",
-        series: "4 x 10 a 12",
-        imagem: "Assets/thumb-peito.png",
-        temVideo: true),
-    Exercicio(
-        nome: "Flexão Inclinada",
-        series: "3 x 15",
-        imagem: "Assets/thumb-peito.png",
-        temVideo: true),
-  ];
-
   // permite finalizar apenas se o treino comecou e todos os exercicios foram concluidos
   bool get podeFinalizar =>
-      exercicios.every((ex) => ex.concluido == true) && treinoIniciado;
-
+      treinoIniciado &&
+      widget.exerciciosTreino.every((ex) => ex.concluido == true);
 
   String formatarTempo(int segundosTotais) {
     final horas = (segundosTotais ~/ 3600).toString().padLeft(2, '0');
@@ -332,6 +396,7 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
       setState(() => segundos++);
     });
   }
+
   void pararCronometro() {
     timer?.cancel();
   }
@@ -353,7 +418,6 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
               style: GoogleFonts.poppins(
                   fontSize: 22, fontWeight: FontWeight.bold, color: grey)),
           const SizedBox(height: 16),
-
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             decoration: BoxDecoration(
@@ -371,7 +435,6 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
             ),
           ),
           const SizedBox(height: 16),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -383,17 +446,16 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                 onPressed: treinoIniciado
                     ? null
                     : () {
-                  setState(() {
-                    treinoIniciado = true;
-                    segundos = 0;
-                  });
-                  iniciarCronometro();
-                },
+                        setState(() {
+                          treinoIniciado = true;
+                          segundos = 0;
+                        });
+                        iniciarCronometro();
+                      },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                  treinoIniciado ? Colors.grey : green,
+                  backgroundColor: treinoIniciado ? Colors.grey : green,
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -406,45 +468,37 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                         fontWeight: FontWeight.bold, color: Colors.white)),
                 onPressed: podeFinalizar
                     ? () {
-                  pararCronometro();
-                  final duracao = formatarTempo(segundos);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content:
-                      Text("Treino finalizado em $duracao"),
-                      backgroundColor: green,
-                    ),
-                  );
-                  Navigator.pop(context);
-                }
+                        pararCronometro();
+                        final duracao = formatarTempo(segundos);
+                        showToast(
+                            context, "Treino concluido em ${duracao} segundos",
+                            type: ToastType.success);
+                        Navigator.pop(context);
+                      }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                  podeFinalizar ? red : Colors.grey.shade400,
+                  backgroundColor: podeFinalizar ? red : Colors.grey.shade400,
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
               ),
             ],
           ),
-
           const SizedBox(height: 20),
-
           Expanded(
             child: ListView.builder(
-              itemCount: exercicios.length,
+              itemCount: widget.exerciciosTreino.length,
               itemBuilder: (context, index) {
-                final ex = exercicios[index];
+                final ex = widget.exerciciosTreino[index];
                 final bool isConcluido = ex.concluido;
 
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   elevation: isConcluido ? 6 : 2,
-                  color: isConcluido
-                      ? lightOrange.withOpacity(0.8)
-                      : Colors.white,
+                  color:
+                      isConcluido ? lightOrange.withOpacity(0.8) : Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                     side: BorderSide(
@@ -456,7 +510,6 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                     iconColor: isConcluido ? green : orange,
                     collapsedIconColor: grey.withOpacity(0.7),
                     tilePadding: const EdgeInsets.only(right: 18),
-
                     initiallyExpanded: ex.expandido,
                     title: Row(
                       children: [
@@ -466,10 +519,10 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                             value: ex.concluido,
                             onChanged: treinoIniciado
                                 ? (value) {
-                              setState(() {
-                                ex.concluido = value!;
-                              });
-                            }
+                                    setState(() {
+                                      ex.concluido = value!;
+                                    });
+                                  }
                                 : null,
                             activeColor: green,
                             checkColor: Colors.white,
@@ -477,24 +530,22 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                         ),
                         Expanded(
                           child: Text(
-                            "${ex.nome} (${ex.series})",
+                            "${ex.nome}",
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
                               decoration: isConcluido
                                   ? TextDecoration.lineThrough
                                   : TextDecoration.none,
-                              color: isConcluido
-                                  ? grey.withOpacity(0.6)
-                                  : grey,
+                              color: isConcluido ? grey.withOpacity(0.6) : grey,
                             ),
                           ),
                         ),
                         if (isConcluido)
                           Padding(
                             padding: const EdgeInsets.only(right: 8.0),
-                            child:
-                            Icon(Icons.check_circle, color: green, size: 20),
+                            child: Icon(Icons.check_circle,
+                                color: green, size: 20),
                           ),
                       ],
                     ),
@@ -505,22 +556,21 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(ex.imagem, height: 150),
+                              child: Image.asset(ex.thumbnail, height: 150),
                             ),
                             const SizedBox(height: 8),
-                            if (ex.temVideo)
-                              ElevatedButton.icon(
-                                icon: const Icon(Icons.play_circle,
-                                    color: Colors.white),
-                                label: Text("Ver vídeo de demonstração",
-                                    style: GoogleFonts.poppins(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: orange,
-                                ),
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.play_circle,
+                                  color: Colors.white),
+                              label: Text("Ver vídeo de demonstração",
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: orange,
                               ),
+                            ),
                           ],
                         ),
                       )
