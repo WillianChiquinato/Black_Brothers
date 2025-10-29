@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/API/Models/modelo_aluno.dart';
 import 'package:projetosflutter/API/Models/modelo_exercicio.dart';
+import 'package:projetosflutter/API/Models/modelo_frequencia.dart';
 import 'package:projetosflutter/API/Models/modelo_instrutor.dart';
 import 'package:projetosflutter/API/Models/modelo_pessoa.dart';
 import 'package:projetosflutter/API/Models/modelo_treinoExercicio.dart';
@@ -32,10 +34,14 @@ class _MenuTreinoState extends State<MenuTreino> {
   late GenericController<UsuarioClass> _usuarioController;
   late GenericController<PessoaClass> _pessoaController;
 
+  late GenericController<FrequenciaClass> _frequenciaController;
+  late List<FrequenciaClass> frequencia = [];
+
   late List<ExercicioClass> exercicios = [];
   late List<TreinoExercicioClass> treinoExercicios = [];
-  InstrutorClass? instrutor;
+  List<PessoaClass> instrutores = [];
   late List<PessoaClass> UsuarioNameInstrutor = [];
+  late AlunoClass aluno;
 
   @override
   void initState() {
@@ -76,12 +82,54 @@ class _MenuTreinoState extends State<MenuTreino> {
       fromJson: (json) => PessoaClass.fromJson(json),
     );
 
+    _frequenciaController = GenericController(
+      endpoint: 'frequencia',
+      fromJson: (json) => FrequenciaClass.fromJson(json),
+    );
+
     carregarTreinos();
   }
 
   Future<void> carregarTreinos() async {
     final treinos = await carregarTreinosDoAlunoEInstrutor(widget.user?.id);
-    UsuarioNameInstrutor = await carregarInstrutor(widget.user?.id);
+
+    for (var treino in treinos) {
+      final empregadoId = treino.FK_Instrutor_ID;
+      if (empregadoId == null) {
+        print("Empregado 222");
+        return;
+      }
+      ;
+
+      final empregados =
+          await _instrutorController.getByQuery('ID_Empregado=$empregadoId');
+      if (empregados.isEmpty) {
+        print("Empregado VAZIO");
+        return;
+      }
+      ;
+
+      final empregado = empregados.first;
+
+      final usuarioId = empregado.FK_Usuario_ID;
+      if (usuarioId == null) {
+        print("Empregado VAZIO");
+        return;
+      }
+      ;
+
+      final pessoaInstrutor = await carregarInstrutor(usuarioId);
+      if (pessoaInstrutor.isNotEmpty) {
+        instrutores.add(pessoaInstrutor.first);
+      } else {
+        print("Nenhum instrutor");
+      }
+    }
+
+    // Salvar para usar no widget
+    setState(() {
+      UsuarioNameInstrutor = instrutores;
+    });
     print('Treinos carregados: ${treinos.length}');
   }
 
@@ -89,14 +137,14 @@ class _MenuTreinoState extends State<MenuTreino> {
   Future<List<PessoaClass>> carregarInstrutor(int? usuarioId) async {
     if (usuarioId == null) return [];
 
-    final usuarios = await _usuarioController.getByQuery('ID_Usuario=$usuarioId');
-    if (usuarios == null || usuarios.isEmpty) return [];
+    final usuario = await _usuarioController.getOne(usuarioId.toString());
+    if (usuario == null) return [];
 
-    final usuario = usuarios.first;
-    final pessoa = await _pessoaController.getOne(usuario.fK_Pessoa_ID.toString());
+    final pessoa =
+        await _pessoaController.getByQuery("CPF=${usuario.fK_Pessoa_ID}");
     if (pessoa == null) return [];
 
-    return [pessoa];
+    return [pessoa.first];
   }
 
   // Carrega treinos do aluno
@@ -104,7 +152,7 @@ class _MenuTreinoState extends State<MenuTreino> {
       int? usuarioId) async {
     if (usuarioId == null) return [];
 
-    final aluno = await _getAlunoPorUsuarioId(usuarioId);
+    aluno = (await _getAlunoPorUsuarioId(usuarioId))!;
     if (aluno == null) return [];
 
     final treinos = await _getTreinosDoAluno(aluno.Matricula);
@@ -147,6 +195,62 @@ class _MenuTreinoState extends State<MenuTreino> {
     if (exercicioIds.isNotEmpty) {
       exercicios = await _exercicioController
           .getByQuery('ID IN (${exercicioIds.join(',')})');
+    }
+  }
+
+  Future<void> _criarFrequencia(int duracaoTimer) async {
+    final random = Random();
+
+    final List<String> prefixos = [
+      "Modo",
+      "Treino",
+      "Desafio",
+      "Série",
+      "Etapa",
+      "Ritmo",
+      "Projeto",
+      "Ciclo",
+      "Operação",
+      "Missão"
+    ];
+
+    final List<String> sufixos = [
+      "Relâmpago",
+      "Explosivo",
+      "Força Total",
+      "Foco Máximo",
+      "Supremo",
+      "Avançado",
+      "Hardcore",
+      "Elite",
+      "Turbo",
+      "Master"
+    ];
+
+    // Monta o nome aleatório
+    final nomeAleatorio =
+        "${prefixos[random.nextInt(prefixos.length)]} ${sufixos[random.nextInt(sufixos.length)]}";
+
+    Map<String, dynamic> data = {
+      'Nome_Frequencia': nomeAleatorio,
+      'CreatedAt': DateTime.now().toIso8601String(),
+      'FK_Aluno_ID': aluno.Matricula,
+      'Duracao': duracaoTimer,
+      'FK_TreinoExercicio_ID': treinoExercicios.first.id
+    };
+
+    print("Data" + data.toString());
+
+    var resultado = await _frequenciaController.create(data);
+    //Resultado Frequencia
+    if (resultado != null) {
+      setState(() {
+        frequencia = [resultado];
+      });
+
+      print('Frequencia criada com sucesso!!');
+    } else {
+      print('Erro ao criar Frequencia');
     }
   }
 
@@ -242,8 +346,12 @@ class _MenuTreinoState extends State<MenuTreino> {
                   children: [
                     Icon(Icons.fitness_center, size: 16, color: orange),
                     const SizedBox(width: 4),
-                    Text("Treino: ${UsuarioNameInstrutor.first.Nome}",
-                        style: GoogleFonts.poppins(fontSize: 12, color: grey)),
+                    Text(
+                      UsuarioNameInstrutor.isNotEmpty
+                          ? "Instrutor: ${UsuarioNameInstrutor.first.Nome}"
+                          : "Instrutor: -",
+                      style: GoogleFonts.poppins(fontSize: 12, color: grey),
+                    ),
                   ],
                 ),
               ),
@@ -350,6 +458,7 @@ class _MenuTreinoState extends State<MenuTreino> {
                   return _TreinoDetalheSheet(
                     titulo: treino.nome ?? '',
                     exerciciosTreino: exerciciosDoTreino,
+                    criarFrequencia: _criarFrequencia,
                   );
                 },
               );
@@ -398,8 +507,12 @@ class _MenuTreinoState extends State<MenuTreino> {
 class _TreinoDetalheSheet extends StatefulWidget {
   final String titulo;
   final List<ExercicioClass> exerciciosTreino;
+  final Future<void> Function(int segundos) criarFrequencia;
+
   const _TreinoDetalheSheet(
-      {required this.titulo, required this.exerciciosTreino});
+      {required this.titulo,
+      required this.exerciciosTreino,
+      required this.criarFrequencia});
 
   @override
   State<_TreinoDetalheSheet> createState() => _TreinoDetalheSheetState();
@@ -505,9 +618,11 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                     style: GoogleFonts.poppins(
                         fontWeight: FontWeight.bold, color: Colors.white)),
                 onPressed: podeFinalizar
-                    ? () {
+                    ? () async {
                         pararCronometro();
                         final duracao = formatarTempo(segundos);
+
+                        await widget.criarFrequencia(segundos);
                         showToast(
                             context, "Treino concluido em ${duracao} segundos",
                             type: ToastType.success);

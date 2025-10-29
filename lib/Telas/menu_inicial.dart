@@ -112,9 +112,22 @@ class _MenuInicialState extends State<MenuInicial> {
       ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MenuFrequencia(user: userData),
+        ),
+      ).then((_) {
+        // Esta função será chamada quando voltar da tela de frequência
+        // Você pode forçar uma reconstrução se necessário
+        setState(() {});
+      });
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override

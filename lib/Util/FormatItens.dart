@@ -18,6 +18,30 @@ class FormatUtil {
     return cleanText;
   }
 
+  static String formatDateShort(String dateString) {
+    try {
+      final inputFormat = DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US');
+      final date = inputFormat.parse(dateString, true).toLocal();
+
+      // Retorna apenas dia/mês
+      return DateFormat('dd/MM').format(date);
+    } catch (e) {
+      return '--/--';
+    }
+  }
+
+  static String formatDuration(int? seconds) {
+    if (seconds == null) return '00:00:00';
+    final duration = Duration(seconds: seconds);
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final secs = twoDigits(duration.inSeconds.remainder(60));
+
+    return "$hours:$minutes:$secs";
+  }
+
   static String formatTellInput(String value) {
     String cleanText = value.replaceAll(RegExp(r'\D'), '');
 

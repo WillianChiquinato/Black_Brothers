@@ -1,19 +1,112 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:projetosflutter/API/models/modelo_tipoPlano.dart';
+import 'package:projetosflutter/API/Models/modelo_frequencia.dart';
+import 'package:projetosflutter/API/controller.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
+import 'package:projetosflutter/API/Models/modelo_aluno.dart';
+import '../Util/FormatItens.dart';
 
-class MenuFrequencia extends StatelessWidget {
+class MenuFrequencia extends StatefulWidget {
   final UsuarioClass? user;
 
   const MenuFrequencia({super.key, this.user});
+
+  @override
+  State<MenuFrequencia> createState() => _MenuFrequenciaState();
+}
+
+class _MenuFrequenciaState extends State<MenuFrequencia> {
+  late GenericController<AlunoClass> _alunoController;
+  late GenericController<FrequenciaClass> _frequenciaController;
+
+  List<FrequenciaClass> frequenciaList = [];
+  bool isLoading = true;
+  int treinoTimer = 0;
+  late AlunoClass? alunoRegister;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _frequenciaController = GenericController(
+      endpoint: 'frequencia',
+      fromJson: (json) => FrequenciaClass.fromJson(json),
+    );
+
+    _alunoController = GenericController(
+      endpoint: 'Aluno',
+      fromJson: (json) => AlunoClass.fromJson(json),
+    );
+
+    carregarFrequencia();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _carregarDados();
+  }
+
+  Future<void> _carregarDados() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await carregarFrequencia();
+  }
+
+  Future<void> carregarFrequencia() async {
+    await carregarAluno();
+
+    if (alunoRegister != null) {
+      frequenciaList = await _frequenciaController
+          .getByQuery("FK_Aluno_ID=${alunoRegister!.Matricula}");
+      print('Frequência carregada: ${frequenciaList.length} itens');
+    } else {
+      print('Aluno não encontrado');
+      frequenciaList = [];
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> carregarAluno() async {
+    var alunos =
+        await _alunoController.getByQuery("FK_Usuario_ID=${widget.user?.id}");
+    if (alunos.isNotEmpty) {
+      alunoRegister = alunos.first;
+    }
+  }
+
+  IconData _getIcon(String tipo) {
+    switch (tipo.toLowerCase()) {
+      case 'aquecimento':
+        return LucideIcons.thermometerSun;
+      case 'cardio':
+        return LucideIcons.heartPulse;
+      default:
+        return LucideIcons.dumbbell;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final Color lightOrange = const Color(0xFFFFF1E6);
     final Color orange = const Color(0xFFFF8C42);
     final Color grey = const Color(0xFF333333);
+    IconData _getIcon(String tipo) {
+      switch (tipo.toLowerCase()) {
+        case 'aquecimento':
+          return LucideIcons.thermometerSun;
+        case 'cardio':
+          return LucideIcons.heartPulse;
+        default:
+          return LucideIcons.dumbbell;
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -94,148 +187,145 @@ class MenuFrequencia extends StatelessWidget {
           ],
         ),
       ),
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              children: [
-                _buildTreinoCard(
-                  horario: '14:30',
-                  tipo: 'Aquecimento',
-                  descricao: 'Manguito 2x, PeckDeck 3x 10',
-                  duracao: '0h15min',
-                  pontos: 3,
-                  corIcone: orange,
-                  icone: LucideIcons.thermometerSun,
-                  tag: 'Hoje',
-                  corTag: lightOrange,
-                ),
-                _buildTreinoCard(
-                  horario: '16:15',
-                  tipo: 'Treino - Completo',
-                  descricao:
-                  'Sup. Reto, Sup. Inclinado, PeckDeck,\nCruc. inclinado, Grac. na polia alta',
-                  duracao: '1h30min',
-                  pontos: 4,
-                  corIcone: orange,
-                  icone: LucideIcons.dumbbell,
-                ),
-                _buildTreinoCard(
-                  horario: '17:00',
-                  tipo: 'Cardio',
-                  descricao: '45min na esteira',
-                  duracao: '0h45min',
-                  pontos: 1,
-                  corIcone: orange,
-                  icone: LucideIcons.heartPulse,
-                ),
-                Divider(height: 30),
-                _buildTreinoCard(
-                  horario: '14:30',
-                  tipo: 'Aquecimento',
-                  descricao: 'Manguito 2x, BarraFixa 3x 8',
-                  duracao: '0h10min',
-                  pontos: 0,
-                  corIcone: orange,
-                  icone: LucideIcons.thermometerSun,
-                  tag: 'Ontem',
-                  corTag: lightOrange,
-                ),
-                _buildTreinoCard(
-                  horario: '16:10',
-                  tipo: 'Treino - Completo',
-                  descricao:
-                  'Remada Articulada, Remada Baixa,\nPeckDeck Invert., Pulley Cima e baixo',
-                  duracao: '1h30min',
-                  pontos: 2,
-                  corIcone: orange,
-                  icone: LucideIcons.dumbbell,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTreinoCard({
-    required String horario,
-    required String tipo,
-    required String descricao,
-    required String duracao,
-    required int pontos,
-    required Color corIcone,
-    required IconData icone,
-    String? tag,
-    Color? corTag,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (tag != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                tag,
-                style: TextStyle(
-                  backgroundColor: corTag,
-                  fontSize: 14,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Suas Frequências",
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
-            ),
-          Container(
-            decoration: BoxDecoration(
-              color: Color(0xFFFDF7F2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Text(horario,
-                    style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(width: 12),
-                Icon(icone, color: corIcone, size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(tipo,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15)),
-                      Text(descricao,
-                          style:
-                          TextStyle(fontSize: 13, color: Colors.black54)),
-                    ],
-                  ),
+              const SizedBox(height: 4),
+              Text(
+                "Confira seus treinos realizados recentemente",
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.black54,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(duracao,
-                        style: TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.bold)),
-                    Row(
-                      children: [
-                        Icon(Icons.star,
-                            color: Colors.amberAccent.shade700, size: 18),
-                        Text(pontos.toString(),
-                            style: TextStyle(fontSize: 13)),
-                      ],
-                    )
-                  ],
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+
+              // Corpo principal
+              Expanded(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : frequenciaList.isEmpty
+                        ? Center(
+                            child: Text(
+                              'Nenhuma frequência registrada ainda',
+                              style: GoogleFonts.poppins(
+                                fontSize: 15,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: frequenciaList.length,
+                            itemBuilder: (context, index) {
+                              final f = frequenciaList[index];
+                              return AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOut,
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(18),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.orange.withOpacity(0.4),
+                                      Colors.orange.withOpacity(0.8),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 1,
+                                      offset: const Offset(0, 0.5),
+                                    )
+                                  ],
+                                ),
+                                child: ListTile(
+                                  leading: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // Data do treino
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.orange
+                                                  .withOpacity(0.15),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              FormatUtil.formatDateShort(
+                                                  f.dataCriacao ?? ''),
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 12,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(width: 10),
+
+                                      Container(
+                                        height: 48,
+                                        width: 48,
+                                        decoration: BoxDecoration(
+                                          color: Colors.orangeAccent
+                                              .withOpacity(0.8),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          _getIcon(f.nome ?? ''),
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  title: Text(
+                                    f.nome ?? 'Frequência',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'Duração: ${FormatUtil.formatDuration(f.duracao)}',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                  // trailing: Icon(
+                                  //   LucideIcons.chevronRight,
+                                  //   color: Colors.black,
+                                  // ),
+                                ),
+                              );
+                            },
+                          ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
