@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projetosflutter/API/Models/modelo_feedback.dart';
 import 'package:projetosflutter/API/Models/modelo_tipoFeedback.dart';
+import 'package:projetosflutter/API/models/modelo_aluno.dart';
+import '../API/models/modelo_tipoPlano.dart';
 import 'package:projetosflutter/API/Models/modelo_videos.dart';
 import 'package:projetosflutter/API/models/modelo_usuario.dart';
 import 'menu_treino.dart';
 
 import '../API/controller.dart';
-import '../API/models/modelo_tipoPlano.dart';
 import '../Components/ToastMessage.dart';
 
 class MenuInicialHome extends StatefulWidget {
@@ -23,6 +24,7 @@ class MenuInicialHome extends StatefulWidget {
 }
 
 class _MenuInicialHomeState extends State<MenuInicialHome> {
+  late GenericController<AlunoClass> _alunoController;
   late GenericController<UsuarioClass> _usuarioController;
   late GenericController<VideosClass> _videoController;
   late GenericController<FeedbackClass> _feedbackController;
@@ -55,9 +57,15 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
 
     usuario = widget.user;
     plano = widget.plan;
+
     _usuarioController = GenericController<UsuarioClass>(
       endpoint: 'Usuario',
       fromJson: (json) => UsuarioClass.fromJson(json),
+    );
+
+    _alunoController = GenericController<AlunoClass>(
+      endpoint: 'Aluno',
+      fromJson: (json) => AlunoClass.fromJson(json),
     );
 
     _videoController = GenericController<VideosClass>(
@@ -98,28 +106,60 @@ class _MenuInicialHomeState extends State<MenuInicialHome> {
     return randomVideos.cast<VideosClass>();
   }
 
-  Future<void> _criarFeedback(int TopicoID, String Mensagem) async {
-    var resultadoTipoFeedback =
-    await _tipoFeedBackController.getOne(TopicoID.toString());
-    if (resultadoTipoFeedback != null) {
-      Map<String, dynamic> data = {
-        'Mensagem': Mensagem,
-        'FK_TipoFeedbacks_ID': TopicoID,
-      };
+  Future<void> _criarFeedback(int topicoID, String mensagem, int avaliacao) async {
+    try {
+      var alunos = await carregarAluno();
 
-      var resultadoFeedback = await _feedbackController.create(data);
+      // Se encontrou o aluno
+      if (alunos != null && alunos.isNotEmpty) {
+        var aluno = alunos.first;
 
-      if (resultadoFeedback != null) {
-        setState(() {
-          feedbacks = [resultadoFeedback];
-        });
+        Map<String, dynamic> data = {
+          'Mensagem': mensagem,
+          'FK_TipoFeedbacks_ID': topicoID,
+          'FK_Aluno_ID': aluno.Matricula,
+          'Avaliacao': avaliacao,
+        };
 
-        print('Feedback criado com sucesso!!');
+        var resultadoFeedback = await _feedbackController.create(data);
+
+        if (resultadoFeedback != null) {
+          setState(() {
+            feedbacks = [resultadoFeedback];
+          });
+          print('✅ Feedback criado com sucesso!');
+        } else {
+          print('❌ Erro ao criar feedback.');
+        }
       } else {
-        print('Feedback deu errado!!');
+        print('⚠️ Nenhum aluno encontrado para este usuário.');
       }
+    } catch (e) {
+      print('Erro ao criar feedback: $e');
     }
   }
+  
+  Future<List<AlunoClass>?> carregarAluno() async {
+    try {
+      if (widget.user == null) {
+        print('Usuário não encontrado!');
+        return null;
+      }
+
+      var resultado = await _alunoController.getByQuery('FK_Usuario_ID=${widget.user?.id}');
+
+      if (resultado != null && resultado.isNotEmpty) {
+        return resultado;
+      } else {
+        print('Nenhum aluno encontrado com FK_Usuario_ID = ${widget.user?.id}');
+        return null;
+      }
+    } catch (e) {
+      print('Erro ao carregar aluno: $e');
+      return null;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -446,7 +486,7 @@ class _FaleConoscoModal extends StatefulWidget {
   final Color grey;
   final Color orange;
   final Color lightOrange;
-  final Future<void> Function(int TopicoID, String Mensagem) criarFeedback;
+  final Future<void> Function(int TopicoID, String Mensagem, int avaliacao) criarFeedback;
   final Map<int, TextEditingController> controllers;
 
   const _FaleConoscoModal({
@@ -465,6 +505,7 @@ class _FaleConoscoModal extends StatefulWidget {
 class __FaleConoscoModalState extends State<_FaleConoscoModal> {
   int? _expandedIndex;
   Map<int, int> _ratings = {};
+  int avaliacao = 0;
 
   @override
   void initState() {
@@ -576,14 +617,20 @@ class __FaleConoscoModalState extends State<_FaleConoscoModal> {
                           onPressed: () async {
                             final mensagem =
                             widget.controllers[item['id']]!.text.trim();
+
+                            final avaliacao = _ratings[currentTopicId] ?? 0;
+
                             if (mensagem.isEmpty) {
-                              showToast(context,
-                                  "Digite algo para enviar!",
-                                  type: ToastType.error);
+                              showToast(context, "Digite algo para enviar!", type: ToastType.error);
                               return;
                             }
 
-                            await widget.criarFeedback(item['id'], mensagem);
+                            if (avaliacao == 0) {
+                              showToast(context, "Dê uma nota antes de enviar!", type: ToastType.error);
+                              return;
+                            }
+
+                            await widget.criarFeedback(item['id'], mensagem, avaliacao);
 
                             widget.controllers[item['id']]!.clear();
                             setState(() {
