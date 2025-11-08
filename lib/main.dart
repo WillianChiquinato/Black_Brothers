@@ -18,15 +18,20 @@ class MainClass extends StatefulWidget {
 class _MyAppState extends State<MainClass> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      navigatorKey: navigatorKey,
-      theme: ThemeData(
-        fontFamily: 'BlackBrothers',
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return MediaQuery(
+      data: MediaQueryData.fromView(
+              WidgetsBinding.instance.platformDispatcher.views.single)
+          .copyWith(textScaler: const TextScaler.linear(1.0)),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        navigatorKey: navigatorKey,
+        theme: ThemeData(
+          fontFamily: 'BlackBrothers',
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const TelaInicial(),
       ),
-      home: const TelaInicial(),
     );
   }
 }

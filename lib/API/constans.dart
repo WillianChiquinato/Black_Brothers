@@ -1,6 +1,6 @@
 class Apiconstants
 {
-  static const String _baseUrl = "blackbrothers-bybwd0axhweag7cy.brazilsouth-01.azurewebsites.net";
+  static const String _baseUrl = "https://blackbrothersapi-ercecsbrf5grg5hu.brazilsouth-01.azurewebsites.net";
 
   static String urlBaseAPI(String endpoint) {
     if (endpoint.startsWith('/')) {
