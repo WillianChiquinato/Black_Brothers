@@ -91,16 +91,16 @@ class _TelaInscricaoState extends State<TelaInscricao> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    final logoHeight = screenHeight * 0.07;
-    final logoPaddingTop = screenHeight * 0.001;
-    final logoPaddingBottom = screenHeight * 0.02;
+    final logoHeight = screenHeight * 0.08;
+    final logoPaddingTop = screenHeight * 0.01;
+    final logoPaddingBottom = screenHeight * 0.03;
     final horizontalPadding = screenWidth * 0.06;
-    final fieldHeight = screenHeight * 0.075;
-    final fieldFontSize = screenWidth * 0.038;
-    final buttonHeight = screenHeight * 0.06;
-    final buttonFontSize = screenWidth * 0.045;
-    final termsFontSize = screenWidth * 0.035;
-    final fieldBottomSpacing = screenHeight * 0.001;
+    final fieldHeight = screenHeight * 0.085;
+    final fieldFontSize = screenWidth * 0.04;
+    final buttonHeight = screenHeight * 0.07;
+    final buttonFontSize = screenWidth * 0.05;
+    final termsFontSize = screenWidth * 0.038;
+    final fieldBottomSpacing = screenHeight * 0.005;
 
     return DefaultTextStyle(
       style: const TextStyle(fontFamily: 'BlackBrothers'),
@@ -108,7 +108,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
           key: _formKey,
           child: Scaffold(
               appBar: AppBar(
-                toolbarHeight: screenHeight * 0.045,
+                toolbarHeight: screenHeight * 0.05,
                 backgroundColor: grey,
               ),
               body: Center(
@@ -387,7 +387,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                           padding: EdgeInsets.only(
                               left: horizontalPadding,
                               right: horizontalPadding,
-                              bottom: fieldBottomSpacing * 2),
+                              bottom: screenHeight * 0.01),
                           child: SizedBox(
                             width: screenWidth * 0.88,
                             height: fieldHeight,
@@ -483,12 +483,12 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: screenHeight * 0.001),
+                              SizedBox(height: screenHeight * 0.01),
                               Column(
                                 children: [
                                   Padding(
                                     padding: EdgeInsets.symmetric(
-                                        horizontal: horizontalPadding - (screenWidth * 0.01)),
+                                        horizontal: horizontalPadding),
                                     child: Align(
                                       alignment: Alignment.center,
                                       child: ElevatedButton(
@@ -497,7 +497,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                               borderRadius:
                                               BorderRadius.circular(7)),
                                           minimumSize:
-                                          Size(screenWidth * 0.9, buttonHeight),
+                                          Size(screenWidth * 0.88, buttonHeight),
                                           backgroundColor: Colors.green,
                                           disabledBackgroundColor: orange,
                                         ),
@@ -570,6 +570,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   ),
                                 ],
                               ),
+                              SizedBox(height: screenHeight * 0.04),
                             ],
                           ),
                         ),
