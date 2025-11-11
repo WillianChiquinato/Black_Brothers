@@ -100,6 +100,21 @@ class _MyAppState extends State<TelaInicial> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final horizontalPadding = screenWidth * 0.06;
+    final logoHeight = screenHeight * 0.14;
+    final logoWidth = screenWidth * 0.20;
+    final titleFontSize = screenWidth * 0.13;
+    final subtitleFontSize = screenWidth * 0.065;
+    final fieldHeight = screenHeight * 0.075;
+    final buttonHeight = screenHeight * 0.08;
+    final smallTextSize = screenWidth * 0.035;
+    final buttonFontSize = screenWidth * 0.05;
+    final fieldContentVerticalPadding = fieldHeight * 0.35;
+    final fieldContentHorizontalPadding = screenWidth * 0.04;
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -113,7 +128,7 @@ class _MyAppState extends State<TelaInicial> {
       home: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          toolbarHeight: 40,
+          toolbarHeight: screenHeight * 0.05,
           backgroundColor: grey,
         ),
         body: Container(
@@ -124,37 +139,37 @@ class _MyAppState extends State<TelaInicial> {
             children: [
               // Vai ser da imagem
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Logo
                     SizedBox(
-                        height: 110,
-                        width: 80,
+                        height: logoHeight,
+                        width: logoWidth,
                         child: Image.asset('Assets/logo-bb.png')),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'BLACK',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 55,
+                              fontSize: titleFontSize,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                               fontFamily: 'Poppins',
                               height: 1,
                             ),
                           ),
-                          const Text(
+                          Text(
                             'BROTHERS',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 55,
+                              fontSize: titleFontSize,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                               fontFamily: 'Poppins',
@@ -164,33 +179,35 @@ class _MyAppState extends State<TelaInicial> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: screenHeight * 0.015),
 
                     Text(
                       'ACADEMIA',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 27,
+                        fontSize: subtitleFontSize,
                         color: orange,
                         fontFamily: 'Poppins',
                       ),
                     ),
-                    const SizedBox(height: 41),
+                    SizedBox(height: screenHeight * 0.05),
                   ],
                 ),
               ),
 
               Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: 30.0, left: 25.0, right: 25.0),
+                  padding: EdgeInsets.only(
+                      bottom: screenHeight * 0.03,
+                      left: horizontalPadding,
+                      right: horizontalPadding),
                   child: SizedBox(
-                    width: 330,
+                    width: screenWidth * 0.88,
                     child: TextField(
                       controller: nomeUsuario,
                       decoration: InputDecoration(
                         hintText: 'Usuário',
-                        hintStyle: const TextStyle(
-                          fontSize: 16.0,
+                        hintStyle: TextStyle(
+                          fontSize: smallTextSize + 2,
                           fontFamily: 'Poppins',
                           color: Colors.white70,
                         ),
@@ -200,8 +217,11 @@ class _MyAppState extends State<TelaInicial> {
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.only(
-                            top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
+                        contentPadding: EdgeInsets.only(
+                            top: fieldContentVerticalPadding,
+                            bottom: fieldContentVerticalPadding,
+                            left: fieldContentHorizontalPadding,
+                            right: fieldContentHorizontalPadding),
                       ),
                       style: const TextStyle(
                         fontFamily: 'Poppins',
@@ -210,17 +230,19 @@ class _MyAppState extends State<TelaInicial> {
                     ),
                   )),
               Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: 6.0, left: 25.0, right: 25.0),
+                  padding: EdgeInsets.only(
+                      bottom: screenHeight * 0.01,
+                      left: horizontalPadding,
+                      right: horizontalPadding),
                   child: SizedBox(
-                    width: 330,
+                    width: screenWidth * 0.88,
                     child: TextField(
                       controller: nomeSenha,
                       obscureText: _obscuraSenha,
                       decoration: InputDecoration(
                         hintText: 'Senha',
                         hintStyle: TextStyle(
-                          fontSize: 16.0,
+                          fontSize: smallTextSize + 2,
                           fontFamily: 'Poppins',
                           color: Colors.white70,
                         ),
@@ -233,7 +255,7 @@ class _MyAppState extends State<TelaInicial> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _obscuraSenha = !_obscuraSenha; // alterna visibilidade
+                              _obscuraSenha = !_obscuraSenha;
                             });
                           },
                         ),
@@ -241,8 +263,11 @@ class _MyAppState extends State<TelaInicial> {
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.only(
-                            top: 26.0, bottom: 20.0, left: 15.0, right: 15.0),
+                        contentPadding: EdgeInsets.only(
+                            top: fieldContentVerticalPadding,
+                            bottom: fieldContentVerticalPadding,
+                            left: fieldContentHorizontalPadding,
+                            right: fieldContentHorizontalPadding),
                       ),
                       style: const TextStyle(
                         fontFamily: 'Poppins',
@@ -250,19 +275,19 @@ class _MyAppState extends State<TelaInicial> {
                       ),
                     ),
                   )),
-              const SizedBox(height: 11),
+              SizedBox(height: screenHeight * 0.015),
 
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 10.0,
-                    bottom: 30.0,
+                  padding: EdgeInsets.only(
+                    top: screenHeight * 0.015,
+                    bottom: screenHeight * 0.04,
                   ),
                   child: Text(
                     'Esqueceu sua senha?',
                     style: TextStyle(
                       color: orange,
-                      fontSize: 14,
+                      fontSize: smallTextSize,
                       fontFamily: 'Poppins',
                     ),
                   ),
@@ -270,10 +295,10 @@ class _MyAppState extends State<TelaInicial> {
               ),
               Builder(
                 builder: (context) => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.0),
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(300, 65),
+                      minimumSize: Size(screenWidth * 0.88, buttonHeight),
                       backgroundColor: orange,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
@@ -288,11 +313,11 @@ class _MyAppState extends State<TelaInicial> {
                         await FazendoLogin(usuarioInput, senhaInput);
                       }
                     },
-                    child: const Text(
+                    child: Text(
                       'ENTRAR',
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: buttonFontSize,
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
                       ),
@@ -302,15 +327,14 @@ class _MyAppState extends State<TelaInicial> {
               ),
               //Para o botao e o Text para adicinar texto e TEXSTYLE para estilizaçao
               Padding(
-                padding: const EdgeInsets.only(top: 25.0),
-                // AJUSTE 1: Adicionei espaçamento no topo
+                padding: EdgeInsets.only(top: screenHeight * 0.035),
                 child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  const Text(
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Text(
                     'Não tem uma conta? ',
                     style: TextStyle(
                         color: Colors.white54,
-                        fontSize: 14,
+                        fontSize: smallTextSize,
                         fontFamily: 'Poppins'),
                   ),
                   GestureDetector(
@@ -324,13 +348,14 @@ class _MyAppState extends State<TelaInicial> {
                       'Crie uma agora',
                       style: TextStyle(
                           color: orange,
-                          fontSize: 14,
+                          fontSize: smallTextSize,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.bold),
                     ),
                   ),
                 ]),
               ),
+              SizedBox(height: screenHeight * 0.08),
             ],
           ),
         ),
