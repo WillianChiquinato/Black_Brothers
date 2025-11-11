@@ -101,6 +101,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
     final buttonFontSize = screenWidth * 0.05;
     final termsFontSize = screenWidth * 0.038;
     final fieldBottomSpacing = screenHeight * 0.005;
+    final proportionalSpacing = screenHeight * 0.005;
 
     return DefaultTextStyle(
       style: const TextStyle(fontFamily: 'BlackBrothers'),
@@ -122,7 +123,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                           child: Container(
                             color: Colors.transparent,
                             height: logoHeight,
-                            width: logoHeight, // Logo quadrada
+                            width: logoHeight,
                             child: Image.asset(
                               'Assets/logo-bb.png',
                             ),
@@ -387,7 +388,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                           padding: EdgeInsets.only(
                               left: horizontalPadding,
                               right: horizontalPadding,
-                              bottom: screenHeight * 0.01),
+                              bottom: proportionalSpacing),
                           child: SizedBox(
                             width: screenWidth * 0.88,
                             height: fieldHeight,
@@ -483,7 +484,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: screenHeight * 0.01),
+                              SizedBox(height: proportionalSpacing),
                               Column(
                                 children: [
                                   Padding(
