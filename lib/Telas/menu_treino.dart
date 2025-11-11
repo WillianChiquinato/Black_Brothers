@@ -102,7 +102,7 @@ class _MenuTreinoState extends State<MenuTreino> {
       ;
 
       final empregados =
-          await _instrutorController.getByQuery('ID_Empregado=$empregadoId');
+      await _instrutorController.getByQuery('ID_Empregado=$empregadoId');
       if (empregados.isEmpty) {
         print("Empregado VAZIO");
         return;
@@ -141,7 +141,7 @@ class _MenuTreinoState extends State<MenuTreino> {
     if (usuario == null) return [];
 
     final pessoa =
-        await _pessoaController.getByQuery("CPF=${usuario.fK_Pessoa_ID}");
+    await _pessoaController.getByQuery("CPF=${usuario.fK_Pessoa_ID}");
     if (pessoa == null) return [];
 
     return [pessoa.first];
@@ -166,7 +166,7 @@ class _MenuTreinoState extends State<MenuTreino> {
   // Busca aluno pelo usuário
   Future<AlunoClass?> _getAlunoPorUsuarioId(int usuarioId) async {
     final alunos =
-        await _alunoController.getByQuery('FK_Usuario_ID=$usuarioId');
+    await _alunoController.getByQuery('FK_Usuario_ID=$usuarioId');
     if (alunos == null || alunos.isEmpty) return null;
     return alunos.first;
   }
@@ -286,7 +286,7 @@ class _MenuTreinoState extends State<MenuTreino> {
                   return Center(
                     child: Text("Nenhum treino disponível.",
                         style:
-                            GoogleFonts.poppins(color: grey.withOpacity(0.6))),
+                        GoogleFonts.poppins(color: grey.withOpacity(0.6))),
                   );
                 }
 
@@ -300,17 +300,25 @@ class _MenuTreinoState extends State<MenuTreino> {
   }
 
   AppBar _buildAppBar() {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final logoSize = screenHeight * 0.045;
+    final titleFontSize = screenWidth * 0.05;
+
     return AppBar(
+      toolbarHeight: screenHeight * 0.07,
       backgroundColor: grey,
       title: Row(
         children: [
-          Image.asset('Assets/logo-bb.png', height: 40, width: 40),
-          const SizedBox(width: 8),
+          Image.asset('Assets/logo-bb.png', height: logoSize, width: logoSize),
+          SizedBox(width: screenWidth * 0.02),
           Text(
             "Black Brothers",
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontWeight: FontWeight.bold,
+              fontSize: titleFontSize,
             ),
           ),
         ],
@@ -319,8 +327,19 @@ class _MenuTreinoState extends State<MenuTreino> {
   }
 
   Widget _buildInfoUsuario() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final paddingAll = screenWidth * 0.04;
+    final planFontSize = screenWidth * 0.035;
+    final userFontSize = screenWidth * 0.04;
+    final instrutorIconSize = screenWidth * 0.04;
+    final instrutorFontSize = screenWidth * 0.035;
+    final boxPaddingHorizontal = screenWidth * 0.03;
+    final boxPaddingVertical = screenHeight * 0.008;
+
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(paddingAll),
       child: Row(
         children: [
           Column(
@@ -328,29 +347,33 @@ class _MenuTreinoState extends State<MenuTreino> {
             children: [
               Text('${widget.plan?.nomePlano}',
                   style: GoogleFonts.poppins(
-                      color: orange, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
+                      fontSize: planFontSize,
+                      color: orange,
+                      fontWeight: FontWeight.bold)),
+              SizedBox(height: screenHeight * 0.005),
               Text('${widget.user?.login}',
                   style: GoogleFonts.poppins(
-                      fontSize: 14, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 18),
+                      fontSize: userFontSize, fontWeight: FontWeight.w600)),
+              SizedBox(height: screenHeight * 0.02),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                EdgeInsets.symmetric(horizontal: boxPaddingHorizontal, vertical: boxPaddingVertical),
                 decoration: BoxDecoration(
                   color: lightOrange,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.02),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.fitness_center, size: 16, color: orange),
-                    const SizedBox(width: 4),
+                    Icon(Icons.fitness_center,
+                        size: instrutorIconSize, color: orange),
+                    SizedBox(width: screenWidth * 0.01),
                     Text(
                       UsuarioNameInstrutor.isNotEmpty
                           ? "Instrutor: ${UsuarioNameInstrutor.first.Nome}"
                           : "Instrutor: -",
-                      style: GoogleFonts.poppins(fontSize: 12, color: grey),
+                      style: GoogleFonts.poppins(
+                          fontSize: instrutorFontSize, color: grey),
                     ),
                   ],
                 ),
@@ -363,6 +386,14 @@ class _MenuTreinoState extends State<MenuTreino> {
   }
 
   Widget _buildDiasSemana() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final dateContainerHeight = screenHeight * 0.11;
+    final dayFontSize = screenWidth * 0.03;
+    final circleSize = screenWidth * 0.12;
+    final dateFontSize = screenWidth * 0.04;
+
     final List<Map<String, String>> datasMock = [
       {"dia": "SEX", "data": "12", "ativo": "false"},
       {"dia": "SÁB", "data": "13", "ativo": "false"},
@@ -374,8 +405,9 @@ class _MenuTreinoState extends State<MenuTreino> {
     ];
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      height: 90,
+      margin: EdgeInsets.symmetric(
+          vertical: screenHeight * 0.01, horizontal: screenWidth * 0.04),
+      height: dateContainerHeight,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: datasMock.length,
@@ -384,22 +416,22 @@ class _MenuTreinoState extends State<MenuTreino> {
           final bool isToday = item['ativo'] == 'true';
 
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.015),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   item['dia']!,
                   style: GoogleFonts.poppins(
-                    fontSize: 11,
+                    fontSize: dayFontSize,
                     fontWeight: FontWeight.w600,
                     color: grey.withOpacity(0.7),
                   ),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: screenHeight * 0.008),
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: circleSize,
+                  height: circleSize,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isToday ? orange : lightOrange,
@@ -412,7 +444,7 @@ class _MenuTreinoState extends State<MenuTreino> {
                   child: Text(
                     item['data']!,
                     style: GoogleFonts.poppins(
-                      fontSize: 15,
+                      fontSize: dateFontSize,
                       fontWeight: FontWeight.bold,
                       color: isToday ? Colors.white : grey,
                     ),
@@ -427,14 +459,22 @@ class _MenuTreinoState extends State<MenuTreino> {
   }
 
   Widget _buildGridTreinos(BuildContext context, List<TreinoClass> treinos) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final gridPadding = screenWidth * 0.04;
+    final iconSize = screenWidth * 0.1;
+    final cardTitleFontSize = screenWidth * 0.045;
+    final cardSubtitleFontSize = screenWidth * 0.03;
+
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(gridPadding),
       child: GridView.builder(
         itemCount: treinos.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
+          mainAxisSpacing: screenWidth * 0.04,
+          crossAxisSpacing: screenWidth * 0.04,
+          childAspectRatio: 1.0, // Mantém o card quadrado ou ajusta conforme necessário
         ),
         itemBuilder: (context, index) {
           final treino = treinos[index];
@@ -444,7 +484,7 @@ class _MenuTreinoState extends State<MenuTreino> {
               final exerciciosDoTreino = treinoExercicios
                   .where((te) => te.FK_Treino_ID == treino.id)
                   .map((te) => exercicios
-                      .firstWhere((ex) => ex.id == te.FK_Exercicio_ID))
+                  .firstWhere((ex) => ex.id == te.FK_Exercicio_ID))
                   .toList();
 
               // Mostra detalhes do treino
@@ -467,28 +507,28 @@ class _MenuTreinoState extends State<MenuTreino> {
               elevation: 6,
               color: lightOrange,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15)),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.04)),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(screenWidth * 0.02),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.fitness_center, size: 40, color: orange),
-                    const SizedBox(height: 8),
+                    Icon(Icons.fitness_center, size: iconSize, color: orange),
+                    SizedBox(height: screenWidth * 0.02),
                     Text(
                       treino.nome ?? 'Treino',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
-                          fontSize: 18,
+                          fontSize: cardTitleFontSize,
                           fontWeight: FontWeight.bold,
                           color: grey),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: screenWidth * 0.01),
                     Text(
                       treino.nome ?? '',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
-                        fontSize: 12,
+                        fontSize: cardSubtitleFontSize,
                         color: grey.withOpacity(0.8),
                         fontWeight: FontWeight.w500,
                       ),
@@ -511,8 +551,8 @@ class _TreinoDetalheSheet extends StatefulWidget {
 
   const _TreinoDetalheSheet(
       {required this.titulo,
-      required this.exerciciosTreino,
-      required this.criarFrequencia});
+        required this.exerciciosTreino,
+        required this.criarFrequencia});
 
   @override
   State<_TreinoDetalheSheet> createState() => _TreinoDetalheSheetState();
@@ -532,7 +572,7 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
   // permite finalizar apenas se o treino comecou e todos os exercicios foram concluidos
   bool get podeFinalizar =>
       treinoIniciado &&
-      widget.exerciciosTreino.every((ex) => ex.concluido == true);
+          widget.exerciciosTreino.every((ex) => ex.concluido == true);
 
   String formatarTempo(int segundosTotais) {
     final horas = (segundosTotais ~/ 3600).toString().padLeft(2, '0');
@@ -560,86 +600,104 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final sheetHeight = screenHeight * 0.85;
+    final titleFontSize = screenWidth * 0.06;
+    final timerFontSize = screenWidth * 0.08;
+    final buttonFontSize = screenWidth * 0.04;
+    final buttonIconSize = screenWidth * 0.05;
+    final buttonPadding = screenWidth * 0.03;
+    final buttonSpacing = screenWidth * 0.03;
+    final checkboxSize = screenWidth * 0.08;
+    final itemTitleFontSize = screenWidth * 0.04;
+    final checkIconSize = screenWidth * 0.05;
+    final imageVideoHeight = screenHeight * 0.18;
+
+
     return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      padding: const EdgeInsets.all(16),
+      height: sheetHeight,
+      padding: EdgeInsets.all(screenWidth * 0.04),
       child: Column(
         children: [
           Text(widget.titulo,
               style: GoogleFonts.poppins(
-                  fontSize: 22, fontWeight: FontWeight.bold, color: grey)),
-          const SizedBox(height: 16),
+                  fontSize: titleFontSize, fontWeight: FontWeight.bold, color: grey)),
+          SizedBox(height: screenHeight * 0.02),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015, horizontal: screenWidth * 0.05),
             decoration: BoxDecoration(
               color: orange.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(screenWidth * 0.04),
               border: Border.all(color: orange, width: 2),
             ),
             child: Text(
               formatarTempo(segundos),
               style: GoogleFonts.poppins(
-                fontSize: 32,
+                fontSize: timerFontSize,
                 fontWeight: FontWeight.bold,
                 color: orange,
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: screenHeight * 0.02),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton.icon(
-                icon: const Icon(Icons.play_arrow, color: Colors.white),
+                icon: Icon(Icons.play_arrow, color: Colors.white, size: buttonIconSize),
                 label: Text("Iniciar Treino",
                     style: GoogleFonts.poppins(
+                        fontSize: buttonFontSize,
                         fontWeight: FontWeight.bold, color: Colors.white)),
                 onPressed: treinoIniciado
                     ? null
                     : () {
-                        setState(() {
-                          treinoIniciado = true;
-                          segundos = 0;
-                        });
-                        iniciarCronometro();
-                      },
+                  setState(() {
+                    treinoIniciado = true;
+                    segundos = 0;
+                  });
+                  iniciarCronometro();
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: treinoIniciado ? Colors.grey : green,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  EdgeInsets.symmetric(horizontal: buttonPadding, vertical: screenHeight * 0.015),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.025)),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: buttonSpacing),
               ElevatedButton.icon(
-                icon: const Icon(Icons.flag, color: Colors.white),
+                icon: Icon(Icons.flag, color: Colors.white, size: buttonIconSize),
                 label: Text("Finalizar Treino",
                     style: GoogleFonts.poppins(
+                        fontSize: buttonFontSize,
                         fontWeight: FontWeight.bold, color: Colors.white)),
                 onPressed: podeFinalizar
                     ? () async {
-                        pararCronometro();
-                        final duracao = formatarTempo(segundos);
+                  pararCronometro();
+                  final duracao = formatarTempo(segundos);
 
-                        await widget.criarFrequencia(segundos);
-                        showToast(
-                            context, "Treino concluido em ${duracao} segundos",
-                            type: ToastType.success);
-                        Navigator.pop(context);
-                      }
+                  await widget.criarFrequencia(segundos);
+                  showToast(
+                      context, "Treino concluido em ${duracao} segundos",
+                      type: ToastType.success);
+                  Navigator.pop(context);
+                }
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: podeFinalizar ? red : Colors.grey.shade400,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  EdgeInsets.symmetric(horizontal: buttonPadding, vertical: screenHeight * 0.015),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.025)),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.025),
           Expanded(
             child: ListView.builder(
               itemCount: widget.exerciciosTreino.length,
@@ -648,12 +706,12 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                 final bool isConcluido = ex.concluido;
 
                 return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  margin: EdgeInsets.symmetric(vertical: screenHeight * 0.006),
                   elevation: isConcluido ? 6 : 2,
                   color:
-                      isConcluido ? lightOrange.withOpacity(0.8) : Colors.white,
+                  isConcluido ? lightOrange.withOpacity(0.8) : Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
                     side: BorderSide(
                       color: isConcluido ? green : grey.withOpacity(0.2),
                       width: isConcluido ? 2 : 1,
@@ -662,20 +720,20 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                   child: ExpansionTile(
                     iconColor: isConcluido ? green : orange,
                     collapsedIconColor: grey.withOpacity(0.7),
-                    tilePadding: const EdgeInsets.only(right: 18),
+                    tilePadding: EdgeInsets.only(right: screenWidth * 0.04),
                     initiallyExpanded: ex.expandido,
                     title: Row(
                       children: [
                         SizedBox(
-                          width: 40,
+                          width: checkboxSize,
                           child: Checkbox(
                             value: ex.concluido,
                             onChanged: treinoIniciado
                                 ? (value) {
-                                    setState(() {
-                                      ex.concluido = value!;
-                                    });
-                                  }
+                              setState(() {
+                                ex.concluido = value!;
+                              });
+                            }
                                 : null,
                             activeColor: green,
                             checkColor: Colors.white,
@@ -686,7 +744,7 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                             "${ex.nome}",
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w600,
-                              fontSize: 15,
+                              fontSize: itemTitleFontSize,
                               decoration: isConcluido
                                   ? TextDecoration.lineThrough
                                   : TextDecoration.none,
@@ -696,27 +754,28 @@ class _TreinoDetalheSheetState extends State<_TreinoDetalheSheet> {
                         ),
                         if (isConcluido)
                           Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
+                            padding: EdgeInsets.only(right: screenWidth * 0.02),
                             child: Icon(Icons.check_circle,
-                                color: green, size: 20),
+                                color: green, size: checkIconSize),
                           ),
                       ],
                     ),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(screenWidth * 0.03),
                         child: Column(
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(ex.thumbnail, height: 150),
+                              borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                              child: Image.asset(ex.thumbnail, height: imageVideoHeight),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: screenHeight * 0.01),
                             ElevatedButton.icon(
-                              icon: const Icon(Icons.play_circle,
-                                  color: Colors.white),
+                              icon: Icon(Icons.play_circle,
+                                  color: Colors.white, size: buttonIconSize),
                               label: Text("Ver vídeo de demonstração",
                                   style: GoogleFonts.poppins(
+                                      fontSize: buttonFontSize,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white)),
                               onPressed: () {},

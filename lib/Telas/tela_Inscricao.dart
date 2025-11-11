@@ -88,36 +88,54 @@ class _TelaInscricaoState extends State<TelaInscricao> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final logoHeight = screenHeight * 0.07;
+    final logoPaddingTop = screenHeight * 0.001;
+    final logoPaddingBottom = screenHeight * 0.02;
+    final horizontalPadding = screenWidth * 0.06;
+    final fieldHeight = screenHeight * 0.075;
+    final fieldFontSize = screenWidth * 0.038;
+    final buttonHeight = screenHeight * 0.06;
+    final buttonFontSize = screenWidth * 0.045;
+    final termsFontSize = screenWidth * 0.035;
+    final fieldBottomSpacing = screenHeight * 0.001;
+
     return DefaultTextStyle(
       style: const TextStyle(fontFamily: 'BlackBrothers'),
       child: Form(
           key: _formKey,
           child: Scaffold(
               appBar: AppBar(
-                toolbarHeight: 40,
+                toolbarHeight: screenHeight * 0.045,
                 backgroundColor: grey,
               ),
               body: Center(
                   child: Container(
                       color: grey,
                       child:
-                          ListView(scrollDirection: Axis.vertical, children: [
+                      ListView(scrollDirection: Axis.vertical, children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 25),
+                          padding: EdgeInsets.only(
+                              top: logoPaddingTop, bottom: logoPaddingBottom),
                           child: Container(
                             color: Colors.transparent,
-                            height: 50,
-                            width: 50,
+                            height: logoHeight,
+                            width: logoHeight, // Logo quadrada
                             child: Image.asset(
                               'Assets/logo-bb.png',
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 30, right: 30),
+                          padding: EdgeInsets.only(
+                              left: horizontalPadding,
+                              right: horizontalPadding,
+                              bottom: fieldBottomSpacing),
                           child: SizedBox(
-                            width: 100,
-                            height: 70,
+                            width: screenWidth * 0.88,
+                            height: fieldHeight,
                             child: TextFormField(
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
@@ -129,14 +147,14 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               },
                               controller: usuarioInscricao,
                               textAlign: TextAlign.left,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'Usuário',
                                 hintStyle: TextStyle(
-                                  fontSize: 15.0,
+                                  fontSize: fieldFontSize,
                                   fontFamily: 'Poppins',
                                   color: Colors.white70,
                                 ),
@@ -151,10 +169,13 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 30, right: 30),
+                          padding: EdgeInsets.only(
+                              left: horizontalPadding,
+                              right: horizontalPadding,
+                              bottom: fieldBottomSpacing),
                           child: SizedBox(
-                            width: 100,
-                            height: 70,
+                            width: screenWidth * 0.88,
+                            height: fieldHeight,
                             child: TextFormField(
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
@@ -166,14 +187,14 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               },
                               controller: nomeInscricao,
                               textAlign: TextAlign.left,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'Nome Completo',
                                 hintStyle: TextStyle(
-                                  fontSize: 15.0,
+                                  fontSize: fieldFontSize,
                                   fontFamily: 'Poppins',
                                   color: Colors.white70,
                                 ),
@@ -188,16 +209,19 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 30, right: 30),
+                          padding: EdgeInsets.only(
+                              left: horizontalPadding,
+                              right: horizontalPadding,
+                              bottom: fieldBottomSpacing),
                           child: SizedBox(
-                            width: 100,
-                            height: 70,
+                            width: screenWidth * 0.88,
+                            height: fieldHeight,
                             child: TextFormField(
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Insira um e-mail válido';
                                 } else if (!RegExp(
-                                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                                     .hasMatch(value)) {
                                   return 'Insira o email completo [@, .com]';
                                 }
@@ -206,14 +230,14 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               keyboardType: TextInputType.emailAddress,
                               controller: emailInscricao,
                               textAlign: TextAlign.left,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'E-mail',
                                 hintStyle: TextStyle(
-                                  fontSize: 15.0,
+                                  fontSize: fieldFontSize,
                                   fontFamily: 'Poppins',
                                   color: Colors.white70,
                                 ),
@@ -228,10 +252,13 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 30, right: 30),
+                          padding: EdgeInsets.only(
+                              left: horizontalPadding,
+                              right: horizontalPadding,
+                              bottom: fieldBottomSpacing),
                           child: SizedBox(
-                            width: 100,
-                            height: 70,
+                            width: screenWidth * 0.88,
+                            height: fieldHeight,
                             child: TextFormField(
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
@@ -240,7 +267,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
 
                                 // lógica para permitir o ponto e hífen
                                 final cleanValue =
-                                    value.replaceAll(RegExp(r'\D'), '');
+                                value.replaceAll(RegExp(r'\D'), '');
 
                                 if (!RegExp(r'^\d{11}$').hasMatch(cleanValue)) {
                                   return 'CPF precisa conter 11 números';
@@ -251,14 +278,14 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               keyboardType: TextInputType.number,
                               controller: cpfInscricao,
                               textAlign: TextAlign.left,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'CPF',
                                 hintStyle: TextStyle(
-                                  fontSize: 15.0,
+                                  fontSize: fieldFontSize,
                                   fontFamily: 'Poppins',
                                   color: Colors.white70,
                                 ),
@@ -273,10 +300,13 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 30, right: 30),
+                          padding: EdgeInsets.only(
+                              left: horizontalPadding,
+                              right: horizontalPadding,
+                              bottom: fieldBottomSpacing),
                           child: SizedBox(
-                            width: 100,
-                            height: 70,
+                            width: screenWidth * 0.88,
+                            height: fieldHeight,
                             child: TextFormField(
                               controller: dtnascInscricao,
                               validator: (String? value) {
@@ -290,14 +320,14 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               },
                               keyboardType: TextInputType.datetime,
                               textAlign: TextAlign.left,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'Data de nascimento',
                                 hintStyle: TextStyle(
-                                  fontSize: 15.0,
+                                  fontSize: fieldFontSize,
                                   fontFamily: 'Poppins',
                                   color: Colors.white70,
                                 ),
@@ -312,10 +342,13 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 30, right: 30),
+                          padding: EdgeInsets.only(
+                              left: horizontalPadding,
+                              right: horizontalPadding,
+                              bottom: fieldBottomSpacing),
                           child: SizedBox(
-                            width: 100,
-                            height: 70,
+                            width: screenWidth * 0.88,
+                            height: fieldHeight,
                             child: TextFormField(
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
@@ -329,14 +362,14 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               keyboardType: TextInputType.phone,
                               controller: tellInscricao,
                               textAlign: TextAlign.left,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'Telefone (DDD)',
                                 hintStyle: TextStyle(
-                                  fontSize: 15.0,
+                                  fontSize: fieldFontSize,
                                   fontFamily: 'Poppins',
                                   color: Colors.white70,
                                 ),
@@ -351,10 +384,13 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 30, right: 30),
+                          padding: EdgeInsets.only(
+                              left: horizontalPadding,
+                              right: horizontalPadding,
+                              bottom: fieldBottomSpacing * 2),
                           child: SizedBox(
-                            width: 100,
-                            height: 70,
+                            width: screenWidth * 0.88,
+                            height: fieldHeight,
                             child: TextFormField(
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
@@ -370,11 +406,11 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                               decoration: InputDecoration(
                                 border: const OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  BorderRadius.all(Radius.circular(15)),
                                 ),
                                 hintText: 'Senha',
-                                hintStyle: const TextStyle(
-                                  fontSize: 15.0,
+                                hintStyle: TextStyle(
+                                  fontSize: fieldFontSize,
                                   fontFamily: 'Poppins',
                                   color: Colors.white70,
                                 ),
@@ -417,16 +453,16 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                     activeColor: Colors.white,
                                     checkColor: Colors.black,
                                     side:
-                                        const BorderSide(color: Colors.white70),
+                                    const BorderSide(color: Colors.white70),
                                   ),
                                   RichText(
                                     text: TextSpan(
                                       children: [
-                                        const TextSpan(
+                                        TextSpan(
                                           text: 'Termos e ',
                                           style: TextStyle(
                                             color: Colors.white70,
-                                            fontSize: 15,
+                                            fontSize: termsFontSize,
                                             fontFamily: 'Poppins',
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -435,7 +471,7 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                           text: 'Condições',
                                           style: TextStyle(
                                             color: Colors.blue[200],
-                                            fontSize: 15,
+                                            fontSize: termsFontSize,
                                             fontFamily: 'Poppins',
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -447,82 +483,83 @@ class _TelaInscricaoState extends State<TelaInscricao> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 12),
+                              SizedBox(height: screenHeight * 0.001),
                               Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 100, right: 100),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: horizontalPadding - (screenWidth * 0.01)),
                                     child: Align(
                                       alignment: Alignment.center,
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(7)),
-                                          minimumSize: const Size(400, 50),
+                                              BorderRadius.circular(7)),
+                                          minimumSize:
+                                          Size(screenWidth * 0.9, buttonHeight),
                                           backgroundColor: Colors.green,
                                           disabledBackgroundColor: orange,
                                         ),
                                         onPressed: IsChecked
                                             ? () async {
-                                                if (_formKey.currentState!
-                                                    .validate()) {
-                                                  print(usuarioInscricao.text);
-                                                  print(nomeInscricao.text);
-                                                  print(emailInscricao.text);
-                                                  print(cpfInscricao.text);
-                                                  print(dtnascInscricao.text);
-                                                  print(tellInscricao.text);
-                                                  print(senhaInscricao.text);
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            print(usuarioInscricao.text);
+                                            print(nomeInscricao.text);
+                                            print(emailInscricao.text);
+                                            print(cpfInscricao.text);
+                                            print(dtnascInscricao.text);
+                                            print(tellInscricao.text);
+                                            print(senhaInscricao.text);
 
-                                                  showToast(context,
-                                                      "Dados Enviados!",
-                                                      type: ToastType.success);
-                                                  Future.delayed(
-                                                      const Duration(
-                                                          seconds: 1), () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            TelaPlanos(
-                                                          dtNascUser:
-                                                              dtnascInscricao
-                                                                  .text
-                                                                  .trim(),
-                                                          cpfUser: cpfInscricao
-                                                              .text
-                                                              .trim(),
-                                                          nomeUser:
-                                                              usuarioInscricao
-                                                                  .text
-                                                                  .trim(),
-                                                          nomeCompletoUser:
-                                                              nomeInscricao.text.trim(),
-                                                          senhaUser:
-                                                              senhaInscricao
-                                                                  .text
-                                                                  .trim(),
-                                                          tellUser:
-                                                              tellInscricao.text
-                                                                  .trim(),
-                                                          emailUser:
-                                                              emailInscricao
-                                                                  .text
-                                                                  .trim(),
-                                                        ),
+                                            showToast(context,
+                                                "Dados Enviados!",
+                                                type: ToastType.success);
+                                            Future.delayed(
+                                                const Duration(
+                                                    seconds: 1), () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      TelaPlanos(
+                                                        dtNascUser:
+                                                        dtnascInscricao
+                                                            .text
+                                                            .trim(),
+                                                        cpfUser: cpfInscricao
+                                                            .text
+                                                            .trim(),
+                                                        nomeUser:
+                                                        usuarioInscricao
+                                                            .text
+                                                            .trim(),
+                                                        nomeCompletoUser:
+                                                        nomeInscricao.text.trim(),
+                                                        senhaUser:
+                                                        senhaInscricao
+                                                            .text
+                                                            .trim(),
+                                                        tellUser:
+                                                        tellInscricao.text
+                                                            .trim(),
+                                                        emailUser:
+                                                        emailInscricao
+                                                            .text
+                                                            .trim(),
                                                       ),
-                                                    );
-                                                  });
-                                                }
-                                              }
+                                                ),
+                                              );
+                                            });
+                                          }
+                                        }
                                             : null,
-                                        child: const Text(
+                                        child: Text(
                                           'INSCREVER-SE',
                                           style: TextStyle(
                                             color: Colors.black,
-                                            fontSize: 20,
+                                            fontSize: buttonFontSize,
                                             fontFamily: 'Poppins',
                                             fontWeight: FontWeight.bold,
                                           ),

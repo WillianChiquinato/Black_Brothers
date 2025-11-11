@@ -20,13 +20,13 @@ class TelaPlanos extends StatefulWidget {
 
   const TelaPlanos(
       {super.key,
-      required this.dtNascUser,
-      required this.cpfUser,
-      required this.nomeUser,
-      required this.nomeCompletoUser,
-      required this.senhaUser,
-      required this.tellUser,
-      required this.emailUser});
+        required this.dtNascUser,
+        required this.cpfUser,
+        required this.nomeUser,
+        required this.nomeCompletoUser,
+        required this.senhaUser,
+        required this.tellUser,
+        required this.emailUser});
 
   @override
   State<TelaPlanos> createState() => _TelaPlanosState();
@@ -235,7 +235,7 @@ class _TelaPlanosState extends State<TelaPlanos> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => TelaInicial()),
-          (route) => false,
+              (route) => false,
         );
       });
     } else {
@@ -244,8 +244,21 @@ class _TelaPlanosState extends State<TelaPlanos> {
   }
 
   Widget _buildPlanCard(Map<String, dynamic> plano, BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final cardPadding = screenWidth * 0.04;
+    final titleFontSize = screenWidth * 0.08;
+    final imageSize = screenHeight * 0.18;
+    final priceFontSize = screenWidth * 0.07;
+    final benefitFontSize = screenWidth * 0.045;
+    final buttonPaddingHorizontal = screenWidth * 0.05;
+    final buttonPaddingVertical = screenHeight * 0.005;
+    final buttonFontSize = screenWidth * 0.05;
+    final benefitIconSize = screenWidth * 0.05;
+
     final imagemPlano = AssetImage(
-      () {
+          () {
         switch (plano['id']) {
           case 1:
             return 'Assets/basicPlan.png';
@@ -260,11 +273,11 @@ class _TelaPlanosState extends State<TelaPlanos> {
     );
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10.0),
-      padding: const EdgeInsets.all(16.0),
+      margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+      padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(screenWidth * 0.05),
         boxShadow: [
           BoxShadow(
             color: Colors.black45,
@@ -287,16 +300,16 @@ class _TelaPlanosState extends State<TelaPlanos> {
               child: Text(
                 plano['nome'],
                 style: TextStyle(
-                  fontSize: 34,
+                  fontSize: titleFontSize,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
             ),
-            SizedBox(height: 15),
+            SizedBox(height: screenHeight * 0.02),
             Container(
-              height: 150,
-              width: 150,
+              height: imageSize,
+              width: imageSize,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
@@ -305,11 +318,11 @@ class _TelaPlanosState extends State<TelaPlanos> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: screenHeight * 0.015),
             Text(
               'R\$ ${plano['preco'].toStringAsFixed(2)}/Mês',
               style: TextStyle(
-                fontSize: 28,
+                fontSize: priceFontSize,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
                 shadows: [
@@ -321,36 +334,36 @@ class _TelaPlanosState extends State<TelaPlanos> {
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: screenHeight * 0.015),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: (plano['beneficios'] as String)
                   .split(';')
                   .where((b) => b.trim().isNotEmpty)
                   .map((b) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.check_circle,
-                              color: Colors.orangeAccent,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                b.trim(),
-                                style: const TextStyle(
-                                    fontSize: 18, color: Colors.white70),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ))
+                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.005),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.orangeAccent,
+                      size: benefitIconSize,
+                    ),
+                    SizedBox(width: screenWidth * 0.02),
+                    Expanded(
+                      child: Text(
+                        b.trim(),
+                        style: TextStyle(
+                            fontSize: benefitFontSize, color: Colors.white70),
+                      ),
+                    ),
+                  ],
+                ),
+              ))
                   .toList(),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: screenHeight * 0.02),
             ElevatedButton(
               onPressed: () async {
                 await _criarPessoa();
@@ -359,14 +372,14 @@ class _TelaPlanosState extends State<TelaPlanos> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 4, 220, 0),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 3),
+                EdgeInsets.symmetric(horizontal: buttonPaddingHorizontal, vertical: buttonPaddingVertical),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.02),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Assinar',
-                style: TextStyle(fontSize: 20, color: Colors.white),
+                style: TextStyle(fontSize: buttonFontSize, color: Colors.white),
               ),
             ),
           ],
@@ -377,11 +390,21 @@ class _TelaPlanosState extends State<TelaPlanos> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final headerPaddingHorizontal = screenWidth * 0.1;
+    final headerTitleFontSize = screenWidth * 0.06;
+    final headerSubtitleFontSize = screenWidth * 0.045;
+    final headerSpacing = screenHeight * 0.02;
+    final pageViewHeight = screenHeight * 0.75;
+
+
     return DefaultTextStyle(
       style: const TextStyle(fontFamily: 'Poppins'),
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 40,
+          toolbarHeight: screenHeight * 0.05,
           backgroundColor: grey,
         ),
         body: Container(
@@ -391,33 +414,33 @@ class _TelaPlanosState extends State<TelaPlanos> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 40.0, right: 40.0),
+                padding: EdgeInsets.only(left: headerPaddingHorizontal, right: headerPaddingHorizontal, top: screenHeight * 0.02),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'BLACK BROTHERS',
                       style: TextStyle(
-                          fontSize: 24,
+                          fontSize: headerTitleFontSize,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFFFF8C42),
+                          color: const Color(0xFFFF8C42),
                           fontFamily: 'Poppins'),
                       textAlign: TextAlign.start,
                     ),
-                    SizedBox(height: 5),
-                    const Text(
+                    SizedBox(height: screenHeight * 0.005),
+                    Text(
                       'Escolha o seu plano de treino',
                       style: TextStyle(
-                          fontSize: 18,
+                          fontSize: headerSubtitleFontSize,
                           color: Colors.white70,
                           fontFamily: 'Poppins'),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: headerSpacing),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.7,
+                height: pageViewHeight,
                 child: FutureBuilder<List<TipoPlanoClass>>(
                   future: planos,
                   builder: (context, snapshot) {
